@@ -1,0 +1,49 @@
+image:
+  name: atlassian/default-image:2
+
+pipelines:
+  # default:
+  #   - step:
+  #       name: Medistaff Admin
+  #       script:
+  #         - echo 'Medistaff Admin'
+
+  branches:
+    develop:
+      - step:
+          name: Docker build and push to AWS ECR
+          services:
+            - docker
+          image: atlassian/pipelines-awscli
+          script:
+            # variables
+            - export ECR_REPOSITORY="medistaff-admin-front-dev-ecr"
+
+            - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ECR_REGISTRY
+
+            - IMAGE=$AWS_ECR_REGISTRY/$ECR_REPOSITORY
+            - TAG=$BITBUCKET_COMMIT
+            - docker build -t $IMAGE:$TAG .
+
+            - docker push $AWS_ECR_REGISTRY/$ECR_REPOSITORY:$TAG
+
+      - step:
+          name: Deploy to AWS ECS, Code Deploy
+          services:
+            - docker
+          image: atlassian/pipelines-awscli
+          # deployment: Development
+          script:
+            # variables
+            - export CLUSTER_NAME="medistaff-admin-front-dev-cluster"
+            - export SERVICE_NAME="medistaff-admin-front-dev-service"
+            - export DEPLOYMENT_GROUP="DpgECS-medistaff-admin-front-dev-cluster-medistaff-admin-front-dev-service"
+
+            - aws ecs deploy
+              --debug
+              --region $AWS_DEFAULT_REGION
+              --task-definition .aws/task-definition-dev.json
+              --cluster $CLUSTER_NAME
+              --service $SERVICE_NAME
+              --codedeploy-appspec appspec-dev.yml
+              --codedeploy-deployment-group $DEPLOYMENT_GROUP
