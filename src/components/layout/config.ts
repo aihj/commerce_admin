@@ -25,19 +25,42 @@ export const layoutConfig = {
       items: [
         {
           key: 'committee',
-          title: 'Committee',
-          href: PATH.COMMITTEE.LIST,
+          title: '사무국',
           icon: 'tent',
           items: [
             {
-              key: 'customers',
-              title: 'List customers',
-              href: PATH.COMMITTEE.LIST,
+              key: 'committee:create',
+              title: '사무국 생성하기',
+              href: PATH.COMMITTEE.CREATE,
             },
             {
-              key: 'customers:[id]',
-              title: 'Create customer',
-              href: PATH.COMMITTEE.DETAIL,
+              key: 'customers:details',
+              title: '사무국 수정하기',
+              href: PATH.COMMITTEE.DETAIL('1'),
+            },
+          ],
+        },
+
+        // TODO : 이모티콘 뭘로 할지 정하는건 필요함
+        {
+          key: 'conference',
+          title: 'Enterprise 학회',
+          icon: 'users',
+          items: [
+            {
+              key: 'enterprise-conferences',
+              title: 'Enterprise 학회 목록',
+              href: PATH.CONFERENCE.LIST,
+            },
+            {
+              key: 'conference:create',
+              title: 'Enterprise 학회 생성',
+              href: PATH.CONFERENCE.CREATE,
+            },
+            {
+              key: 'conference:details',
+              title: 'Enterprise 학회 수정',
+              href: PATH.CONFERENCE.DETAIL('1'),
             },
           ],
         },
