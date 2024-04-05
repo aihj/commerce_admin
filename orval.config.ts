@@ -3,14 +3,13 @@ import { defineConfig } from 'orval';
 export default defineConfig({
   medistaffAdmin: {
     input: {
-      // TODO admin backend api swagger url로 수정
-      target: 'api/v1',
+      target: 'http://localhost:8045' + '/v3/api-docs',
     },
     output: {
       mode: 'tags-split',
       target: 'src/orval/api',
       schemas: 'src/orval/model',
-      //   client: 'react-query',
+      client: 'react-query',
       prettier: true,
       tsconfig: 'tsconfig.json',
     },

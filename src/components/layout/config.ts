@@ -1,6 +1,5 @@
 import { PATH } from '@/paths';
 import type { NavItemConfig } from '@/types/nav';
-
 export interface LayoutConfig {
   navItems: NavItemConfig[];
 }
@@ -28,7 +27,7 @@ export const layoutConfig = {
           key: 'committee',
           title: 'Committee',
           href: PATH.COMMITTEE.LIST,
-          icon: 'mosque',
+          icon: 'tent',
           items: [
             {
               key: 'customers',

@@ -28,7 +28,7 @@ import { Truck as TruckIcon } from '@phosphor-icons/react/dist/ssr/Truck';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 import { WarningDiamond as WarningDiamondIcon } from '@phosphor-icons/react/dist/ssr/WarningDiamond';
-
+import { Tent } from '@phosphor-icons/react/dist/ssr/Tent';
 export const icons = {
   'address-book': AddressBookIcon,
   'align-left': AlignLeftIcon,
@@ -48,6 +48,7 @@ export const icons = {
   'sign-out': SignOutIcon,
   'text-align-left': TextAlignLeftIcon,
   'warning-diamond': WarningDiamondIcon,
+  tent: Tent,
   cube: CubeIcon,
   file: FileIcon,
   house: HouseIcon,

@@ -15,7 +15,8 @@
   "rules": {
     "react/react-in-jsx-scope": "off", // react 17부턴 import 안해도돼서 기능 끔
     "react/jsx-uses-vars": "error",
-    "prettier/prettier": ["error", { "endOfLine": "auto" }]
+    "prettier/prettier": ["error", { "endOfLine": "auto" }],
+    "@typescript-eslint/no-explicit-any": 0 // any 허용
   },
   "overrides": [
     {
