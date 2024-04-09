@@ -38,10 +38,12 @@ export const getTestSuccessReturnVoQueryOptions = <
   TData = Awaited<ReturnType<typeof testSuccessReturnVo>>,
   TError = AxiosError<unknown>,
 >(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof testSuccessReturnVo>>,
-    TError,
-    TData
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof testSuccessReturnVo>>,
+      TError,
+      TData
+    >
   >;
   axios?: AxiosRequestConfig;
 }) => {
@@ -72,10 +74,12 @@ export const useTestSuccessReturnVo = <
   TData = Awaited<ReturnType<typeof testSuccessReturnVo>>,
   TError = AxiosError<unknown>,
 >(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof testSuccessReturnVo>>,
-    TError,
-    TData
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof testSuccessReturnVo>>,
+      TError,
+      TData
+    >
   >;
   axios?: AxiosRequestConfig;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
@@ -108,10 +112,12 @@ export const getTestSuccessReturnMapQueryOptions = <
   TData = Awaited<ReturnType<typeof testSuccessReturnMap>>,
   TError = AxiosError<unknown>,
 >(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof testSuccessReturnMap>>,
-    TError,
-    TData
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof testSuccessReturnMap>>,
+      TError,
+      TData
+    >
   >;
   axios?: AxiosRequestConfig;
 }) => {
@@ -142,10 +148,12 @@ export const useTestSuccessReturnMap = <
   TData = Awaited<ReturnType<typeof testSuccessReturnMap>>,
   TError = AxiosError<unknown>,
 >(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof testSuccessReturnMap>>,
-    TError,
-    TData
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof testSuccessReturnMap>>,
+      TError,
+      TData
+    >
   >;
   axios?: AxiosRequestConfig;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
@@ -178,10 +186,12 @@ export const getTestFailReturnMapQueryOptions = <
   TData = Awaited<ReturnType<typeof testFailReturnMap>>,
   TError = AxiosError<unknown>,
 >(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof testFailReturnMap>>,
-    TError,
-    TData
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof testFailReturnMap>>,
+      TError,
+      TData
+    >
   >;
   axios?: AxiosRequestConfig;
 }) => {
@@ -212,10 +222,12 @@ export const useTestFailReturnMap = <
   TData = Awaited<ReturnType<typeof testFailReturnMap>>,
   TError = AxiosError<unknown>,
 >(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof testFailReturnMap>>,
-    TError,
-    TData
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof testFailReturnMap>>,
+      TError,
+      TData
+    >
   >;
   axios?: AxiosRequestConfig;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {

@@ -174,7 +174,7 @@ const EnterpriseList = () => {
           <div>
             <Button
               component={RouterLink}
-              href={PATH.CONFERENCE.CREATE}
+              href={PATH.CONFERENCE.ENTERPRISE.CREATE}
               startIcon={<PlusIcon />}
               variant="contained"
             >

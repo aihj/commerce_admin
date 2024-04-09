@@ -5,72 +5,69 @@
  * 로그인을 제외한 메디스태프 어드민의 모든 API와 학회 관련 API를 구성합니다.
  * OpenAPI spec version: 1.0.0
  */
-import { useQuery } from '@tanstack/react-query';
 import type {
   QueryFunction,
   QueryKey,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import type { AxiosError, AxiosRequestConfig } from 'axios';
+import { AxiosResponse } from 'axios';
 import { EnterpriseListResVo } from '@/api/types/EnterpriseListResVo';
 import { adminAxiosInstance } from '@/api/authApi';
+import { ResponseMessageVo } from '@/api/types/ResponseMessageVo';
 import { TableSearchParams } from '@/api/types/TableSearchParams';
-import { AxiosResponse } from 'axios/index';
 
-interface ResponseMessageVo<T = any> {
-  content?: T;
-  enMessage?: string;
-  error?: string;
-  message?: string;
-  status?: number;
-}
-
+// region *********************** Enterprise Conference 목록 가져오기 ***********************
 /**
  * Enterprise Conference 목록 가져오기
  * @summary getEnterprisePcoList
  */
 export const getEnterprisePcoList = (
-  param: TableSearchParams,
+  params: TableSearchParams,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<EnterpriseListResVo>> => {
+): Promise<AxiosResponse<EnterpriseListResVo> | void> => {
+  const url = `/api/pco/top/enterprises`;
   return adminAxiosInstance
-    .post(`/api/pco/top/enterprises`, param, options)
+    .post(url, params, options)
     .then((response) => {
       console.log('AxiosResponse response : ', response);
-      return response.data.content;
+      return response.data;
     })
     .catch((error) => {
       console.log('AxiosResponse error: ', error);
-      return null;
+      throw error;
     });
 };
 
-export const getEnterprisePcoListQueryKey = () => {
-  return [`/api/pco/top/enterprises`] as const;
+export const getEnterprisePcoListQueryKey = (params: TableSearchParams) => {
+  const url = `/api/pco/top/enterprises`;
+  return [url, ...(params ? [params] : [])] as const;
 };
 
 export const getEnterprisePcoListQueryOptions = <
   TData = Awaited<ReturnType<typeof getEnterprisePcoList>>,
   TError = AxiosError<ResponseMessageVo>,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getEnterprisePcoList>>,
-      TError,
-      TData
-    >
-  >;
-  axios?: AxiosRequestConfig;
-}) => {
+>(
+  params: TableSearchParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getEnterprisePcoList>>,
+        TError,
+        TData
+      >
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
   const { query: queryOptions, axios: axiosOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getEnterprisePcoListQueryKey();
-
+  const queryKey =
+    queryOptions?.queryKey ?? getEnterprisePcoListQueryKey(params);
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getEnterprisePcoList>>
-  > = ({ signal }) => getEnterprisePcoList({ signal, ...axiosOptions });
-
+  > = ({ signal }) => getEnterprisePcoList(params, { signal, ...axiosOptions });
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getEnterprisePcoList>>,
     TError,
@@ -78,36 +75,114 @@ export const getEnterprisePcoListQueryOptions = <
   > & { queryKey: QueryKey };
 };
 
-export type GetEnterprisePcoListQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getEnterprisePcoList>>
->;
-export type GetEnterprisePcoListQueryError = AxiosError<ResponseMessageVo>;
-
 /**
  * @summary getEnterprisePcoList
  */
 export const useGetEnterprisePcoList = <
   TData = Awaited<ReturnType<typeof getEnterprisePcoList>>,
   TError = AxiosError<ResponseMessageVo>,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getEnterprisePcoList>>,
-      TError,
-      TData
-    >
-  >;
-  axios?: AxiosRequestConfig;
-}): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getEnterprisePcoListQueryOptions(options);
-
+>(
+  params: TableSearchParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getEnterprisePcoList>>,
+        TError,
+        TData
+      >
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getEnterprisePcoListQueryOptions(params, options);
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
   };
-
   query.queryKey = queryOptions.queryKey;
-
   return query;
 };
-
 // 사용법 : const { data, isLoading, isError } = useGetEnterprisePcoList();
+// endregion *********************** Enterprise Conference 목록 가져오기 ***********************
+
+// region *********************** Alliance Conference 목록 가져오기 **************************
+/**
+ * Alliance Conference 목록 가져오기
+ * @summary getAlliancePcoList
+ */
+export const getAlliancePcoList = (
+  params: TableSearchParams,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<EnterpriseListResVo> | void> => {
+  const url = `/api/pco/top/alliances`;
+  return adminAxiosInstance
+    .post(url, params, options)
+    .then((response) => {
+      console.log('AxiosResponse response : ', response);
+      return response.data;
+    })
+    .catch((error) => {
+      console.log('AxiosResponse error: ', error);
+      throw error;
+    });
+};
+
+export const getAlliancePcoListQueryKey = (params: TableSearchParams) => {
+  const url = `/api/pco/top/alliances`;
+  return [url, ...(params ? [params] : [])] as const;
+};
+
+export const getAlliancePcoListQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAlliancePcoList>>,
+  TError = AxiosError<ResponseMessageVo>,
+>(
+  params: TableSearchParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getAlliancePcoList>>,
+        TError,
+        TData
+      >
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getAlliancePcoListQueryKey(params);
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAlliancePcoList>>
+  > = ({ signal }) => getAlliancePcoList(params, { signal, ...axiosOptions });
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAlliancePcoList>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+/**
+ * @summary getEnterprisePcoList
+ */
+export const useGetAlliancePcoList = <
+  TData = Awaited<ReturnType<typeof getAlliancePcoList>>,
+  TError = AxiosError<ResponseMessageVo>,
+>(
+  params: TableSearchParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getAlliancePcoList>>,
+        TError,
+        TData
+      >
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getAlliancePcoListQueryOptions(params, options);
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+  query.queryKey = queryOptions.queryKey;
+  return query;
+};
+// endregion *********************** Alliance Conference 목록 가져오기 ***********************

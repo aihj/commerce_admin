@@ -6,9 +6,16 @@
  * OpenAPI spec version: 1.0.0
  */
 
+export * from './allianceDtVo';
+export * from './enterpriseDtVo';
+export * from './facultyVo';
+export * from './getAlliancePcoDtBody';
+export * from './getEnterprisePcoDTBody';
 export * from './getEnterprisePcoListBody';
+export * from './getProgramDTBody';
 export * from './getSurveys1400';
 export * from './getSurveys400';
+export * from './programDtVo';
 export * from './responseMessageVo';
 export * from './responseMessageVoContent';
 export * from './responseMessageVoError';
@@ -17,6 +24,7 @@ export * from './responseMessageVoErrorCauseStackTraceItem';
 export * from './responseMessageVoErrorStackTraceItem';
 export * from './responseMessageVoErrorSuppressedItem';
 export * from './responseMessageVoErrorSuppressedItemStackTraceItem';
+export * from './responseMessageVoTotalCount';
 export * from './surveyVo';
 export * from './testFailReturnMap200';
 export * from './testSuccessReturnMap200';

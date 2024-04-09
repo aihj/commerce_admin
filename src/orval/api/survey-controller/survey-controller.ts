@@ -34,10 +34,8 @@ export const getGetSurveysQueryOptions = <
   TData = Awaited<ReturnType<typeof getSurveys>>,
   TError = AxiosError<GetSurveys400>,
 >(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof getSurveys>>,
-    TError,
-    TData
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getSurveys>>, TError, TData>
   >;
   axios?: AxiosRequestConfig;
 }) => {
@@ -68,10 +66,8 @@ export const useGetSurveys = <
   TData = Awaited<ReturnType<typeof getSurveys>>,
   TError = AxiosError<GetSurveys400>,
 >(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof getSurveys>>,
-    TError,
-    TData
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getSurveys>>, TError, TData>
   >;
   axios?: AxiosRequestConfig;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {

@@ -7,9 +7,16 @@ export const PATH = {
     DETAIL: (invoiceId: number) => `/committee/${invoiceId}`,
   },
   CONFERENCE: {
-    LIST: '/conferences',
-    CREATE: '/conference',
-    DETAIL: (invoiceId: number) => `/conference/${invoiceId}`,
+    ENTERPRISE: {
+      LIST: '/enterprise/conferences',
+      CREATE: '/enterprise/conference',
+      DETAIL: (invoiceId: number) => `/enterprise/conference/${invoiceId}`,
+    },
+    ALLIANCE: {
+      LIST: '/alliance/conferences',
+      CREATE: '/alliance/conference',
+      DETAIL: (invoiceId: number) => `/alliance/conference/${invoiceId}`,
+    },
   },
 
   // 각 학회마다 경로가 다를 경우

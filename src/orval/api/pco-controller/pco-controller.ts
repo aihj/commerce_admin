@@ -12,76 +12,147 @@ import type {
 } from '@tanstack/react-query';
 import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
-import type { GetEnterprisePcoListBody, ResponseMessageVo } from '../../model';
+import type {
+  GetAlliancePcoDtBody,
+  GetEnterprisePcoDTBody,
+  ResponseMessageVo,
+} from '../../model';
 
 /**
  * Enterprise Conference 목록 가져오기
  * @summary getEnterprisePcoList
  */
-export const getEnterprisePcoList = (
-  getEnterprisePcoListBody: GetEnterprisePcoListBody,
+export const getEnterprisePcoDT = (
+  getEnterprisePcoDTBody: GetEnterprisePcoDTBody,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<ResponseMessageVo>> => {
   return axios.post(
     `/api/pco/top/enterprises`,
-    getEnterprisePcoListBody,
+    getEnterprisePcoDTBody,
     options
   );
 };
 
-export const getGetEnterprisePcoListMutationOptions = <
+export const getGetEnterprisePcoDTMutationOptions = <
   TError = AxiosError<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof getEnterprisePcoList>>,
+    Awaited<ReturnType<typeof getEnterprisePcoDT>>,
     TError,
-    { data: GetEnterprisePcoListBody },
+    { data: GetEnterprisePcoDTBody },
     TContext
   >;
   axios?: AxiosRequestConfig;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof getEnterprisePcoList>>,
+  Awaited<ReturnType<typeof getEnterprisePcoDT>>,
   TError,
-  { data: GetEnterprisePcoListBody },
+  { data: GetEnterprisePcoDTBody },
   TContext
 > => {
   const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof getEnterprisePcoList>>,
-    { data: GetEnterprisePcoListBody }
+    Awaited<ReturnType<typeof getEnterprisePcoDT>>,
+    { data: GetEnterprisePcoDTBody }
   > = (props) => {
     const { data } = props ?? {};
 
-    return getEnterprisePcoList(data, axiosOptions);
+    return getEnterprisePcoDT(data, axiosOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type GetEnterprisePcoListMutationResult = NonNullable<
-  Awaited<ReturnType<typeof getEnterprisePcoList>>
+export type GetEnterprisePcoDTMutationResult = NonNullable<
+  Awaited<ReturnType<typeof getEnterprisePcoDT>>
 >;
-export type GetEnterprisePcoListMutationBody = GetEnterprisePcoListBody;
-export type GetEnterprisePcoListMutationError = AxiosError<unknown>;
+export type GetEnterprisePcoDTMutationBody = GetEnterprisePcoDTBody;
+export type GetEnterprisePcoDTMutationError = AxiosError<unknown>;
 
 /**
  * @summary getEnterprisePcoList
  */
-export const useGetEnterprisePcoList = <
+export const useGetEnterprisePcoDT = <
   TError = AxiosError<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof getEnterprisePcoList>>,
+    Awaited<ReturnType<typeof getEnterprisePcoDT>>,
     TError,
-    { data: GetEnterprisePcoListBody },
+    { data: GetEnterprisePcoDTBody },
     TContext
   >;
   axios?: AxiosRequestConfig;
 }) => {
-  const mutationOptions = getGetEnterprisePcoListMutationOptions(options);
+  const mutationOptions = getGetEnterprisePcoDTMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+/**
+ * Alliance Conference 목록 가져오기
+ * @summary getAlliancePcoList
+ */
+export const getAlliancePcoDt = (
+  getAlliancePcoDtBody: GetAlliancePcoDtBody,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<ResponseMessageVo>> => {
+  return axios.post(`/api/pco/top/alliances`, getAlliancePcoDtBody, options);
+};
+
+export const getGetAlliancePcoDtMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getAlliancePcoDt>>,
+    TError,
+    { data: GetAlliancePcoDtBody },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof getAlliancePcoDt>>,
+  TError,
+  { data: GetAlliancePcoDtBody },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof getAlliancePcoDt>>,
+    { data: GetAlliancePcoDtBody }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return getAlliancePcoDt(data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type GetAlliancePcoDtMutationResult = NonNullable<
+  Awaited<ReturnType<typeof getAlliancePcoDt>>
+>;
+export type GetAlliancePcoDtMutationBody = GetAlliancePcoDtBody;
+export type GetAlliancePcoDtMutationError = AxiosError<unknown>;
+
+/**
+ * @summary getAlliancePcoList
+ */
+export const useGetAlliancePcoDt = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getAlliancePcoDt>>,
+    TError,
+    { data: GetAlliancePcoDtBody },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getGetAlliancePcoDtMutationOptions(options);
 
   return useMutation(mutationOptions);
 };

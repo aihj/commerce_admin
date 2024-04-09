@@ -14,3 +14,10 @@ export interface ResponseMessageVo {
   message?: string;
   status?: number;
 }
+export interface ResponseMessageVo<T = any> {
+  content?: T;
+  enMessage?: string;
+  error?: string;
+  message?: string;
+  status?: number;
+}

@@ -12,11 +12,11 @@ import { useGetEnterprisePcoList } from '@/api/pco/pco';
 import { EnterpriseListResVo } from '@/api/types/EnterpriseListResVo';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
-// import EnterpriseListFilters from '@/app/(afterLogin)/test/mui-table/EnterpriseListFilters';
 import { mergeSearchParams } from '@/lib/table';
 import RouterLink from 'next/link';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { PATH } from '@/paths';
+import EnterpriseListFilters from '@/app/(afterLogin)/(conference)/enterprise/conferences/EnterpriseListFilters';
 
 interface Filter {
   searchParams: SearchParamsType;
@@ -171,14 +171,14 @@ const EnterpriseList = ({ searchParams }: Filter) => {
         size: 100,
       }),
     ],
-    []
+    [columnHelper]
   );
   // endregion ****************************** 열 구성 설정 ******************************
   const filterInitialData = {
     currentPage: 0,
     rowsPerPage: 10,
 
-    sortType: 'conference_idx',
+    sortType: 'tbl_conference.conference_idx',
     sortDir: 'desc',
   };
   console.log('searchParams', searchParams);
@@ -189,7 +189,8 @@ const EnterpriseList = ({ searchParams }: Filter) => {
   // window.data = data;
   // **********************************************************
   if (isLoading) return <div>Loading...</div>;
-  if (isError || !data) return <div>Error fetching data</div>;
+  if (isError || !data.content || !data.totalCount)
+    return <div>Error fetching data</div>;
   return (
     <Box
       sx={{
@@ -211,7 +212,7 @@ const EnterpriseList = ({ searchParams }: Filter) => {
           <div>
             <Button
               component={RouterLink}
-              href={PATH.CONFERENCE.CREATE}
+              href={PATH.CONFERENCE.ENTERPRISE.CREATE}
               startIcon={<PlusIcon />}
               variant="contained"
             >
@@ -221,9 +222,9 @@ const EnterpriseList = ({ searchParams }: Filter) => {
         </Stack>
 
         <Card>
-          {/*<EnterpriseListFilters filters={searchParams} />*/}
+          <EnterpriseListFilters filters={searchParams} />
           <TableBody<EnterpriseListResVo>
-            data={data}
+            data={data.content}
             columns={columns}
             selectable={false}
             hideHead={false}
@@ -231,7 +232,7 @@ const EnterpriseList = ({ searchParams }: Filter) => {
             isHover={true}
             size="medium"
           />
-          <TablePagination count={data.length} />
+          <TablePagination count={data.totalCount} />
         </Card>
       </Stack>
     </Box>

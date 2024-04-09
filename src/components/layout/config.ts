@@ -43,24 +43,46 @@ export const layoutConfig = {
 
         // TODO : 이모티콘 뭘로 할지 정하는건 필요함
         {
-          key: 'conference',
+          key: 'enterprise-conference',
           title: 'Enterprise 학회',
           icon: 'users',
           items: [
             {
               key: 'enterprise-conferences',
               title: 'Enterprise 학회 목록',
-              href: PATH.CONFERENCE.LIST,
+              href: PATH.CONFERENCE.ENTERPRISE.LIST,
             },
             {
               key: 'conference:create',
               title: 'Enterprise 학회 생성',
-              href: PATH.CONFERENCE.CREATE,
+              href: PATH.CONFERENCE.ENTERPRISE.CREATE,
             },
             {
               key: 'conference:details',
               title: 'Enterprise 학회 수정',
-              href: PATH.CONFERENCE.DETAIL('1'),
+              href: PATH.CONFERENCE.ENTERPRISE.DETAIL('1'),
+            },
+          ],
+        },
+        {
+          key: 'alliance-conference',
+          title: 'Alliance 학회',
+          icon: 'users',
+          items: [
+            {
+              key: 'alliance-conferences',
+              title: 'Alliance 학회 목록',
+              href: PATH.CONFERENCE.ALLIANCE.LIST,
+            },
+            {
+              key: 'alliance:create',
+              title: 'Alliance 학회 생성',
+              href: PATH.CONFERENCE.ALLIANCE.CREATE,
+            },
+            {
+              key: 'alliance:details',
+              title: 'Alliance 학회 수정',
+              href: PATH.CONFERENCE.ALLIANCE.DETAIL('1'),
             },
           ],
         },

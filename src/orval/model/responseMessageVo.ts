@@ -7,6 +7,7 @@
  */
 import type { ResponseMessageVoContent } from './responseMessageVoContent';
 import type { ResponseMessageVoError } from './responseMessageVoError';
+import type { ResponseMessageVoTotalCount } from './responseMessageVoTotalCount';
 
 export interface ResponseMessageVo {
   content?: ResponseMessageVoContent;
@@ -14,4 +15,5 @@ export interface ResponseMessageVo {
   error?: ResponseMessageVoError;
   message?: string;
   status?: number;
+  totalCount?: ResponseMessageVoTotalCount;
 }
