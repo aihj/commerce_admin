@@ -3,19 +3,19 @@ export const PATH = {
   HOME: '/',
   COMMITTEE: {
     LIST: '/committees',
-    CREATE: '/committee',
-    DETAIL: (invoiceId: number) => `/committee/${invoiceId}`,
+    CREATE: '/committees/form',
+    DETAIL: (invoiceId: number) => `/committees/${invoiceId}`,
   },
   CONFERENCE: {
     ENTERPRISE: {
       LIST: '/enterprise/conferences',
-      CREATE: '/enterprise/conference',
-      DETAIL: (invoiceId: number) => `/enterprise/conference/${invoiceId}`,
+      CREATE: '/enterprise/conferences/from',
+      DETAIL: (invoiceId: number) => `/enterprise/conferences/${invoiceId}`,
     },
     ALLIANCE: {
       LIST: '/alliance/conferences',
-      CREATE: '/alliance/conference',
-      DETAIL: (invoiceId: number) => `/alliance/conference/${invoiceId}`,
+      CREATE: '/alliance/conferences/form',
+      DETAIL: (invoiceId: number) => `/alliance/conferences/${invoiceId}`,
     },
   },
 
@@ -23,9 +23,9 @@ export const PATH = {
   EATH: {
     PROGRAM: {
       LIST: (confStringIdx: string) => `/${confStringIdx}/programs`,
-      CREATE: (confStringIdx: string) => `/${confStringIdx}/program`,
+      CREATE: (confStringIdx: string) => `/${confStringIdx}/programs/form`,
       DETAIL: (confStringIdx: string, programId: number) =>
-        `/${confStringIdx}/program/${programId}`,
+        `/${confStringIdx}/programs/${programId}`,
     },
   },
   AUTH: {
