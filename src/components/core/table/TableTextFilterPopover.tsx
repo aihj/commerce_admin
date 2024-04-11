@@ -7,11 +7,13 @@ import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Button from '@mui/material/Button';
 
-interface TableFilterPopoverProps {
+interface TableTextFilterPopoverProps {
   title?: string;
 }
 
-export default function TableFilterPopover({ title }: TableFilterPopoverProps) {
+export default function TableTextFilterPopover({
+  title,
+}: TableTextFilterPopoverProps) {
   const {
     anchorEl,
     onApply,

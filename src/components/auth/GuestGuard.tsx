@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
 
 import { PATH } from '@/paths';
-import { defaultLogger } from '@/lib/logger/defaultLogger';
+import { logger } from '@/lib/logger/defaultLogger';
 import { useUser } from '@/hooks/useUser';
 
 export interface GuestGuardProps {
@@ -31,9 +31,7 @@ export function GuestGuard({
 
     // 만약에 유저 권한이 있을 경우
     if (user) {
-      defaultLogger.debug(
-        '[GuestGuard]: User is logged in, redirecting to dashboard'
-      );
+      logger.debug('[GuestGuard]: User is logged in, redirecting to dashboard');
       router.replace(PATH.HOME);
       return;
     }
@@ -45,7 +43,7 @@ export function GuestGuard({
     checkPermissions().catch(() => {
       // noop
     });
-  }, [user, error, isLoading]);
+  }, [user, error, isLoading, checkPermissions]);
 
   if (isChecking) {
     return null;

@@ -17,7 +17,7 @@ import { mergeSearchParams } from '@/lib/table';
 import RouterLink from 'next/link';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { PATH } from '@/paths';
-import AllianceListFilters from '@/app/(afterLogin)/(conference)/alliance/conferences/AllianceListFilters';
+import { AllianceListFilters } from '@/components/conferences/AllianceListFilters';
 
 interface Filter {
   searchParams: SearchParamsType;
@@ -36,7 +36,7 @@ export interface SearchParamsType {
   conferenceEndT?: string;
 }
 
-const EnterpriseList = ({ searchParams }: Filter) => {
+const AllianceList = ({ searchParams }: Filter) => {
   const columnHelper = createColumnHelper();
   const columns = useMemo(
     () => [
@@ -190,7 +190,12 @@ const EnterpriseList = ({ searchParams }: Filter) => {
   window.data = data;
   // **********************************************************
   if (isLoading) return <div>Loading...</div>;
-  if (isError || !data.content || !data.totalCount)
+  if (
+    isError ||
+    !data.content ||
+    data.totalCount === undefined ||
+    data.totalCount === null
+  )
     return <div>Error fetching data</div>;
   return (
     <Box
@@ -240,4 +245,4 @@ const EnterpriseList = ({ searchParams }: Filter) => {
   );
 };
 
-export default EnterpriseList;
+export default AllianceList;

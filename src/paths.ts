@@ -1,4 +1,5 @@
 export const PATH = {
+  TEST: '/test',
   // dashboard
   HOME: '/',
   COMMITTEE: {
@@ -8,14 +9,14 @@ export const PATH = {
   },
   CONFERENCE: {
     ENTERPRISE: {
-      LIST: '/enterprise/conferences',
-      CREATE: '/enterprise/conferences/from',
-      DETAIL: (invoiceId: number) => `/enterprise/conferences/${invoiceId}`,
+      LIST: '/enterprise-conferences',
+      CREATE: '/enterprise-conferences/from',
+      DETAIL: (invoiceId: number) => `/enterprise-conferences/${invoiceId}`,
     },
     ALLIANCE: {
-      LIST: '/alliance/conferences',
-      CREATE: '/alliance/conferences/form',
-      DETAIL: (invoiceId: number) => `/alliance/conferences/${invoiceId}`,
+      LIST: '/alliance-conferences',
+      CREATE: '/alliance-conferences/form',
+      DETAIL: (invoiceId: number) => `/alliance-conferences/${invoiceId}`,
     },
   },
 

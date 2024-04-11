@@ -150,7 +150,7 @@ export const TableBody = <TRowModel extends object>({
                 <TableCell colSpan={table.getAllLeafColumns().length}>
                   <Box width={'100%'} py={3}>
                     <Typography variant="h6" textAlign={'center'}>
-                      No records found
+                      존재하는 데이터가 없습니다.
                     </Typography>
                   </Box>
                 </TableCell>

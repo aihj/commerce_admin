@@ -4,9 +4,10 @@ import * as React from 'react';
 
 import type { User } from '@/types/user';
 import { authClient } from '@/lib/auth/client';
-import { defaultLogger } from '@/lib/logger/defaultLogger';
+import { logger } from '@/lib/logger/defaultLogger';
 
 import type { UserContextValue } from './types';
+import { useCallback } from 'react';
 
 export const NextAuthUserContext = React.createContext<
   UserContextValue | undefined
@@ -30,20 +31,20 @@ export function UserProvider({
   });
 
   // 사용자 정보 업데이트 함수
-  const updateUser = (newUser: User | null) => {
+  const updateUser = useCallback((newUser: User | null) => {
     setState((prevState) => ({
       ...prevState,
       user: newUser,
     }));
-  };
+  }, []);
 
   // 사용자 세션을 확인하고 세션 정보를 가져오는 기능
-  const checkSession = React.useCallback(async (): Promise<void> => {
+  const checkSession = useCallback(async (): Promise<void> => {
     try {
       const { data, error } = await authClient.getUser();
 
       if (error) {
-        defaultLogger.error(error);
+        logger.error(error);
         setState((prev) => ({
           ...prev,
           user: null,
@@ -60,7 +61,7 @@ export function UserProvider({
         isLoading: false,
       }));
     } catch (err) {
-      defaultLogger.error(err);
+      logger.error(err);
       setState((prev) => ({
         ...prev,
         user: null,
@@ -72,10 +73,10 @@ export function UserProvider({
 
   React.useEffect(() => {
     checkSession().catch((err) => {
-      defaultLogger.error(err);
+      logger.error(err);
       // noop
     });
-  }, []);
+  }, [checkSession]);
 
   return (
     <NextAuthUserContext.Provider

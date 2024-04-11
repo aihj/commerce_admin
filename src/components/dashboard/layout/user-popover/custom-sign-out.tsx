@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import MenuItem from '@mui/material/MenuItem';
 
 import { authClient } from '@/lib/auth/client';
-import { defaultLogger } from '@/lib/logger/defaultLogger';
+import { logger } from '@/lib/logger/defaultLogger';
 import { useUser } from '@/hooks/useUser';
 import { toast } from '@/components/core/Toaster';
 import { signOut } from 'next-auth/react';
@@ -19,7 +19,7 @@ export function CustomSignOut(): React.JSX.Element {
       const { error } = await authClient.signOut();
 
       if (error) {
-        defaultLogger.error('Sign out error', error);
+        logger.error('Sign out error', error);
         toast.error('Something went wrong, unable to sign out');
         return;
       }
@@ -34,7 +34,7 @@ export function CustomSignOut(): React.JSX.Element {
 
       // After refresh, AuthGuard will handle the redirect
     } catch (err) {
-      defaultLogger.error('Sign out error', err);
+      logger.error('Sign out error', err);
       toast.error('Something went wrong, unable to sign out');
     }
   }, [checkSession, router]);

@@ -7,9 +7,10 @@ import Alert from '@mui/material/Alert';
 import { config } from '@/config';
 import { PATH } from '@/paths';
 import { AuthStrategy } from '@/lib/auth/strategy';
-import { defaultLogger } from '@/lib/logger/defaultLogger';
+import { logger } from '@/lib/logger/defaultLogger';
 import { useUser } from '@/hooks/useUser';
 import { useSession } from 'next-auth/react';
+import { useCallback } from 'react';
 
 export interface AuthGuardProps {
   children: React.ReactNode;
@@ -24,32 +25,30 @@ export function AuthGuard({
   const { user, error, isLoading, updateUser } = useUser();
   const [isChecking, setIsChecking] = React.useState<boolean>(true);
 
-  const checkPermissions = async (): Promise<void> => {
-    defaultLogger.debug('[AuthGuard] <checkPermissions>');
+  const checkPermissions = useCallback(async (): Promise<void> => {
+    logger.debug('[AuthGuard] <checkPermissions>');
     if (isLoading) {
-      defaultLogger.debug('[AuthGuard] <checkPermissions> isLoading');
+      logger.debug('[AuthGuard] <checkPermissions> isLoading');
       return;
     } else {
-      defaultLogger.debug('[AuthGuard] <checkPermissions> 계속 진행');
+      logger.debug('[AuthGuard] <checkPermissions> 계속 진행');
     }
 
     if (error) {
-      defaultLogger.debug('[AuthGuard] <checkPermissions> error: ' + error);
+      logger.debug('[AuthGuard] <checkPermissions> error: ' + error);
       setIsChecking(false);
       return;
     }
 
     if (!user) {
       if (session) {
-        defaultLogger.debug(
-          '[AuthGuard] <checkPermissions> session: ' + session
-        );
+        logger.debug('[AuthGuard] <checkPermissions> session: ' + session);
         if (updateUser) {
           updateUser(session);
           return;
         }
       }
-      defaultLogger.debug(
+      logger.debug(
         '[AuthGuard]: 유저가 로그인 하지 않았습니다. 로그인 페이지로 이동합니다.'
       );
 
@@ -59,18 +58,18 @@ export function AuthGuard({
           return;
         }
         default: {
-          defaultLogger.error('[AuthGuard]: Unknown auth strategy');
+          logger.error('[AuthGuard]: Unknown auth strategy');
           return;
         }
       }
     }
 
     setIsChecking(false);
-  };
+  }, [error, isLoading, router, session, updateUser, user]);
 
   React.useEffect(() => {
     checkPermissions().catch(() => {
-      defaultLogger.error('[AuthGuard]: 잘못된 권한입니다..');
+      logger.error('[AuthGuard]: 잘못된 권한입니다..');
     });
   }, [user, error, isLoading, checkPermissions]);
 

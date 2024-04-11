@@ -8,13 +8,13 @@ import Stack from '@mui/material/Stack';
 import { PATH } from '@/paths';
 import { FilterButton } from '@/components/core/FilterButton';
 import { SearchParamsType } from '@/app/(afterLogin)/test/mui-table/page';
-import TableFilterPopover from '@/components/core/table/TableFilterPopover';
+import TableFilterPopover from '@/components/core/table/TableTextFilterPopover';
 
 interface EnterpriseListFiltersProps {
   filters?: SearchParamsType;
 }
 
-const EnterpriseListFilters = ({
+const AllianceListFilters = ({
   filters = {},
 }: EnterpriseListFiltersProps): JSX.Element => {
   const {
@@ -94,4 +94,4 @@ const EnterpriseListFilters = ({
     </div>
   );
 };
-export default EnterpriseListFilters;
+export { AllianceListFilters };

@@ -16,7 +16,8 @@ import { mergeSearchParams } from '@/lib/table';
 import RouterLink from 'next/link';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { PATH } from '@/paths';
-import EnterpriseListFilters from '@/app/(afterLogin)/(conference)/enterprise/conferences/EnterpriseListFilters';
+import { EnterpriseListFilters } from '@/components/conferences/EnterpriseListFilters';
+import { logger } from '@/lib/logger/defaultLogger';
 
 interface Filter {
   searchParams: SearchParamsType;
@@ -181,15 +182,20 @@ const EnterpriseList = ({ searchParams }: Filter) => {
     sortType: 'tbl_conference.conference_idx',
     sortDir: 'desc',
   };
-  console.log('searchParams', searchParams);
+  logger.debug('[searchParams', searchParams);
   const mergedSearchParams = mergeSearchParams(searchParams, filterInitialData);
   const { data, isLoading, isError } = useGetEnterprisePcoList({
     ...mergedSearchParams,
   });
-  // window.data = data;
+  window.data = data;
   // **********************************************************
   if (isLoading) return <div>Loading...</div>;
-  if (isError || !data.content || !data.totalCount)
+  if (
+    isError ||
+    !data.content ||
+    data.totalCount === undefined ||
+    data.totalCount === null
+  )
     return <div>Error fetching data</div>;
   return (
     <Box
