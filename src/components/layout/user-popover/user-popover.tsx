@@ -60,7 +60,7 @@ export function UserPopover({
       <List sx={{ p: 1 }}>
         <MenuItem
           component={RouterLink}
-          href={PATH.SETTINGS.MY_PAGE}
+          href={PATH.SETTING.MY_PAGE}
           onClick={onClose}
         >
           <ListItemIcon>
@@ -71,7 +71,7 @@ export function UserPopover({
       </List>
       <Divider />
       <Box sx={{ p: 1 }}>
-        {config.auth.strategy === AuthStrategy.CUSTOM ? (
+        {config.auth.strategy === AuthStrategy.NEXT_AUTH ? (
           <CustomSignOut />
         ) : null}
       </Box>

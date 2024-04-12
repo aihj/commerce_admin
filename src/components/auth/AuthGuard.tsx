@@ -26,16 +26,16 @@ export function AuthGuard({
   const [isChecking, setIsChecking] = React.useState<boolean>(true);
 
   const checkPermissions = useCallback(async (): Promise<void> => {
-    logger.debug('[AuthGuard] <checkPermissions>');
+    // logger.debug('[AuthGuard] <checkPermissions>');
     if (isLoading) {
-      logger.debug('[AuthGuard] <checkPermissions> isLoading');
+      // logger.debug('[AuthGuard] <checkPermissions> isLoading');
       return;
     } else {
-      logger.debug('[AuthGuard] <checkPermissions> 계속 진행');
+      // logger.debug('[AuthGuard] <checkPermissions> 계속 진행');
     }
 
     if (error) {
-      logger.debug('[AuthGuard] <checkPermissions> error: ' + error);
+      logger.error('[AuthGuard] <checkPermissions> error: ' + error);
       setIsChecking(false);
       return;
     }
@@ -44,13 +44,14 @@ export function AuthGuard({
       if (session) {
         logger.debug('[AuthGuard] <checkPermissions> session: ' + session);
         if (updateUser) {
-          updateUser(session);
+          updateUser(session.user);
           return;
         }
+      } else {
+        logger.error(
+          '[AuthGuard]: 유저가 로그인 하지 않았습니다. 로그인 페이지로 이동합니다.'
+        );
       }
-      logger.debug(
-        '[AuthGuard]: 유저가 로그인 하지 않았습니다. 로그인 페이지로 이동합니다.'
-      );
 
       switch (config.auth.strategy) {
         case AuthStrategy.NEXT_AUTH: {

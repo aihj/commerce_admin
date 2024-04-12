@@ -27,6 +27,10 @@ export const PATH = {
       CREATE: (confStringIdx: string) => `/${confStringIdx}/programs/form`,
       DETAIL: (confStringIdx: string, programId: number) =>
         `/${confStringIdx}/programs/${programId}`,
+      SESSION_GROUP: {
+        DETAIL: (confStringIdx: string, programId: number) =>
+          `/${confStringIdx}/program/session-groups/${programId}`,
+      },
     },
   },
   AUTH: {
@@ -36,7 +40,7 @@ export const PATH = {
       RESET_PASSWORD: '/auth/set-password',
     },
   },
-  SETTINGS: {
-    MY_PAGE: '/settings/my-page',
+  SETTING: {
+    MY_PAGE: '/setting/my-page',
   },
 };

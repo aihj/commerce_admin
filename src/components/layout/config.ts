@@ -4,8 +4,9 @@ export interface LayoutConfig {
   navItems: NavItemConfig[];
 }
 
-// 메뉴바
-export const layoutConfig = {
+// TODO: 권한마다 보여주는 레이아웃을 다르게 할려면 어떻게 해야할까?
+// TODO : 생각해보니 권한마다가 아니라 경로마다임 confStringIdx를 포함할경우에는
+const layoutConfig = {
   navItems: [
     {
       key: 'dashboards',
@@ -16,12 +17,13 @@ export const layoutConfig = {
           title: 'Overview',
           href: '/',
           icon: 'house',
+          auth: '',
         },
       ],
     },
     {
       key: 'general',
-      title: 'General',
+      title: '모든 학회 관리',
       items: [
         {
           key: 'committee',
@@ -32,11 +34,13 @@ export const layoutConfig = {
               key: 'committee:create',
               title: '사무국 생성하기',
               href: PATH.COMMITTEE.CREATE,
+              auth: '',
             },
             {
               key: 'customers:details',
               title: '사무국 수정하기',
               href: PATH.COMMITTEE.DETAIL('1'),
+              auth: '',
             },
           ],
         },
@@ -90,3 +94,44 @@ export const layoutConfig = {
     },
   ],
 } satisfies LayoutConfig;
+
+const eachPcoLayoutConfig = {
+  navItems: [
+    // TODO : 이모티콘 뭘로 할지 정하는건 필요함
+    {
+      key: 'eath-pco',
+      title: '학회 각각의 정보',
+      items: [
+        {
+          key: 'programs',
+          title: '프로그램',
+          icon: 'tent',
+          items: [
+            {
+              key: 'programs:list',
+              title: '프로그램 목록',
+              href: PATH.EATH.PROGRAM.LIST,
+            },
+            {
+              key: 'program:create',
+              title: '프로그램 생성하기',
+              href: PATH.EATH.PROGRAM.CREATE,
+            },
+            {
+              key: 'program:details',
+              title: '프로그램 수정하기',
+              href: PATH.EATH.PROGRAM.DETAIL('1'),
+            },
+            {
+              key: 'session:details',
+              title: '프로그램 세션 수정하기',
+              href: PATH.EATH.PROGRAM.SESSION_GROUP.DETAIL('1'),
+            },
+          ],
+        },
+      ],
+    },
+  ],
+} satisfies LayoutConfig;
+
+export { layoutConfig, eachPcoLayoutConfig };

@@ -15,11 +15,14 @@ import { Logo } from '@/components/core/Logo';
 
 import { icons } from '../NavIcons';
 import { navColorStyles } from './styles';
+import { WorkspacesSwitch } from '@/components/layout/WorkspacesSwitch';
+import { PATH } from '@/paths';
 
 interface SideNavProps {
   items?: NavItemConfig[];
 }
 
+// 왼쪽 사이드에 있는 Nav
 export function SideNav({ items = [] }: SideNavProps): React.JSX.Element {
   const pathname = usePathname();
 
@@ -43,14 +46,19 @@ export function SideNav({ items = [] }: SideNavProps): React.JSX.Element {
         zIndex: 'var(--SideNav-zIndex)',
       }}
     >
-      <Box
-        sx={{
-          display: 'inline-flex',
-          p: 2,
-        }}
-      >
-        <Logo height={46} width={120} />
-      </Box>
+      <Stack spacing={2} sx={{ p: 2 }}>
+        <div>
+          <Box
+            component={RouterLink}
+            href={PATH.HOME}
+            sx={{ display: 'inline-flex' }}
+          >
+            <Logo height={46} width={120} />
+          </Box>
+        </div>
+        <WorkspacesSwitch />
+      </Stack>
+
       <Box
         component="nav"
         sx={{

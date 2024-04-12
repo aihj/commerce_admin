@@ -112,13 +112,13 @@ export default function Page(): React.JSX.Element {
               ]}
             />
           </Grid>
+
           <Grid md={4} xs={12}>
             <Subscriptions
               subscriptions={[
                 {
                   id: 'supabase',
                   title: 'Supabase',
-                  icon: '/assets/company-avatar-5.png',
                   costs: '$599',
                   billingCycle: 'year',
                   status: 'paid',
@@ -126,7 +126,6 @@ export default function Page(): React.JSX.Element {
                 {
                   id: 'vercel',
                   title: 'Vercel',
-                  icon: '/assets/company-avatar-4.png',
                   costs: '$20',
                   billingCycle: 'month',
                   status: 'expiring',
@@ -134,7 +133,6 @@ export default function Page(): React.JSX.Element {
                 {
                   id: 'auth0',
                   title: 'Auth0',
-                  icon: '/assets/company-avatar-3.png',
                   costs: '$20-80',
                   billingCycle: 'month',
                   status: 'canceled',
@@ -142,7 +140,6 @@ export default function Page(): React.JSX.Element {
                 {
                   id: 'google_cloud',
                   title: 'Google Cloud',
-                  icon: '/assets/company-avatar-2.png',
                   costs: '$100-200',
                   billingCycle: 'month',
                   status: 'paid',
@@ -150,7 +147,6 @@ export default function Page(): React.JSX.Element {
                 {
                   id: 'stripe',
                   title: 'Stripe',
-                  icon: '/assets/company-avatar-1.png',
                   costs: '$70',
                   billingCycle: 'month',
                   status: 'paid',
@@ -166,7 +162,6 @@ export default function Page(): React.JSX.Element {
                   content: 'Hello, we spoke earlier on the phone',
                   author: {
                     name: 'Alcides Antonio',
-                    avatar: '/assets/avatar-10.png',
                     status: 'online',
                   },
                   createdAt: dayjs().subtract(2, 'minute').toDate(),
@@ -176,7 +171,6 @@ export default function Page(): React.JSX.Element {
                   content: 'Is the job still available?',
                   author: {
                     name: 'Marcus Finn',
-                    avatar: '/assets/avatar-9.png',
                     status: 'offline',
                   },
                   createdAt: dayjs().subtract(56, 'minute').toDate(),
@@ -186,7 +180,6 @@ export default function Page(): React.JSX.Element {
                   content: "What is a screening task? I'd like to",
                   author: {
                     name: 'Carson Darrin',
-                    avatar: '/assets/avatar-3.png',
                     status: 'online',
                   },
                   createdAt: dayjs()
@@ -199,7 +192,6 @@ export default function Page(): React.JSX.Element {
                   content: 'Still waiting for feedback',
                   author: {
                     name: 'Fran Perez',
-                    avatar: '/assets/avatar-5.png',
                     status: 'online',
                   },
                   createdAt: dayjs()
@@ -212,7 +204,6 @@ export default function Page(): React.JSX.Element {
                   content: 'Need more information about campaigns',
                   author: {
                     name: 'Jie Yan',
-                    avatar: '/assets/avatar-8.png',
                     status: 'offline',
                   },
                   createdAt: dayjs()

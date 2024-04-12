@@ -1,16 +1,15 @@
-import * as React from 'react';
-import { usePopover } from '@/hooks/usePopover';
-import { UserPopover } from '@/components/dashboard/layout/user-popover/user-popover';
-import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import Badge from '@mui/material/Badge';
+import { usePopover } from '@/hooks/usePopover';
+import { UserPopover } from '@/components/layout/user-popover/user-popover';
 import { useUser } from '@/hooks/useUser';
 
-export default function UserButton(): React.JSX.Element {
-  const popover = usePopover<HTMLButtonElement>();
+function UserButton() {
   const { user } = useUser();
+  const popover = usePopover<HTMLButtonElement>();
   return (
-    <React.Fragment>
+    <>
       <Box
         component="button"
         onClick={popover.handleOpen}
@@ -37,7 +36,15 @@ export default function UserButton(): React.JSX.Element {
           }}
           variant="dot"
         >
-          <Avatar src={user.avatar} />
+          {!!user?.adminProfileHost && (
+            <Avatar
+              src={
+                user.adminProfileHost +
+                user.adminProfilePath +
+                user.adminProfileName
+              }
+            />
+          )}
         </Badge>
       </Box>
       <UserPopover
@@ -45,6 +52,8 @@ export default function UserButton(): React.JSX.Element {
         onClose={popover.handleClose}
         open={popover.open}
       />
-    </React.Fragment>
+    </>
   );
 }
+
+export { UserButton };

@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown';
 
-import { usePopover } from '@/hooks/use-popover';
+import { usePopover } from '@/hooks/usePopover';
 
 import { workspaces, WorkspacesPopover } from './WorkspacesPopover';
 

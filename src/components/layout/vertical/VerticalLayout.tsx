@@ -4,9 +4,11 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
-import { layoutConfig } from '../config';
+import { layoutConfig, eachPcoLayoutConfig } from '../config';
 import { MainNav } from './MainNav';
 import { SideNav } from './SideNav';
+import { useSearchParams } from 'next/navigation';
+import { logger } from '@/lib/logger/defaultLogger';
 
 export interface VerticalLayoutProps {
   children?: React.ReactNode;
@@ -15,6 +17,15 @@ export interface VerticalLayoutProps {
 export function VerticalLayout({
   children,
 }: VerticalLayoutProps): React.JSX.Element {
+  /*
+  TODO : 현재 ulr에 따라서 보여주는 navItem이 달라야함
+  confStringIdx를 현재 param으로 가지고 있다면 eathPcolayoutConfig을 그렇지 않으면서 탑 권한을 가지고 있으면 layoutConfig를 보여줘야함
+  */
+  const params = useSearchParams();
+  logger.debug('<VerticalLayout> params', params);
+  const navItem = layoutConfig.navItems.concat(eachPcoLayoutConfig.navItems);
+  logger.debug('<VerticalLayout> navItem', navItem);
+
   return (
     <React.Fragment>
       <GlobalStyles
@@ -38,7 +49,7 @@ export function VerticalLayout({
           minHeight: '100%',
         }}
       >
-        <SideNav items={layoutConfig.navItems} />
+        <SideNav items={navItem} />
         <Box
           sx={{
             display: 'flex',
@@ -47,7 +58,7 @@ export function VerticalLayout({
             pl: { lg: 'var(--SideNav-width)' },
           }}
         >
-          <MainNav />
+          <MainNav items={navItem} />
           <Box
             component="main"
             sx={{

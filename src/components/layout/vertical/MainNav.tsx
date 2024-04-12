@@ -5,9 +5,15 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
-import UserButton from '@/components/UserButton';
+import { NavItemConfig } from '@/types/nav';
+import { MobileNav } from '@/components/layout/MobileNav';
+import { UserButton } from '@/components/user/UserButton';
 
-const MainNav = (): React.JSX.Element => {
+export interface MainNavProps {
+  items: NavItemConfig[];
+}
+
+const MainNav = ({ items }: MainNavProps): React.JSX.Element => {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   console.log(openNav);
   return (
@@ -63,8 +69,13 @@ const MainNav = (): React.JSX.Element => {
           </Stack>
         </Box>
       </Box>
-
-      {/* // TODO mobile nav 추가 */}
+      <MobileNav
+        items={items}
+        onClose={() => {
+          setOpenNav(false);
+        }}
+        open={openNav}
+      />
     </React.Fragment>
   );
 };
