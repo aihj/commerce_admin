@@ -13,6 +13,8 @@ import type {
 import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import type {
+  AllianceDtVo,
+  EnterpriseDtVo,
   GetAlliancePcoDtBody,
   GetEnterprisePcoDTBody,
   ResponseMessageVo,
@@ -25,7 +27,7 @@ import type {
 export const getEnterprisePcoDT = (
   getEnterprisePcoDTBody: GetEnterprisePcoDTBody,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ResponseMessageVo>> => {
+): Promise<AxiosResponse<EnterpriseDtVo>> => {
   return axios.post(
     `/api/pco/top/enterprises`,
     getEnterprisePcoDTBody,
@@ -34,7 +36,7 @@ export const getEnterprisePcoDT = (
 };
 
 export const getGetEnterprisePcoDTMutationOptions = <
-  TError = AxiosError<unknown>,
+  TError = AxiosError<ResponseMessageVo>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -68,13 +70,13 @@ export type GetEnterprisePcoDTMutationResult = NonNullable<
   Awaited<ReturnType<typeof getEnterprisePcoDT>>
 >;
 export type GetEnterprisePcoDTMutationBody = GetEnterprisePcoDTBody;
-export type GetEnterprisePcoDTMutationError = AxiosError<unknown>;
+export type GetEnterprisePcoDTMutationError = AxiosError<ResponseMessageVo>;
 
 /**
  * @summary getEnterprisePcoList
  */
 export const useGetEnterprisePcoDT = <
-  TError = AxiosError<unknown>,
+  TError = AxiosError<ResponseMessageVo>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -96,12 +98,12 @@ export const useGetEnterprisePcoDT = <
 export const getAlliancePcoDt = (
   getAlliancePcoDtBody: GetAlliancePcoDtBody,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<ResponseMessageVo>> => {
+): Promise<AxiosResponse<AllianceDtVo>> => {
   return axios.post(`/api/pco/top/alliances`, getAlliancePcoDtBody, options);
 };
 
 export const getGetAlliancePcoDtMutationOptions = <
-  TError = AxiosError<unknown>,
+  TError = AxiosError<ResponseMessageVo>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -135,13 +137,13 @@ export type GetAlliancePcoDtMutationResult = NonNullable<
   Awaited<ReturnType<typeof getAlliancePcoDt>>
 >;
 export type GetAlliancePcoDtMutationBody = GetAlliancePcoDtBody;
-export type GetAlliancePcoDtMutationError = AxiosError<unknown>;
+export type GetAlliancePcoDtMutationError = AxiosError<ResponseMessageVo>;
 
 /**
  * @summary getAlliancePcoList
  */
 export const useGetAlliancePcoDt = <
-  TError = AxiosError<unknown>,
+  TError = AxiosError<ResponseMessageVo>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<

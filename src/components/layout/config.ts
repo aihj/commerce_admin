@@ -110,22 +110,22 @@ const eachPcoLayoutConfig = {
             {
               key: 'programs:list',
               title: '프로그램 목록',
-              href: PATH.EATH.PROGRAM.LIST,
+              href: PATH.EACH.PROGRAM.LIST('test2024'),
             },
             {
               key: 'program:create',
               title: '프로그램 생성하기',
-              href: PATH.EATH.PROGRAM.CREATE,
+              href: PATH.EACH.PROGRAM.CREATE('test2024'),
             },
             {
               key: 'program:details',
               title: '프로그램 수정하기',
-              href: PATH.EATH.PROGRAM.DETAIL('1'),
+              href: PATH.EACH.PROGRAM.DETAIL('test2024', 1),
             },
             {
               key: 'session:details',
               title: '프로그램 세션 수정하기',
-              href: PATH.EATH.PROGRAM.SESSION_GROUP.DETAIL('1'),
+              href: PATH.EACH.PROGRAM.SESSION_GROUP.DETAIL('test2024', 1),
             },
           ],
         },

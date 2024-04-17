@@ -8,8 +8,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import { useGetAlliancePcoList } from '@/api/pco/pco';
-import { EnterpriseListResVo } from '@/api/types/EnterpriseListResVo';
+import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
 // import EnterpriseListFilters from '@/app/(afterLogin)/test/mui-table/EnterpriseListFilters';
@@ -18,6 +17,7 @@ import RouterLink from 'next/link';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { PATH } from '@/paths';
 import { AllianceListFilters } from '@/components/conferences/AllianceListFilters';
+import { useGetAlliancePcoList } from '@/api/conferenceApi';
 
 interface Filter {
   searchParams: SearchParamsType;

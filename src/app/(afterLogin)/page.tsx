@@ -25,7 +25,6 @@ import { Subscriptions } from '@/components/dashboard/overview/Subscriptions';
 import { Summary } from '@/components/dashboard/overview/Summary';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { logger } from '@/lib/logger/defaultLogger';
 
 // export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
 
@@ -34,9 +33,6 @@ export default function Page(): React.JSX.Element {
   const router = useRouter();
   useEffect(() => {
     console.log('useSession status : ' + status);
-    logger.error(
-      '==============================================================='
-    );
     if (status !== 'authenticated') {
       router.push('/auth/sign-in');
     }

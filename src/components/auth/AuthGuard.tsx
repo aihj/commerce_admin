@@ -48,7 +48,7 @@ export function AuthGuard({
           return;
         }
       } else {
-        logger.error(
+        logger.debug(
           '[AuthGuard]: 유저가 로그인 하지 않았습니다. 로그인 페이지로 이동합니다.'
         );
       }

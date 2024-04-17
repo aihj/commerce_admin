@@ -14,17 +14,17 @@ import type {
 import { useQuery } from '@tanstack/react-query';
 import type { AxiosError, AxiosRequestConfig } from 'axios';
 import { AxiosResponse } from 'axios';
-import { EnterpriseListResVo } from '@/api/types/EnterpriseListResVo';
+import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import { adminAxiosInstance } from '@/api/authApi';
-import { ResponseMessageVo } from '@/api/types/ResponseMessageVo';
-import { TableSearchParams } from '@/api/types/TableSearchParams';
+import { ResponseMessageVo } from '@/api/types/responseMessageVo';
+import { TableSearchParams } from '@/api/types/tableSearchParams';
 
 // region *********************** Enterprise Conference 목록 가져오기 ***********************
 /**
  * Enterprise Conference 목록 가져오기
  * @summary getEnterprisePcoList
  */
-export const getEnterprisePcoList = (
+const getEnterprisePcoList = (
   params: TableSearchParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<EnterpriseListResVo> | void> => {
@@ -41,12 +41,12 @@ export const getEnterprisePcoList = (
     });
 };
 
-export const getEnterprisePcoListQueryKey = (params: TableSearchParams) => {
+const getEnterprisePcoListQueryKey = (params: TableSearchParams) => {
   const url = `/api/pco/top/enterprises`;
   return [url, ...(params ? [params] : [])] as const;
 };
 
-export const getEnterprisePcoListQueryOptions = <
+const getEnterprisePcoListQueryOptions = <
   TData = Awaited<ReturnType<typeof getEnterprisePcoList>>,
   TError = AxiosError<ResponseMessageVo>,
 >(
@@ -109,7 +109,7 @@ export const useGetEnterprisePcoList = <
  * Alliance Conference 목록 가져오기
  * @summary getAlliancePcoList
  */
-export const getAlliancePcoList = (
+const getAlliancePcoList = (
   params: TableSearchParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<EnterpriseListResVo> | void> => {
@@ -126,12 +126,12 @@ export const getAlliancePcoList = (
     });
 };
 
-export const getAlliancePcoListQueryKey = (params: TableSearchParams) => {
+const getAlliancePcoListQueryKey = (params: TableSearchParams) => {
   const url = `/api/pco/top/alliances`;
   return [url, ...(params ? [params] : [])] as const;
 };
 
-export const getAlliancePcoListQueryOptions = <
+const getAlliancePcoListQueryOptions = <
   TData = Awaited<ReturnType<typeof getAlliancePcoList>>,
   TError = AxiosError<ResponseMessageVo>,
 >(

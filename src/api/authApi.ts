@@ -31,14 +31,14 @@ const adminAxiosInstance: CustomInstance = axios.create({
 adminAxiosInstance.interceptors.request.use(
   async (config) => {
     const session = await getSession();
-    console.log(
-      '📍 adminAxiosInstance interceptors request session -> ',
-      session
-    );
-    console.log(
-      '📍 adminAxiosInstance interceptors request config -> ',
-      config
-    );
+    // console.log(
+    //   '📍 adminAxiosInstance interceptors request session -> ',
+    //   session
+    // );
+    // console.log(
+    //   '📍 adminAxiosInstance interceptors request config -> ',
+    //   config
+    // );
     config.headers.Authorization = `Bearer ${session.user.accessToken}`;
     config.headers['Auth-Type'] = process.env.NEXT_PUBLIC_AUTH_TYPE;
     return config;

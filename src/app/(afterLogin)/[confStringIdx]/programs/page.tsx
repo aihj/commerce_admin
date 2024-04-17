@@ -1,14 +1,13 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import { useGetEnterprisePcoList } from '@/api/pco/pco';
-import { EnterpriseListResVo } from '@/api/types/EnterpriseListResVo';
+import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
 // import EnterpriseListFilters from '@/app/(afterLogin)/test/mui-table/EnterpriseListFilters';
@@ -16,48 +15,55 @@ import { mergeSearchParams } from '@/lib/table';
 import RouterLink from 'next/link';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { PATH } from '@/paths';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { logger } from '@/lib/logger/defaultLogger';
+import { useProgramDt } from '@/api/programApi';
 
-// interface Filter {
-//   searchParams: SearchParamsType;
-// }
+type PcoProgramListProps = {
+  params: { confStringIdx: string };
+};
 
-// export interface SearchParamsType {
-//   currentPage?: number;
-//   rowsPerPage?: number;
-//
-//   sortType?: string; // 어떤 타입을 가지고 정렬 할 것인지
-//   sortDir?: 'asc' | 'desc'; // 어떤 방향으로 정렬할 것인지
-// }
+const PcoProgramList = ({ params }: PcoProgramListProps) => {
+  const router = useRouter();
 
-const PcoProgramList = () => {
+  // TODO : 페이지 이동할때 현재의 쿼리스트링을 그대로 저장하고 이동하고 싶은데
+
+  const moveProgramDetail = useCallback(
+    (sessionCategoryIdx) => {
+      router.push(`/${params.confStringIdx}/programs/${sessionCategoryIdx}`);
+    },
+    [params.confStringIdx, router]
+  );
+
+  // 세션 그룹 상세 + 강의 페이지로 이동
+  const moveSessionGroupDetail = useCallback(
+    (sessionGroupIdx) => {
+      const link = `/${params.confStringIdx}/programs/session-group/${sessionGroupIdx}`;
+      window.open(link, '_blank');
+    },
+    [params.confStringIdx]
+  );
+
+  logger.debug('<PcoProgramList> params : ', params);
   const searchParams = useSearchParams();
   const columnHelper = createColumnHelper();
   const columns = useMemo(
     () => [
-      // columnHelper.accessor("confName", {
-      //   header: "학회 이름(학회 단체)",
-      //   cell: info => <Button
-      //     variant="primary"
-      //   >
-      //     {info.getValue()}
-      //   </Button>,
-      // }),
-      columnHelper.accessor('session_category_date', {
-        header: 'category date',
+      columnHelper.accessor('sessionCategoryDate', {
+        header: '해당 프로그램 시작일',
         cell: (info) => (
           <div className="flex justify-center">{info.getValue()}</div>
         ),
         size: 110,
       }),
-      columnHelper.accessor('session_category_title', {
-        header: 'category',
+      columnHelper.accessor('sessionCategoryTitle', {
+        header: '카테고리',
         cell: (info) => (
           <div className="flex justify-center">
             <Button
               variant="primary"
               onClick={() =>
-                moveProgramDetail(info.row.original.session_category_idx)
+                moveProgramDetail(info.row.original.sessionCategoryIdx)
               }
               className="text-center va"
             >
@@ -68,52 +74,38 @@ const PcoProgramList = () => {
         size: 110,
       }),
       columnHelper.accessor('session_group_title', {
-        header: 'session name',
+        header: '세션',
         cell: (info) => (
           <div className="flex justify-center">
             <Button
               variant="primary"
               className="text-center va"
               onClick={() =>
-                moveSessionGroupDetail(info.row.original.session_group_idx)
+                moveSessionGroupDetail(info.row.original.sessionGroupIdx)
               }
-
-              // id={`sessionDetailModal_${info.row.original.session_group_idx}`}
-              // onClick={openModal}
             >
               {info.getValue()}
             </Button>
-
-            {/* 세션 그룹 상세 페이지 모달 */}
-            {/*<Modal*/}
-            {/*  // cl="left"*/}
-            {/*  id={`sessionDetailModal_${info.row.original.session_group_idx}`}*/}
-            {/*  openedModals={state.openedModals}*/}
-            {/*  header="강의 안내"*/}
-            {/*>*/}
-            {/*  <A_SessionGroupDetail*/}
-            {/*    sessionGroup={info.row.original}/>*/}
-            {/*</Modal>*/}
           </div>
         ),
       }),
-      columnHelper.accessor('session_group_start_t', {
-        header: 'session start time',
+      columnHelper.accessor('sessionGroupStartT', {
+        header: '세션 시작 시간',
         cell: (info) => <div className="text-center va">{info.getValue()}</div>,
         size: 90,
       }),
-      columnHelper.accessor('session_group_end_t', {
-        header: 'session end time',
+      columnHelper.accessor('sessionGroupEndT', {
+        header: '세션 종료 시간',
         cell: (info) => <div className="text-center va">{info.getValue()}</div>,
         size: 90,
       }),
-      columnHelper.accessor('location_name', {
-        header: 'session location',
+      columnHelper.accessor('locationName', {
+        header: '장소',
         size: 50,
         cell: (info) => <div className="text-center va">{info.getValue()}</div>,
       }),
       columnHelper.accessor('sessionGroupFaculties', {
-        header: 'session faculty',
+        header: '연자',
         size: 50,
         cell: (info) => (
           <div className="text-center va">
@@ -122,7 +114,7 @@ const PcoProgramList = () => {
                 key={index}
                 variant="primary"
                 className="btn-sm"
-                onClick={() => goFaculty(info.row.original.session_group_idx)}
+                onClick={() => goFaculty(info.row.original.sessionGroupIdx)}
               >
                 {item?.conferenceUserName}({item?.facultyProgramRole})
               </Button>
@@ -137,19 +129,19 @@ const PcoProgramList = () => {
         className: 'w-[50px]', // Tailwind CSS 클래스를 추가하여 너비 조정
       }),
     ],
-    []
+    [columnHelper, moveProgramDetail, moveSessionGroupDetail]
   );
   // endregion ****************************** 열 구성 설정 ******************************
   const filterInitialData = {
-    confStringIdx: searchParams.get('confStringIdx'),
+    confStringIdx: params.confStringIdx,
     currentPage: 0,
     rowsPerPage: 10,
 
-    sortType: 'conference_idx',
+    sortType: 'tbl_conference_session_category.session_category_idx',
     sortDir: 'desc',
   };
   const mergedSearchParams = mergeSearchParams(searchParams, filterInitialData);
-  const { data, isLoading, isError } = useGetEnterprisePcoList({
+  const { data, isLoading, isError } = useProgramDt({
     ...mergedSearchParams,
   });
   // window.data = data;
@@ -172,16 +164,16 @@ const PcoProgramList = () => {
           sx={{ alignItems: 'flex-start' }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">Enterprise 학회 목록</Typography>
+            <Typography variant="h4">프로그램 목록</Typography>
           </Box>
           <div>
             <Button
               component={RouterLink}
-              href={PATH.CONFERENCE.ENTERPRISE.CREATE}
+              href={PATH.EACH.PROGRAM.CREATE(params.confStringIdx)}
               startIcon={<PlusIcon />}
               variant="contained"
             >
-              Enterprise 학회 등록
+              프로그램 등록
             </Button>
           </div>
         </Stack>
@@ -193,7 +185,7 @@ const PcoProgramList = () => {
             columns={columns}
             selectable={false}
             hideHead={false}
-            uniqueRowId={'conferenceIdx'}
+            uniqueRowId={'sessionCategoryIdx'}
             isHover={true}
             size="medium"
           />

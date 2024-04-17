@@ -1,4 +1,4 @@
-import { TableSearchParams } from '@/api/types/TableSearchParams';
+import { TableSearchParams } from '@/api/types/tableSearchParams';
 
 export const mergeSearchParams = (
   searchParams: TableSearchParams,

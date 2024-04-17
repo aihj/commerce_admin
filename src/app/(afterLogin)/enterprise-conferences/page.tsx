@@ -8,8 +8,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import { useGetEnterprisePcoList } from '@/api/pco/pco';
-import { EnterpriseListResVo } from '@/api/types/EnterpriseListResVo';
+import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { mergeSearchParams } from '@/lib/table';
@@ -18,6 +17,7 @@ import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { PATH } from '@/paths';
 import { EnterpriseListFilters } from '@/components/conferences/EnterpriseListFilters';
 import { logger } from '@/lib/logger/defaultLogger';
+import { useGetEnterprisePcoList } from '@/api/conferenceApi';
 
 interface Filter {
   searchParams: SearchParamsType;

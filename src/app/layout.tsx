@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import '@/styles/global.css';
 import { config } from '@/config';
-import { ThemeProvider } from '@/components/core/ThemeProvider';
+import { ThemeProvider } from '@/components/core/theme-provider';
 import { LocalizationProvider } from '@/components/core/LocalizationProvider';
 import { Toaster } from '@/components/core/Toaster';
 import ReduxProviders from '@/redux/ReduxProvider';

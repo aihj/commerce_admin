@@ -4,6 +4,8 @@ import { logger } from '@/lib/logger/defaultLogger';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { Card } from '@mui/material';
+import MuiTest from '@/app/test/MuiTest';
+import MuiFormTest from '@/app/test/MuiFormTest';
 
 type TestTypeProps = NonNullable<unknown>;
 
@@ -29,9 +31,8 @@ export default function Test({}: TestTypeProps) {
           value = {JSON.stringify(value)}
         </>
       </Card>
-      <Card>
-        <>ㅋㅋㅋㅋ</>
-      </Card>
+      <MuiTest />
+      <MuiFormTest />
     </article>
   );
 }
