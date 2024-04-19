@@ -1,7 +1,7 @@
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
-import { Option } from '@/components/core/option';
+import { Option } from '@/components/core/Option';
 import {
   FilterPopover,
   useFilterContext,

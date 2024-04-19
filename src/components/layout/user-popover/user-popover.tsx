@@ -16,13 +16,6 @@ import { AuthStrategy } from '@/lib/auth/strategy';
 
 import { CustomSignOut } from './custom-sign-out';
 import { useUser } from '@/hooks/useUser';
-import { useSession } from 'next-auth/react';
-
-// 더미 데이터
-// const user = {
-//   adminId: 'USR-000',
-//   adminName: 'Sofia Rivers',
-// } satisfies User;
 
 export interface UserPopoverProps {
   anchorEl: null | Element;
@@ -37,9 +30,9 @@ export function UserPopover({
   open,
 }: UserPopoverProps): React.JSX.Element {
   const { user } = useUser();
-  const { data: session } = useSession();
-  console.log('user : ', user);
-  console.log('session : ', session);
+  // const { data: session } = useSession();
+  // console.log('user : ', user);
+  // console.log('session : ', session);
   // --------------------------------------------------------------------
   return (
     <Popover

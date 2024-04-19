@@ -15,7 +15,7 @@ export interface MainNavProps {
 
 const MainNav = ({ items }: MainNavProps): React.JSX.Element => {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
-  console.log(openNav);
+  // console.log("openNav : ",openNav);
   return (
     <React.Fragment>
       <Box

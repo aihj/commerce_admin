@@ -105,3 +105,20 @@ export function updateProgramSessionGroup(params) {
     // {headers:adminAuthHeader()}
   );
 }
+
+export function getSessionGroupDetail(sessionGroupIdx) {
+  return adminAxiosInstance.get(
+    `/api/pco/program/session-group/${sessionGroupIdx}`
+    // { headers: adminAuthHeader() }
+  );
+}
+
+// 세션 그룹 디테일 페이지 정보 입력 & 수정하기
+export async function updateSessionGroupDetail(params) {
+  // console.log(`params : ${params}`);
+  return adminAxiosInstance.post(
+    `/api/pco/program/session-group-detail`,
+    params
+    // { headers: adminAuthHeader() }
+  );
+}

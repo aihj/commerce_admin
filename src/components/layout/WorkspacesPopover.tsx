@@ -7,8 +7,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
 export const workspaces = [
-  { name: 'Devias', avatar: '/assets/workspace-avatar-1.png' },
-  { name: 'Carpatin', avatar: '/assets/workspace-avatar-2.png' },
+  { name: 'Devias', avatar: '/assets/avatar.png' },
+  { name: 'Carpatin', avatar: '/assets/avatar.png' },
 ] satisfies Workspaces[];
 
 export interface Workspaces {

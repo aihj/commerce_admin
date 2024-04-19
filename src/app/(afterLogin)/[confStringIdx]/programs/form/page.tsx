@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import FormLayout from '@/components/core/form/FormLayout';
 import { getProgram } from '@/api/programApi';
-import CategoryForm from '@/components/program/CategoryForm';
+import CategoryListForm from '@/components/program/CategoryListForm';
 import SessionGroupListForm from '@/components/program/SessionGroupListForm';
 import { PATH } from '@/paths';
 
@@ -24,6 +24,7 @@ export default function CreateProgram({ params }: CreateProgramProps) {
     refetchOnWindowFocus: false,
   });
 
+  // window.programData = programData;
   if (error)
     return <div>현재 서버에 문제가 있어 데이터를 불러 올 수 없습니다.</div>;
 
@@ -43,11 +44,11 @@ export default function CreateProgram({ params }: CreateProgramProps) {
       {/*/>*/}
 
       {/* 카테고리 등록 폼 */}
-      <CategoryForm refetch={refetch} programData={programData?.content} />
+      <CategoryListForm refetch={refetch} programData={programData?.content} />
 
       {/* 세션 그룹 And 세션 관계자 연결 폼 */}
       <SessionGroupListForm
-        refetch={refetch}
+        // refetch={refetch}
         programData={programData?.content}
       />
     </FormLayout>

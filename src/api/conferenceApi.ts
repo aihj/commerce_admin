@@ -186,3 +186,10 @@ export const useGetAlliancePcoList = <
   return query;
 };
 // endregion *********************** Alliance Conference 목록 가져오기 ***********************
+
+// 학회 장소 리스트 가져오기
+export async function getLocations(confStringIdx) {
+  return adminAxiosInstance.get(`/api/pco/${confStringIdx}/locations`, {
+    // headers: adminAuthHeader(),
+  });
+}

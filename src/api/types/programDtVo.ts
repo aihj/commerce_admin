@@ -12,12 +12,14 @@ export interface ProgramDtVo {
   locationAddr?: string;
   locationIdx?: number;
   locationName?: string;
+
   sessionCategoryDate?: string;
   sessionCategoryIdx?: number;
   sessionCategoryTitle?: string;
-  sessionGroupEndT?: string;
   sessionGroupFaculties?: FacultyVo[];
+
   sessionGroupIdx?: number;
-  sessionGroupStartT?: string;
   sessionGroupTitle?: string;
+  sessionGroupStartT?: string;
+  sessionGroupEndT?: string;
 }

@@ -47,7 +47,6 @@ adminAxiosInstance.interceptors.request.use(
     console.log('axios response 실패 err : ', err);
     if (axios.isAxiosError(err)) {
       const status = err.response?.status;
-
       // 임시 코드
       if (status === 400) {
         console.log('데이터가 존재하지 않아요!');
@@ -81,7 +80,7 @@ async function adminPostRefreshToken() {
 adminAxiosInstance.interceptors.response.use(
   // 정상일 경우 그대로 응답 넘기기
   (response) => {
-    console.log('📍 adminAxiosInstance interceptors response : ', response);
+    // console.log('📍 adminAxiosInstance interceptors response : ', response);
     return response;
   },
 
@@ -116,7 +115,7 @@ adminAxiosInstance.interceptors.response.use(
           }
           // 진행중이던 요청 이어서하기(이것만으로 보내는 토큰 값이 변경 되지 않아 위의 request 인터셉터 추가)
           originRequest.headers.Authorization = `Bearer ${response.data.content.accessToken}`;
-          return axios(originRequest);
+          return adminAxiosInstance(originRequest);
         }
 
         //리프레시 토큰 요청이 실패할때(리프레시 토큰도 만료되었을때 = 재로그인 안내)
@@ -128,7 +127,7 @@ adminAxiosInstance.interceptors.response.use(
         }
       }
     }
-    return Promise.reject(error);
+    return Promise.reject(error); // not a 401, simply fail the response
   }
 );
 

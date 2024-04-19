@@ -22,6 +22,9 @@ export const PATH = {
 
   // 각 학회마다 경로가 다를 경우
   EACH: {
+    CONFERENCE: {
+      DETAIL: (confStringIdx: string) => `/${confStringIdx}`,
+    },
     PROGRAM: {
       LIST: (confStringIdx: string) => `/${confStringIdx}/programs`,
       CREATE: (confStringIdx: string) => `/${confStringIdx}/programs/form`,

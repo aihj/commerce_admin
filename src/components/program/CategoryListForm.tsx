@@ -28,7 +28,6 @@ import { useParams } from 'next/navigation';
 import { dayjs } from '@/lib/dayjs';
 import { DatePicker } from '@mui/x-date-pickers';
 import { DevTool } from '@hookform/devtools';
-import { logger } from '@/lib/logger/defaultLogger';
 
 type CategoryFormTypes = {
   programData: {
@@ -40,11 +39,11 @@ type CategoryFormTypes = {
   refetch: () => void;
 };
 
-export default function CategoryForm({
+export default function CategoryListForm({
   programData,
   refetch,
 }: CategoryFormTypes) {
-  logger.debug('programData?.categories', programData?.categories);
+  // logger.debug('programData?.categories', programData?.categories);
   const params = useParams();
   // region *********************** FORM 데이터 ***********************
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -146,7 +145,7 @@ export default function CategoryForm({
                       },
                     }}
                   >
-                    <InputLabel color={'info'} required variant={'filled'}>
+                    <InputLabel color={'info'} variant={'filled'}>
                       카테고리 {index + 1}
                     </InputLabel>
                     <input
@@ -157,7 +156,6 @@ export default function CategoryForm({
                       defaultValue={item['sessionCategoryIdx']}
                     />
                     <Button
-                      clss
                       color="error"
                       variant="contained"
                       type="button"
@@ -179,7 +177,7 @@ export default function CategoryForm({
                   <Controller
                     control={control}
                     name={`sessionCategories.${index}.sessionCategoryTitle`}
-                    rules={{ required: true }}
+                    rules={{ required: '카테고리 이름은 필수 값입니다.' }}
                     render={({ field }) => (
                       <FormControl
                         error={Boolean(
@@ -188,9 +186,7 @@ export default function CategoryForm({
                         )}
                         fullWidth
                       >
-                        <InputLabel required>
-                          카테고리 이름 {index + 1}
-                        </InputLabel>
+                        <InputLabel required>카테고리 이름</InputLabel>
                         <Box
                           display="flex"
                           sx={{
@@ -224,13 +220,14 @@ export default function CategoryForm({
                   <Controller
                     control={control}
                     name={`sessionCategories.${index}.sessionCategoryDate`}
-                    rules={{ required: true }}
+                    rules={{ required: '카테고리 날짜는 필수 값입니다.' }}
                     render={({ field }) => (
                       <DatePicker
                         {...field}
                         format="YYYY/MM/DD"
-                        label="카테고리 날짜"
+                        label="카테고리 날짜 *"
                         onChange={(date) => {
+                          console.log('<CategoryListForm> date', date);
                           field.onChange(date?.toDate());
                         }}
                         value={dayjs(field.value)}
@@ -272,6 +269,7 @@ export default function CategoryForm({
               append({
                 sessionCategoryIdx: null,
                 sessionCategoryTitle: null,
+                sessionCategoryDate: null,
               })
             }
           >

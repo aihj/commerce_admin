@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useCallback } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
@@ -9,16 +9,16 @@ import { PATH } from '@/paths';
 import { FilterButton } from '@/components/core/FilterButton';
 import { SearchParamsType } from '@/app/(afterLogin)/test/mui-table/page';
 import TableTextFilterPopover from '@/components/core/table/TableTextFilterPopover';
-import TableOneSelectFilterPopover from '@/components/core/table/TableOneSelectFilterPopover';
 import { TableDateFilterPopover } from '@/components/core/table/TableDateFilterPopover';
 
 interface EnterpriseListFiltersProps {
   filters?: SearchParamsType;
 }
 
-const EnterpriseListFilters = ({
+const ProgramListFilters = ({
   filters = {},
 }: EnterpriseListFiltersProps): JSX.Element => {
+  const { confStringIdx } = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -36,17 +36,15 @@ const EnterpriseListFilters = ({
   // 검색 초기화
   const handleClearFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
-    console.log('params', params);
-
     // 모든 매개변수를 삭제
-    const keysToDelete = Array.from(params.keys());
-    console.log('params keysToDelete', keysToDelete);
-    keysToDelete.forEach((key) => {
+    for (const key of params.keys()) {
       params.delete(key);
-    });
+    }
 
-    router.push(`${PATH.CONFERENCE.ENTERPRISE.LIST}?${params.toString()}`);
-  }, [router, searchParams]);
+    router.push(
+      `${PATH.EACH.PROGRAM.LIST(confStringIdx)}?${params.toString()}`
+    );
+  }, [confStringIdx, router, searchParams]);
 
   const hasFilters = (filters: any): boolean => {
     for (const key in filters) {
@@ -61,13 +59,6 @@ const EnterpriseListFilters = ({
     return false; // 모든 값이 undefined 또는 null일 경우 false 반환
   };
 
-  const clientOpenStatusFilterData = useMemo(
-    () => [
-      { value: 'active', label: '활성화' },
-      { value: 'inactive', label: '비활성화' },
-    ],
-    []
-  );
   return (
     <div>
       <Stack
@@ -81,75 +72,50 @@ const EnterpriseListFilters = ({
           sx={{ alignItems: 'center', flex: '1 1 auto', flexWrap: 'wrap' }}
         >
           <FilterButton
-            displayValue={filters.conferenceStartT || undefined}
-            label="학회 시작 날짜"
+            displayValue={filters.sessionCategoryDate || undefined}
+            label="카테고리 날짜"
             onFilterApply={(value) => {
               onChangeSelect({
-                name: 'conferenceStartT',
+                name: 'sessionCategoryDate',
                 value,
               });
             }}
             onFilterDelete={() => {
-              onChangeSelect({ name: 'conferenceStartT', value: null });
+              onChangeSelect({ name: 'sessionCategoryDate', value: null });
             }}
             popover={
               <TableDateFilterPopover
                 format="YYYY-MM-DD"
-                title="학회 시작 날짜로 검색"
+                title="카테고리 날짜로 검색"
               />
             }
-            value={filters.conferenceStartT || undefined}
-          />
-          <FilterButton
-            displayValue={filters.conferenceEndT || undefined}
-            label="학회 종료 날짜"
-            onFilterApply={(value) => {
-              onChangeSelect({
-                name: 'conferenceEndT',
-                value,
-              });
-            }}
-            onFilterDelete={() => {
-              onChangeSelect({ name: 'conferenceEndT', value: null });
-            }}
-            popover={
-              <TableDateFilterPopover
-                format="YYYY-MM-DD"
-                title="학회 종료 날짜로 검색"
-              />
-            }
-            value={filters.conferenceEndT || undefined}
+            value={filters.sessionCategoryDate || undefined}
           />
 
           <FilterButton
-            displayValue={filters.committeeName || undefined}
-            label="사무국"
+            displayValue={filters.sessionCategoryTitle || undefined}
+            label="카테고리 제목"
             onFilterApply={(value) => {
-              onChangeSelect({ name: 'committeeName', value });
+              onChangeSelect({ name: 'sessionCategoryTitle', value });
             }}
             onFilterDelete={() => {
-              onChangeSelect({ name: 'committeeName', value: null });
+              onChangeSelect({ name: 'sessionCategoryTitle', value: null });
             }}
-            popover={<TableTextFilterPopover title="사무국 이름으로 검색" />}
-            value={filters.committeeName || undefined}
+            popover={<TableTextFilterPopover title="카테고리 제목으로 검색" />}
+            value={filters.sessionCategoryTitle || undefined}
           />
 
           <FilterButton
-            displayValue={filters.clientOpenStatus || undefined}
-            label="Client 페이지 Open 여부"
+            displayValue={filters.sessionGroupTitle || undefined}
+            label="세션 제목"
             onFilterApply={(value) => {
-              onChangeSelect({ name: 'clientOpenStatus', value });
+              onChangeSelect({ name: 'sessionGroupTitle', value });
             }}
             onFilterDelete={() => {
-              onChangeSelect({ name: 'clientOpenStatus', value: null });
+              onChangeSelect({ name: 'sessionGroupTitle', value: null });
             }}
-            popover={
-              <TableOneSelectFilterPopover
-                title="Filter by category"
-                data={clientOpenStatusFilterData}
-              />
-            }
-            value={filters.clientOpenStatus || undefined}
+            popover={<TableTextFilterPopover title="세션 제목으로 검색" />}
+            value={filters.sessionGroupTitle || undefined}
           />
 
           {hasFilters(filters) ? (
@@ -160,4 +126,4 @@ const EnterpriseListFilters = ({
     </div>
   );
 };
-export { EnterpriseListFilters };
+export { ProgramListFilters };

@@ -26,9 +26,9 @@ function TableDateFilterPopover({
     value: initialValue,
   } = useFilterContext();
   // logger.debug('initialValue : ', initialValue);
-  const [value, setValue] = useState<string>(null);
+  const [value, setValue] = useState<string | null>(null);
   useEffect(() => {
-    setValue((initialValue as string | undefined) ? dayjs(initialValue) : null);
+    setValue(initialValue ? dayjs(initialValue) : null);
   }, [initialValue]);
 
   return (

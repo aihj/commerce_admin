@@ -7,7 +7,6 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
 // import EnterpriseListFilters from '@/app/(afterLogin)/test/mui-table/EnterpriseListFilters';
@@ -15,37 +14,50 @@ import { mergeSearchParams } from '@/lib/table';
 import RouterLink from 'next/link';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { PATH } from '@/paths';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { logger } from '@/lib/logger/defaultLogger';
+import { useParams, useRouter } from 'next/navigation';
 import { useProgramDt } from '@/api/programApi';
+import { ProgramDtVo } from '@/api/types/programDtVo';
+import { ProgramListFilters } from '@/components/program/ProgramListFilters';
 
-type PcoProgramListProps = {
-  params: { confStringIdx: string };
-};
+interface Filter {
+  searchParams: SearchParamsType;
+}
 
-const PcoProgramList = ({ params }: PcoProgramListProps) => {
+export interface SearchParamsType {
+  currentPage?: number;
+  rowsPerPage?: number;
+
+  sortType?: string; // 어떤 타입을 가지고 정렬 할 것인지
+  sortDir?: 'asc' | 'desc'; // 어떤 방향으로 정렬할 것인지
+
+  sessionCategoryDate?: string;
+  sessionCategoryTitle?: string;
+  sessionGroupTitle?: string;
+  // sessionGroupStartT?: string;
+  // sessionGroupEndT?: string;
+}
+
+const PcoProgramList = ({ searchParams }: Filter) => {
   const router = useRouter();
-
+  const { confStringIdx } = useParams();
   // TODO : 페이지 이동할때 현재의 쿼리스트링을 그대로 저장하고 이동하고 싶은데
 
   const moveProgramDetail = useCallback(
     (sessionCategoryIdx) => {
-      router.push(`/${params.confStringIdx}/programs/${sessionCategoryIdx}`);
+      router.push(`/${confStringIdx}/programs/${sessionCategoryIdx}`);
     },
-    [params.confStringIdx, router]
+    [confStringIdx, router]
   );
 
   // 세션 그룹 상세 + 강의 페이지로 이동
   const moveSessionGroupDetail = useCallback(
     (sessionGroupIdx) => {
-      const link = `/${params.confStringIdx}/programs/session-group/${sessionGroupIdx}`;
-      window.open(link, '_blank');
+      const link = `/${confStringIdx}/programs/session-group/${sessionGroupIdx}`;
+      router.push(link);
     },
-    [params.confStringIdx]
+    [confStringIdx, router]
   );
 
-  logger.debug('<PcoProgramList> params : ', params);
-  const searchParams = useSearchParams();
   const columnHelper = createColumnHelper();
   const columns = useMemo(
     () => [
@@ -73,13 +85,13 @@ const PcoProgramList = ({ params }: PcoProgramListProps) => {
         ),
         size: 110,
       }),
-      columnHelper.accessor('session_group_title', {
+      columnHelper.accessor('sessionGroupTitle', {
         header: '세션',
         cell: (info) => (
           <div className="flex justify-center">
             <Button
-              variant="primary"
-              className="text-center va"
+              color="success"
+              variant="outlined"
               onClick={() =>
                 moveSessionGroupDetail(info.row.original.sessionGroupIdx)
               }
@@ -133,7 +145,7 @@ const PcoProgramList = ({ params }: PcoProgramListProps) => {
   );
   // endregion ****************************** 열 구성 설정 ******************************
   const filterInitialData = {
-    confStringIdx: params.confStringIdx,
+    confStringIdx: confStringIdx,
     currentPage: 0,
     rowsPerPage: 10,
 
@@ -144,10 +156,16 @@ const PcoProgramList = ({ params }: PcoProgramListProps) => {
   const { data, isLoading, isError } = useProgramDt({
     ...mergedSearchParams,
   });
-  // window.data = data;
+  window.data = data;
   // **********************************************************
   if (isLoading) return <div>Loading...</div>;
-  if (isError || !data) return <div>Error fetching data</div>;
+  if (
+    isError ||
+    !data.content ||
+    data.totalCount === undefined ||
+    data.totalCount === null
+  )
+    return <div>Error fetching data</div>;
   return (
     <Box
       sx={{
@@ -169,7 +187,7 @@ const PcoProgramList = ({ params }: PcoProgramListProps) => {
           <div>
             <Button
               component={RouterLink}
-              href={PATH.EACH.PROGRAM.CREATE(params.confStringIdx)}
+              href={PATH.EACH.PROGRAM.CREATE(confStringIdx)}
               startIcon={<PlusIcon />}
               variant="contained"
             >
@@ -179,17 +197,17 @@ const PcoProgramList = ({ params }: PcoProgramListProps) => {
         </Stack>
 
         <Card>
-          {/*<EnterpriseListFilters filters={searchParams} />*/}
-          <TableBody<EnterpriseListResVo>
-            data={data}
+          <ProgramListFilters filters={searchParams} />
+          <TableBody<ProgramDtVo>
+            data={data.content}
             columns={columns}
             selectable={false}
             hideHead={false}
-            uniqueRowId={'sessionCategoryIdx'}
+            uniqueRowId={'sessionGroupIdx'}
             isHover={true}
             size="medium"
           />
-          <TablePagination count={data.length} />
+          <TablePagination count={data.totalCount} />
         </Card>
       </Stack>
     </Box>

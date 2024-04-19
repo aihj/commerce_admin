@@ -42,7 +42,7 @@ export function AuthGuard({
 
     if (!user) {
       if (session) {
-        logger.debug('[AuthGuard] <checkPermissions> session: ' + session);
+        logger.debug('[AuthGuard] <checkPermissions> session: ', session);
         if (updateUser) {
           updateUser(session.user);
           return;
