@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { getSession } from 'next-auth/react';
+import { logger } from '@/lib/logger/defaultLogger';
 
 interface APIResponse<T = any> {
   code: number;
@@ -40,6 +41,10 @@ adminAxiosInstance.interceptors.request.use(
     //   config
     // );
     config.headers.Authorization = `Bearer ${session.user.accessToken}`;
+    logger.error(
+      '📍 adminAxiosInstance session.user.accessToken',
+      session.user.accessToken
+    );
     config.headers['Auth-Type'] = process.env.NEXT_PUBLIC_AUTH_TYPE;
     return config;
   },

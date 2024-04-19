@@ -25,15 +25,14 @@ type SessionGroupFormTypes = {
   remove: () => void;
   errors: FieldErrors;
   programData: {
-    files: any[];
-    categories: any[];
+    files?: any[];
+    categories?: any[];
     sessionGroups: any[];
     sessions: any[];
   };
   control: any;
 };
 // 하나의 세션 그룹에 대한 Form
-// eslint-disable-next-line no-empty-pattern
 export default function SessionGroupForm({
   index,
   item,

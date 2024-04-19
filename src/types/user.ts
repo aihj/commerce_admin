@@ -1,5 +1,6 @@
 export interface User {
   accessToken?: string;
+  refreshToken?: string;
 
   auth?: string;
   adminIdx?: string;
@@ -11,4 +12,5 @@ export interface User {
   adminProfileName?: string;
 
   adminPw?: string;
+  isLoggedIn?: boolean;
 }
