@@ -45,7 +45,6 @@ adminAxiosInstance.interceptors.request.use(
       '📍 adminAxiosInstance session.user.accessToken',
       session.user.accessToken
     );
-    config.headers['Auth-Type'] = process.env.NEXT_PUBLIC_AUTH_TYPE;
     return config;
   },
   async (err) => {
@@ -75,7 +74,6 @@ async function adminPostRefreshToken() {
     {
       headers: {
         Authorization: 'Bearer ' + user.accessToken,
-        'Auth-type': process.env.NEXT_PUBLIC_AUTH_TYPE,
       },
     }
   );

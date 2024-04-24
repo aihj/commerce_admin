@@ -23,15 +23,32 @@ import { z as zod } from 'zod';
 import { PATH } from '@/paths';
 import { DynamicLogo } from '@/components/core/Logo';
 import { signIn, useSession } from 'next-auth/react';
+import { phoneRegex } from '@/zod';
+import { logger } from '@/lib/logger/defaultLogger';
+import Swal from 'sweetalert2';
+import OpenAdminPcoSelect from '@/components/conferences/OpenAdminPcoSelect';
 
 // ----------------------------------------------------------------------------------
-type FormValues = {
-  adminId: string;
-  adminPw: string;
+export type signInFormValues = {
+  // [process.env.NEXT_PUBLIC_LOGIN_TYPE]: string;
+  email?: string;
+  phone?: string;
+  password: string;
+  service_type: string;
 };
 const schema = zod.object({
-  adminId: zod.string().min(1, { message: 'Email is required' }).email(),
-  adminPw: zod.string().min(1, { message: 'Password is required' }),
+  // email: zod
+  //   .string()
+  //   .min(1, { message: '이메일은 필수로 입력하셔야 합니다.' })
+  //   .email(),
+  phone: zod
+    .string()
+    .min(1, { message: '전화번호는 필수로 입력하셔야 합니다.' })
+    .regex(phoneRegex, '잘못된 전화번호 형식입니다.'),
+  password: zod.string().min(1, { message: '패스워드는 필수값입니다.' }),
+  service_type: zod
+    .string()
+    .min(1, { message: 'service_type은 필수값입니다.' }),
 });
 type Values = zod.infer<typeof schema>;
 // ----------------------------------------------------------------------------------
@@ -55,13 +72,32 @@ export function SignInForm(): React.JSX.Element {
     control,
     handleSubmit,
     formState: { errors },
+    register,
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
-
+  logger.debug('errors', errors);
   // ********************* 로그인 하기 *********************
   const onSubmit = React.useCallback(async (values: Values): Promise<void> => {
     console.log('onSubmit values : ', values);
-    const result = await signIn('credentials', values);
-    console.log('login result', result);
+    const result = await signIn('credentials', {
+      redirect: false,
+      ...values,
+    }).then((result) => {
+      // logger.error('[credentials] error result', result);
+
+      // TODO : nextAuth가 서버가 없을때 return을 400을 하는것이 아니라 401을 함...400을 했으면 좋겠는데..
+      if (result.status === 401) {
+        0;
+        Swal.fire({
+          icon: 'error',
+          text:
+            result.error ===
+            "Cannot read properties of undefined (reading 'data')"
+              ? '현재 서버에 문제가 있어 로그인을 진행하실수 없습니다. 관리자에게 문의하여주세요.'
+              : result.error,
+        });
+      }
+    });
+    console.log('[credentials] login result', result);
   }, []);
 
   return (
@@ -98,24 +134,48 @@ export function SignInForm(): React.JSX.Element {
         <Stack spacing={2}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={2}>
-              <Controller
-                control={control}
-                name="adminId"
-                render={({ field }) => (
-                  <FormControl error={Boolean(errors.adminId)}>
-                    <InputLabel>Email address</InputLabel>
-                    <OutlinedInput {...field} type="adminId" />
-                    {errors.adminId ? (
-                      <FormHelperText>{errors.adminId.message}</FormHelperText>
-                    ) : null}
-                  </FormControl>
-                )}
+              <input
+                type="hidden"
+                {...register('service_type')}
+                value={process.env.NEXT_PUBLIC_AUTH_TYPE}
               />
+
+              <OpenAdminPcoSelect errors={errors} control={control} />
+
+              {process.env.NEXT_PUBLIC_LOGIN_TYPE === 'email' ? (
+                <Controller
+                  control={control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormControl error={Boolean(errors.email)}>
+                      <InputLabel>Email address</InputLabel>
+                      <OutlinedInput {...field} type="email" />
+                      {errors.email ? (
+                        <FormHelperText>{errors.email.message}</FormHelperText>
+                      ) : null}
+                    </FormControl>
+                  )}
+                />
+              ) : (
+                <Controller
+                  control={control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormControl error={Boolean(errors.phone)}>
+                      <InputLabel>Phone Number</InputLabel>
+                      <OutlinedInput {...field} type="phone" />
+                      {errors.phone ? (
+                        <FormHelperText>{errors.phone.message}</FormHelperText>
+                      ) : null}
+                    </FormControl>
+                  )}
+                />
+              )}
               <Controller
                 control={control}
-                name="adminPw"
+                name="password"
                 render={({ field }) => (
-                  <FormControl error={Boolean(errors.adminPw)}>
+                  <FormControl error={Boolean(errors.password)}>
                     <InputLabel>Password</InputLabel>
                     <OutlinedInput
                       {...field}
@@ -138,11 +198,11 @@ export function SignInForm(): React.JSX.Element {
                           />
                         )
                       }
-                      label="adminPw"
+                      label="password"
                       type={showPassword ? 'text' : 'password'}
                     />
-                    {errors.adminPw ? (
-                      <FormHelperText>{errors.adminPw.message}</FormHelperText>
+                    {errors.password ? (
+                      <FormHelperText>{errors.password.message}</FormHelperText>
                     ) : null}
                   </FormControl>
                 )}

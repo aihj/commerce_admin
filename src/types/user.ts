@@ -2,15 +2,13 @@ export interface User {
   accessToken?: string;
   refreshToken?: string;
 
-  auth?: string;
-  adminIdx?: string;
-  adminId?: string;
-  adminName?: string;
+  service: string;
+  role: string;
+  phone?: string;
+  email?: string;
+  password?: string;
+  status?: string;
 
-  adminProfileHost?: string;
-  adminProfilePath?: string;
-  adminProfileName?: string;
-
-  adminPw?: string;
-  isLoggedIn?: boolean;
+  // 학회의 경우
+  conferenceIdx?: string;
 }

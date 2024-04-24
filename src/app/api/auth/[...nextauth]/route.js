@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios';
 import { useUser } from '../../../../hooks/useUser';
+import Swal from 'sweetalert2';
 
 // import Swal from "sweetalert2";
 
@@ -16,17 +17,21 @@ const handler = NextAuth({
   providers: [
     // *********************** 메디스태프 로그인 ***********************
     CredentialsProvider({
-      // 인증 제공자의 이름(프로바이더의 이름)을 정의
-      name: 'medistaff_admin',
+      // 인증 제공자의 이름(프로바이더의 이름)을 정의(tbl_web_service.wservice_name)
+      name: 'pco_admin',
 
       // 실제 로그인 input의 내용
       credentials: {
-        email: {
-          label: 'adminId',
+        [process.env.NEXT_PUBLIC_LOGIN_TYPE]: {
+          label: process.env.NEXT_PUBLIC_LOGIN_TYPE,
           type: 'text',
-          placeholder: '이메일을 입력해주세요.',
+          placeholder:
+            process.env.NEXT_PUBLIC_LOGIN_TYPE === 'email'
+              ? 'medistaff@naver.com'
+              : '000-0000-0000',
         },
-        password: { label: 'adminPw', type: 'password' },
+        password: { label: 'password', type: 'password' },
+        service_type: { label: 'service_type', type: 'text' },
       },
 
       // 로그인을 처리하는 함수
@@ -39,10 +44,7 @@ const handler = NextAuth({
         try {
           console.log('<authorize> credentials', credentials);
           const user = axios
-            .post(
-              `${process.env.AUTH_BACKEND_URL}/api/medistaff/admin/login`,
-              credentials
-            )
+            .post(`${process.env.AUTH_BACKEND_URL}/request_token`, credentials)
             .then((response) => {
               console.log('<authorize> success');
               if (response.data.content.accessToken) {
@@ -53,20 +55,14 @@ const handler = NextAuth({
             })
             .catch((result) => {
               console.log('<authorize> error', result.response.data.message);
-              throw new Error(result.response.data.message);
-              // Swal.fire({
-              //   icon: 'error',
-              //   text: result.response
-              //     ? result.response.data.message
-              //     : "현재 서버에 문제가 있습니다. 관리자에게 문의해주세요."
-              // })
+              throw new Error(result.response.data.message); // 이렇게 하면 다른 경로로 이동해버림
             });
           // const user = authClient.nextAuthLogin(credentials);
 
           // null이 아닌것을 리턴할 경우 nextAuth는 로그인으로 감주함
           // 이때의 user는 promise 객체
           if (user) {
-            console.log('록인 성공 user info : ', user);
+            console.log('로그인 성공 user info : ', user);
             return user;
           } else {
             // If you return null then an error will be displayed advising the user to check their details.

@@ -44,9 +44,9 @@ export function UserPopover({
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
     >
       <Box sx={{ p: 2 }}>
-        <Typography>{user?.adminId}</Typography>
+        <Typography>{user?.[process.env.NEXT_PUBLIC_LOGIN_TYPE]}</Typography>
         <Typography color="text.secondary" variant="body2">
-          {user?.adminName}
+          {user?.name}
         </Typography>
       </Box>
       <Divider />

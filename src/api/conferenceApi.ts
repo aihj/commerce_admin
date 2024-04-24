@@ -193,3 +193,10 @@ export async function getLocations(confStringIdx) {
     // headers: adminAuthHeader(),
   });
 }
+
+// 어드민 페이지가 오픈 되어 있는 pco 리스트 가져오기
+export async function getOpenAdminPcoList() {
+  return adminAxiosInstance.get(`/api/pco/admin-open`, {
+    // headers: adminAuthHeader(),
+  });
+}
