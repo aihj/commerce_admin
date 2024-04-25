@@ -15,7 +15,12 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import {
+  Controller,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { produce } from 'immer';
 import Swal from 'sweetalert2';
@@ -29,7 +34,7 @@ import { dayjs } from '@/lib/dayjs';
 import { DatePicker } from '@mui/x-date-pickers';
 import { DevTool } from '@hookform/devtools';
 
-type CategoryFormTypes = {
+export type CategoryListFormTypes = {
   programData: {
     files: any[];
     categories: any[];
@@ -39,12 +44,22 @@ type CategoryFormTypes = {
   refetch: () => void;
 };
 
+interface FormData {
+  confStringIdx: string;
+  sessionCategories?: SessionCategory[];
+}
+
+interface SessionCategory {
+  sessionCategoryIdx?: number;
+  sessionCategoryTitle?: string;
+  sessionCategoryDate?: string;
+}
 export default function CategoryListForm({
   programData,
   refetch,
-}: CategoryFormTypes) {
+}: CategoryListFormTypes) {
   // logger.debug('programData?.categories', programData?.categories);
-  const params = useParams();
+  const { confStringIdx } = useParams();
   // region *********************** FORM 데이터 ***********************
   const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -55,7 +70,9 @@ export default function CategoryListForm({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({ defaultValues: { confStringIdx: params.confStringIdx } });
+  } = useForm<FormData>({
+    defaultValues: { confStringIdx: confStringIdx },
+  });
 
   const { fields, append, update, remove } = useFieldArray({
     control,
@@ -64,7 +81,7 @@ export default function CategoryListForm({
 
   useEffect(() => {
     programData?.categories?.forEach((item, index) => {
-      const dataToAppend = {};
+      const dataToAppend: any = {};
       Object.keys(item).forEach((key) => {
         if (item[key] !== null) {
           if (isDate(item[key])) dataToAppend[key] = new Date(item[key]);
@@ -77,7 +94,7 @@ export default function CategoryListForm({
   // endregion *********************** FORM 데이터  ***********************
   // sessionCategoryDate -> 2024-04-17T07:59:43.000Z
   // region ***************************DB 세션 카테고리 작업 ************************************
-  const onSubmit = (data) => {
+  const onSubmit: SubmitHandler<FormData> = (data) => {
     console.log('onSubmit data : ', data);
     setLoading(true);
     const newData = produce(data, (draft) => {
@@ -122,8 +139,8 @@ export default function CategoryListForm({
                 카테고리 입력
               </Typography>
 
-              {fields.map((item, index) => (
-                <Box key={item}>
+              {fields.map((item, index: number) => (
+                <Box key={index}>
                   <Divider />
                   <input
                     type="hidden"
@@ -148,13 +165,6 @@ export default function CategoryListForm({
                     <InputLabel color={'info'} variant={'filled'}>
                       카테고리 {index + 1}
                     </InputLabel>
-                    <input
-                      type="hidden"
-                      {...register(
-                        `sessionCategories.${index}.sessionCategoryIdx`
-                      )}
-                      defaultValue={item['sessionCategoryIdx']}
-                    />
                     <Button
                       color="error"
                       variant="contained"
@@ -199,18 +209,14 @@ export default function CategoryListForm({
                             },
                           }}
                         >
-                          <OutlinedInput
-                            {...field}
-                            defaultValues={item['sessionCategoryIdx'] || ''}
-                            style={{ flexGrow: 1 }}
-                          />
+                          <OutlinedInput {...field} style={{ flexGrow: 1 }} />
                         </Box>
                         {errors.sessionCategories?.[index]
                           ?.sessionCategoryTitle ? (
                           <FormHelperText>
                             {
                               errors.sessionCategories?.[index]
-                                ?.sessionCategoryTitle.message
+                                ?.sessionCategoryTitle?.message
                             }
                           </FormHelperText>
                         ) : null}
@@ -240,7 +246,7 @@ export default function CategoryListForm({
                             fullWidth: true,
                             helperText:
                               errors.sessionCategories?.[index]
-                                ?.sessionCategoryDate.message,
+                                ?.sessionCategoryDate?.message,
                           },
                         }}
                       />
@@ -257,7 +263,7 @@ export default function CategoryListForm({
             variant="contained"
             color="secondary"
             component={RouterLink}
-            href={PATH.EACH.PROGRAM.LIST(params?.confStringIdx)}
+            href={PATH.EACH.PROGRAM.LIST(confStringIdx)}
           >
             Cancel
           </Button>
@@ -265,11 +271,12 @@ export default function CategoryListForm({
             disabled={isLoading}
             type="button"
             variant="contained"
+            // TODO : undefined 해도 되나 확인 안되면 null로 변경 필요
             onClick={() =>
               append({
-                sessionCategoryIdx: null,
-                sessionCategoryTitle: null,
-                sessionCategoryDate: null,
+                sessionCategoryIdx: undefined,
+                sessionCategoryTitle: undefined,
+                sessionCategoryDate: undefined,
               })
             }
           >

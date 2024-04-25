@@ -2,7 +2,7 @@ export interface User {
   accessToken?: string;
   refreshToken?: string;
 
-  service: string;
+  serviceType: string;
   role: string;
   phone?: string;
   email?: string;

@@ -34,7 +34,8 @@ export type signInFormValues = {
   email?: string;
   phone?: string;
   password: string;
-  service_type: string;
+  serviceType: string;
+  conferenceIdx: number;
 };
 const schema = zod.object({
   // email: zod
@@ -46,9 +47,8 @@ const schema = zod.object({
     .min(1, { message: '전화번호는 필수로 입력하셔야 합니다.' })
     .regex(phoneRegex, '잘못된 전화번호 형식입니다.'),
   password: zod.string().min(1, { message: '패스워드는 필수값입니다.' }),
-  service_type: zod
-    .string()
-    .min(1, { message: 'service_type은 필수값입니다.' }),
+  serviceType: zod.string().min(1, { message: '서비스 타입은 필수값입니다.' }),
+  conferenceIdx: zod.number().min(-1, { message: '학회를 선택해주세요.' }),
 });
 type Values = zod.infer<typeof schema>;
 // ----------------------------------------------------------------------------------
@@ -73,31 +73,33 @@ export function SignInForm(): React.JSX.Element {
     handleSubmit,
     formState: { errors },
     register,
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  } = useForm<signInFormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      conferenceIdx: -1,
+    },
+  });
   logger.debug('errors', errors);
   // ********************* 로그인 하기 *********************
   const onSubmit = React.useCallback(async (values: Values): Promise<void> => {
     console.log('onSubmit values : ', values);
-    const result = await signIn('credentials', {
+    await signIn('credentials', {
       redirect: false,
       ...values,
     }).then((result) => {
-      // logger.error('[credentials] error result', result);
-
       // TODO : nextAuth가 서버가 없을때 return을 400을 하는것이 아니라 401을 함...400을 했으면 좋겠는데..
       if (result.status === 401) {
-        0;
         Swal.fire({
           icon: 'error',
           text:
             result.error ===
-            "Cannot read properties of undefined (reading 'data')"
+              "Cannot read properties of undefined (reading 'data')" ||
+            !result.error
               ? '현재 서버에 문제가 있어 로그인을 진행하실수 없습니다. 관리자에게 문의하여주세요.'
               : result.error,
         });
       }
     });
-    console.log('[credentials] login result', result);
   }, []);
 
   return (
@@ -136,7 +138,7 @@ export function SignInForm(): React.JSX.Element {
             <Stack spacing={2}>
               <input
                 type="hidden"
-                {...register('service_type')}
+                {...register('serviceType')}
                 value={process.env.NEXT_PUBLIC_AUTH_TYPE}
               />
 
@@ -148,7 +150,7 @@ export function SignInForm(): React.JSX.Element {
                   name="email"
                   render={({ field }) => (
                     <FormControl error={Boolean(errors.email)}>
-                      <InputLabel>Email address</InputLabel>
+                      <InputLabel required>Email address</InputLabel>
                       <OutlinedInput {...field} type="email" />
                       {errors.email ? (
                         <FormHelperText>{errors.email.message}</FormHelperText>
@@ -162,7 +164,7 @@ export function SignInForm(): React.JSX.Element {
                   name="phone"
                   render={({ field }) => (
                     <FormControl error={Boolean(errors.phone)}>
-                      <InputLabel>Phone Number</InputLabel>
+                      <InputLabel required>Phone Number</InputLabel>
                       <OutlinedInput {...field} type="phone" />
                       {errors.phone ? (
                         <FormHelperText>{errors.phone.message}</FormHelperText>
@@ -176,7 +178,7 @@ export function SignInForm(): React.JSX.Element {
                 name="password"
                 render={({ field }) => (
                   <FormControl error={Boolean(errors.password)}>
-                    <InputLabel>Password</InputLabel>
+                    <InputLabel required>Password</InputLabel>
                     <OutlinedInput
                       {...field}
                       endAdornment={

@@ -11,7 +11,6 @@ import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import { adminAxiosInstance } from '@/api/authApi';
 import { ResponseMessageVo } from '@/api/types/responseMessageVo';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
-import { getProgramDT } from '@/api/types/getProgramDT';
 
 // region *********************** Program DT ***********************
 /**
@@ -88,17 +87,17 @@ export const useProgramDt = <
 };
 // endregion *********************** Enterprise Conference 목록 가져오기 ***********************
 
-export async function getProgram(confStringIdx) {
+export async function getProgram(confStringIdx: string) {
   return adminAxiosInstance.get(`/api/pco/${confStringIdx}/programs`);
 }
 
 // 학회 프로그램 카테고리 입력 및 수정
-export function updateProgramCategory(params) {
+export function updateProgramCategory(params: any) {
   return adminAxiosInstance.post(`/api/pco/program/category`, params);
 }
 
 // 학회 프로그램 세션 그룹 입력 및 숮어
-export function updateProgramSessionGroup(params) {
+export function updateProgramSessionGroup(params: any) {
   return adminAxiosInstance.post(
     `/api/pco/program/session-group`,
     params
@@ -106,15 +105,18 @@ export function updateProgramSessionGroup(params) {
   );
 }
 
-export function getSessionGroupDetail(sessionGroupIdx) {
+export function getSessionGroupDetail(
+  confStringIdx: string,
+  sessionGroupIdx: number
+) {
   return adminAxiosInstance.get(
-    `/api/pco/program/session-group/${sessionGroupIdx}`
+    `/api/pco/${confStringIdx}/program/session-group/${sessionGroupIdx}`
     // { headers: adminAuthHeader() }
   );
 }
 
 // 세션 그룹 디테일 페이지 정보 입력 & 수정하기
-export async function updateSessionGroupDetail(params) {
+export async function updateSessionGroupDetail(params: any) {
   // console.log(`params : ${params}`);
   return adminAxiosInstance.post(
     `/api/pco/program/session-group-detail`,

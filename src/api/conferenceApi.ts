@@ -12,7 +12,7 @@ import type {
   UseQueryResult,
 } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
-import type { AxiosError, AxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { AxiosResponse } from 'axios';
 import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import { adminAxiosInstance } from '@/api/authApi';
@@ -27,7 +27,7 @@ import { TableSearchParams } from '@/api/types/tableSearchParams';
 const getEnterprisePcoList = (
   params: TableSearchParams,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<EnterpriseListResVo> | void> => {
+): Promise<AxiosResponse<ResponseMessageVo<EnterpriseListResVo>> | void> => {
   const url = `/api/pco/top/enterprises`;
   return adminAxiosInstance
     .post(url, params, options)
@@ -188,15 +188,17 @@ export const useGetAlliancePcoList = <
 // endregion *********************** Alliance Conference 목록 가져오기 ***********************
 
 // 학회 장소 리스트 가져오기
-export async function getLocations(confStringIdx) {
+export async function getLocations(confStringIdx: string) {
   return adminAxiosInstance.get(`/api/pco/${confStringIdx}/locations`, {
     // headers: adminAuthHeader(),
   });
 }
 
-// 어드민 페이지가 오픈 되어 있는 pco 리스트 가져오기
+// 어드민 페이지가 오픈 되어 있는 pco 리스트 가져오기(권한 없이 사용할경우)
 export async function getOpenAdminPcoList() {
-  return adminAxiosInstance.get(`/api/pco/admin-open`, {
-    // headers: adminAuthHeader(),
-  });
+  console.log('[getOpenAdminPcoList] 실행');
+  return axios.get(
+    `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/no-auth/pco/admin-open`,
+    {}
+  );
 }

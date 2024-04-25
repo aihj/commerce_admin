@@ -5,10 +5,17 @@ import { FormControl, FormHelperText, InputLabel, Select } from '@mui/material';
 import { Option } from '@/components/core/Option';
 import { getOpenAdminPcoList } from '@/api/conferenceApi';
 import { useQuery } from '@tanstack/react-query';
+import { logger } from '@/lib/logger/defaultLogger';
 
 type OpenAdminPcoSelectTypes = {
   errors: FieldErrors<signInFormValues>;
   control: Control<signInFormValues>;
+};
+
+type PcoData = {
+  conference_idx: number;
+  committee_name: string;
+  conference_name: string;
 };
 
 export default function OpenAdminPcoSelect({
@@ -17,18 +24,24 @@ export default function OpenAdminPcoSelect({
 }: OpenAdminPcoSelectTypes) {
   const {
     isLoading,
-    error,
+    error: getOpenAdminPcoListError,
     data: pcoData,
-  } = useQuery({
+  } = useQuery<PcoData[]>({
     queryKey: ['getOpenAdminPcoList'],
     queryFn: () =>
-      getOpenAdminPcoList().then((res) => {
-        console.log('res : ', res);
-        return res.data;
-      }),
+      getOpenAdminPcoList()
+        .then((res) => {
+          // console.log('[getOpenAdminPcoList] : ', res.data.content);
+          return res.data.content;
+        })
+        .catch((error) => {
+          logger.error('[getOpenAdminPcoList] error', error);
+          return null;
+        }),
   });
-  window.pcoData = pcoData;
-  if (error || !pcoData) {
+
+  // window.pcoData = pcoData;
+  if (getOpenAdminPcoListError || !pcoData) {
     return (
       <div>
         해당하는 학회의 데이터를 불러 올 수 없습니다. 관리자에게 문의하여
@@ -42,15 +55,17 @@ export default function OpenAdminPcoSelect({
   return (
     <>
       <Controller
+        defaultValue={-1}
         control={control}
         name="conferenceIdx"
         render={({ field }) => (
           <FormControl error={Boolean(errors.conferenceIdx)} fullWidth>
-            <InputLabel required>Country</InputLabel>
+            <InputLabel required>학회 선택하기</InputLabel>
             <Select {...field}>
+              <Option value={-1}>메디스태프</Option>
               {pcoData.map((item) => (
-                <Option key={item.conferenceIdx} value={item.conferenceIdx}>
-                  {`${item.committeeName}(${item.conferenceName})`}
+                <Option key={item.conference_idx} value={item.conference_idx}>
+                  {`${item.committee_name}(${item.conference_name})`}
                 </Option>
               ))}
             </Select>

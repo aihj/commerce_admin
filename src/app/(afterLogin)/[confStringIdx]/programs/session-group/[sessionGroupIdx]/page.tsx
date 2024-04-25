@@ -1,13 +1,12 @@
 'use client';
 
 import { PATH } from '@/paths';
-import FormLayout from '@/components/core/Form/FormLayout';
-import SessionGroupForm from '@/components/program/SessionGroupForm';
+import OneSessionGroup from '@/app/(afterLogin)/[confStringIdx]/programs/session-group/[sessionGroupIdx]/OneSessionGroup';
 import SessionListForm from '@/components/program/SessionListForm';
 import Swal from 'sweetalert2';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { produce } from 'immer';
 import {
   getSessionGroupDetail,
@@ -22,15 +21,34 @@ import {
   CardContent,
   Divider,
   Stack,
-  Typography,
 } from '@mui/material';
+import FormLayout from '@/components/core/form/FormLayout';
+import { Category, Session } from '@/types/type';
 
 type SessionGroupDetailTypeProps = {
   params: {
     confStringIdx: string;
-    sessionGroupIdx: string;
+    sessionGroupIdx: number;
   };
 };
+
+interface FormData {
+  confStringIdx: string;
+  sessionGroupStartT?: string;
+  sessionGroupEndT?: string;
+  sessionStartT?: string;
+  sessionEndT?: string;
+  sessionGroupIdx: number;
+  sessions?: Session[];
+}
+
+interface SessionGroupDetailData {
+  categories: Category[];
+  sessionGroups: {
+    [key: string]: sessionGroup;
+    sessions?: Session[];
+  };
+}
 
 export default function SessionGroupDetail({
   params,
@@ -40,31 +58,14 @@ export default function SessionGroupDetail({
     isLoading: isQueryLoading,
     error: sessionGroupDetailError,
     data: sessionGroupDetailData,
-  } = useQuery({
+  } = useQuery<SessionGroupDetailData>({
     queryKey: ['sessionGroupDetail', params.sessionGroupIdx],
     queryFn: () =>
-      getSessionGroupDetail(params.sessionGroupIdx).then((res) =>
-        processingSessionGroup(res.data.content)
+      getSessionGroupDetail(params.confStringIdx, params.sessionGroupIdx).then(
+        (res) => res.data.content
       ),
   });
-  function processingSessionGroup(_data) {
-    if (_data === null) return null;
 
-    const sessionGroup = {};
-    const sessionGroups = [];
-
-    // sessions를 제외한 나머지 정보를 sessionGroup에 복사
-    for (const key in _data) {
-      if (key !== 'sessions') {
-        sessionGroup[key] = _data[key];
-      }
-    }
-
-    // sessionGroups 배열에 sessionGroup 추가
-    sessionGroups.push(sessionGroup);
-
-    return sessionGroups;
-  }
   window.sessionGroupDetailData = sessionGroupDetailData;
   // endregion ***************************** POST: 데이터 요청하기 *****************************
 
@@ -74,22 +75,44 @@ export default function SessionGroupDetail({
     register,
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormData>({
     defaultValues: {
       sessionGroupIdx: params.sessionGroupIdx,
     },
   });
 
+  const applyModifyDataToForm = useCallback(
+    (data) => {
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          if (isDate(data[key])) {
+            setValue(key, new Date(data[key]));
+          } else {
+            setValue(key, data[key]);
+          }
+        }
+      }
+    },
+    [setValue]
+  );
+
   // const [count, setCount] = useState(0);
-  const { append, remove, update } = useFieldArray({
+  const { append, update } = useFieldArray({
     control,
     name: 'sessions',
   });
 
   useEffect(() => {
-    sessionGroupDetailData?.sessions.forEach((item, index) => {
-      const dataToAppend = {};
+    if (sessionGroupDetailData?.sessionGroups) {
+      applyModifyDataToForm(sessionGroupDetailData.sessionGroups);
+    }
+  }, [applyModifyDataToForm, sessionGroupDetailData?.sessionGroups]);
+
+  useEffect(() => {
+    sessionGroupDetailData?.sessionGroups.sessions.forEach((item, index) => {
+      const dataToAppend: any = {};
       Object.keys(item).forEach((key) => {
         if (item[key] !== null) {
           if (isDate(item[key])) dataToAppend[key] = new Date(item[key]);
@@ -98,12 +121,12 @@ export default function SessionGroupDetail({
       });
       update(index, dataToAppend);
     });
-  }, [sessionGroupDetailData?.sessions, update]);
+  }, [sessionGroupDetailData?.sessionGroups.sessions, update]);
   // endregion *********************** FORM 데이터 ***********************
 
   // region *********************** 데이터 제출 **************************
 
-  const onSubmit = (data) => {
+  const onSubmit: SubmitHandler<FormData> = (data) => {
     setSubmitLoading(true);
 
     // 데이터 가공
@@ -161,24 +184,17 @@ export default function SessionGroupDetail({
         {/*<DevTool control={control} />*/}
         <Card>
           <CardContent>
-            <Stack divider={<Divider />} spacing={3}>
-              <Stack>
-                {/* 아래부터 CreateForm 내부 콘텐츠 */}
-                <Typography color="primary" variant="h6">
-                  세션 상세
-                </Typography>
+            <Stack divider={<Divider />} spacing={4}>
+              {/* sessionGroupIdx에 따른 하나의 세션 그룹 폼 */}
+              <OneSessionGroup
+                register={register}
+                control={control}
+                errors={errors}
+                programData={sessionGroupDetailData}
+              />
 
-                {/* sessionGroupIdx에 따른 하나의 세션 그룹 폼 */}
-                <SessionGroupForm
-                  index={null}
-                  item={null}
-                  register={register}
-                  remove={remove}
-                  control={control}
-                  errors={errors}
-                  programData={sessionGroupDetailData}
-                />
-
+              <Stack spacing={3}>
+                연자 내용
                 {/*      <A_FacultyConnectionSelect
         cl="inner_container one_depth"
         relatedType="sessionGroup"
@@ -186,8 +202,8 @@ export default function SessionGroupDetail({
         facultyProgramData={SGData?.sessionGroupFaculties}
         register={register} control={control} errors={errors} trigger={trigger}
       />*/}
-                <SessionListForm append={append} />
               </Stack>
+              <SessionListForm append={append} />
             </Stack>
           </CardContent>
           <CardActions sx={{ justifyContent: 'flex-end' }}>

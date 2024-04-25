@@ -31,7 +31,8 @@ const handler = NextAuth({
               : '000-0000-0000',
         },
         password: { label: 'password', type: 'password' },
-        service_type: { label: 'service_type', type: 'text' },
+        serviceType: { label: 'serviceType', type: 'text' },
+        conferenceIdx: { label: 'conferenceIdx', type: 'number' },
       },
 
       // 로그인을 처리하는 함수
@@ -66,6 +67,7 @@ const handler = NextAuth({
             return user;
           } else {
             // If you return null then an error will be displayed advising the user to check their details.
+            console.error('로그인 실패 리턴된 유저 정보가 없습니다.');
             return null;
 
             // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter

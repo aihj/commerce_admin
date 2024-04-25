@@ -17,8 +17,8 @@ import { produce } from 'immer';
 import { formatDatePickerTimeInList, isDate } from '@/utils/dateFunctions';
 import { useParams } from 'next/navigation';
 import { DevTool } from '@hookform/devtools';
-import SessionGroupForm from '@/components/program/SessionGroupForm';
 import { logger } from '@/lib/logger/defaultLogger';
+import SessionGroupItem from '@/app/(afterLogin)/[confStringIdx]/programs/form/SessionGroupItem';
 
 type SessionGroupListFormTypes = {
   programData: {
@@ -123,7 +123,7 @@ export default function SessionGroupListForm({
 
               {fields.map((item, index) => (
                 <div key={index}>
-                  <SessionGroupForm
+                  <SessionGroupItem
                     index={index}
                     item={item}
                     register={register}

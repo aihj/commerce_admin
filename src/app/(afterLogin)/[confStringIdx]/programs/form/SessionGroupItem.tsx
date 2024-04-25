@@ -27,13 +27,14 @@ type SessionGroupFormTypes = {
   programData: {
     files?: any[];
     categories?: any[];
-    sessionGroups: any[];
-    sessions: any[];
+    sessionGroups?: any[];
+    sessions?: any[];
   };
   control: any;
 };
+
 // 하나의 세션 그룹에 대한 Form
-export default function SessionGroupForm({
+export default function SessionGroupItem({
   index,
   item,
   register,
@@ -42,7 +43,8 @@ export default function SessionGroupForm({
   errors,
   programData,
 }: SessionGroupFormTypes) {
-  const { confStringIdx, sessionGroupIdx } = useParams();
+  // window.programData = programData;
+  const { confStringIdx } = useParams();
   const sessionGroupTypeOptions = useMemo(
     () => [
       { value: 'lecture', label: '강의' },
@@ -56,11 +58,7 @@ export default function SessionGroupForm({
     <>
       <input
         type="hidden"
-        {...register(
-          index !== null
-            ? `sessionGroups.${index}.sessionGroupIdx`
-            : sessionGroupIdx
-        )}
+        {...register(`sessionGroups.${index}.sessionGroupIdx`)}
       />
       <Box
         display="flex"
@@ -80,17 +78,13 @@ export default function SessionGroupForm({
           variant="contained"
           type="button"
           onClick={() => {
-            if (index !== null) {
-              fieldArrayRemove(
-                remove,
-                index,
-                confStringIdx,
-                'sessionGroup',
-                item['sessionGroupIdx']
-              );
-            } else {
-              // TODO : 해당 버튼 클릭시 세션 한개 삭제
-            }
+            fieldArrayRemove(
+              remove,
+              index,
+              confStringIdx,
+              'sessionGroup',
+              item['sessionGroupIdx']
+            );
           }}
         >
           세션 삭제
@@ -103,24 +97,18 @@ export default function SessionGroupForm({
         <Grid md={6} xs={12}>
           <Controller
             control={control}
-            name={
-              index !== null
-                ? `sessionGroups.${index}.sessionCategoryIdx`
-                : 'sessionCategoryIdx'
-            }
+            name={`sessionGroups.${index}.sessionCategoryIdx`}
             rules={{ required: '카테고리를 반드시 선택해주세요.' }}
             render={({ field }) => (
               <FormControl
                 error={Boolean(
-                  index !== null
-                    ? errors.sessionGroups?.[index]?.sessionCategoryIdx
-                    : errors.sessionCategoryIdx
+                  errors.sessionGroups?.[index]?.sessionCategoryIdx
                 )}
                 fullWidth
               >
                 <InputLabel required>카테고리</InputLabel>
                 <Select {...field}>
-                  {programData?.categories.map((oneDepthItem) => (
+                  {programData?.categories?.map((oneDepthItem) => (
                     <Option
                       key={oneDepthItem['sessionCategoryIdx']}
                       value={oneDepthItem['sessionCategoryIdx']}
@@ -130,19 +118,9 @@ export default function SessionGroupForm({
                     </Option>
                   ))}
                 </Select>
-
-                {index !== null &&
-                  errors.sessionGroups?.[index]?.sessionCategoryIdx && (
-                    <FormHelperText>
-                      {
-                        errors.sessionGroups?.[index]?.sessionCategoryIdx
-                          ?.message
-                      }
-                    </FormHelperText>
-                  )}
-                {!index !== null && errors.sessionCategoryIdx && (
+                {errors.sessionGroups?.[index]?.sessionCategoryIdx && (
                   <FormHelperText>
-                    {errors.sessionCategoryIdx.message}
+                    {errors.sessionGroups?.[index]?.sessionCategoryIdx?.message}
                   </FormHelperText>
                 )}
               </FormControl>
@@ -152,11 +130,7 @@ export default function SessionGroupForm({
         <Grid md={6} xs={12}>
           <Controller
             control={control}
-            name={
-              index !== null
-                ? `sessionGroups.${index}.sessionGroupOrder`
-                : 'sessionGroupOrder'
-            }
+            name={`sessionGroups.${index}.sessionGroupOrder`}
             render={({ field }) => (
               <FormControl
                 error={Boolean(
@@ -167,18 +141,9 @@ export default function SessionGroupForm({
                 <InputLabel required>카테고리 내 세션 순서</InputLabel>
                 <OutlinedInput {...field} />
 
-                {index !== null &&
-                  errors.sessionGroups?.[index]?.sessionGroupOrder && (
-                    <FormHelperText>
-                      {
-                        errors.sessionGroups?.[index]?.sessionGroupOrder
-                          ?.message
-                      }
-                    </FormHelperText>
-                  )}
-                {!index !== null && errors.sessionGroupOrder && (
+                {errors.sessionGroups?.[index]?.sessionGroupOrder && (
                   <FormHelperText>
-                    {errors.sessionGroupOrder.message}
+                    {errors.sessionGroups?.[index]?.sessionGroupOrder?.message}
                   </FormHelperText>
                 )}
 
@@ -194,17 +159,11 @@ export default function SessionGroupForm({
             <Controller
               control={control}
               rules={{ required: '세션 타입은 필수 값입니다.' }}
-              name={
-                index !== null
-                  ? `sessionGroups.${index}.sessionGroupType`
-                  : 'sessionGroupType'
-              }
+              name={`sessionGroups.${index}.sessionGroupType`}
               render={({ field }) => (
                 <FormControl
                   error={Boolean(
-                    index !== null
-                      ? errors.sessionGroups?.[index]?.sessionGroupType
-                      : errors.sessionGroupType
+                    errors.sessionGroups?.[index]?.sessionGroupType
                   )}
                   fullWidth
                 >
@@ -217,18 +176,9 @@ export default function SessionGroupForm({
                     ))}
                   </Select>
 
-                  {index !== null &&
-                    errors.sessionGroups?.[index]?.sessionGroupType && (
-                      <FormHelperText>
-                        {
-                          errors.sessionGroups?.[index]?.sessionGroupType
-                            ?.message
-                        }
-                      </FormHelperText>
-                    )}
-                  {!index !== null && errors.sessionGroupType && (
+                  {errors.sessionGroups?.[index]?.sessionGroupType && (
                     <FormHelperText>
-                      {errors.sessionGroupOrder.message}
+                      {errors.sessionGroups?.[index]?.sessionGroupType?.message}
                     </FormHelperText>
                   )}
                 </FormControl>
@@ -238,44 +188,29 @@ export default function SessionGroupForm({
           <Grid md={6} xs={12}></Grid>
         </>
         {/*장소 선택 Select */}
-        {/*// TODO : index가 없을때에도 장소 선택할 수 있게 해줘야함*/}
-        {index !== null && (
-          <ProgramLocationSelect
-            control={control}
-            filedName="sessionGroups"
-            index={index}
-            // item={item}
-            errors={errors}
-          />
-        )}
+        (
+        <ProgramLocationSelect
+          control={control}
+          filedName="sessionGroups"
+          index={index}
+          // item={item}
+          errors={errors}
+        />
+        )
         <Controller
           control={control}
           rules={{ required: '세션 제목은 필수 값입니다.' }}
-          name={
-            index !== null
-              ? `sessionGroups.${index}.sessionGroupTitle`
-              : 'sessionGroupTitle'
-          }
+          name={`sessionGroups.${index}.sessionGroupTitle`}
           render={({ field }) => (
             <FormControl
-              error={Boolean(
-                index !== null
-                  ? errors.sessionGroups?.[index]?.sessionGroupTitle
-                  : errors.sessionGroupTitle
-              )}
+              error={Boolean(errors.sessionGroups?.[index]?.sessionGroupTitle)}
             >
               <InputLabel required>세션 제목</InputLabel>
               <OutlinedInput {...field} />
 
-              {index !== null &&
-                errors.sessionGroups?.[index]?.sessionGroupTitle && (
-                  <FormHelperText>
-                    {errors.sessionGroups?.[index]?.sessionGroupTitle?.message}
-                  </FormHelperText>
-                )}
-              {!index !== null && errors.sessionGroupTitle && (
+              {errors.sessionGroups?.[index]?.sessionGroupTitle && (
                 <FormHelperText>
-                  {errors.sessionGroupTitle.message}
+                  {errors.sessionGroups?.[index]?.sessionGroupTitle?.message}
                 </FormHelperText>
               )}
             </FormControl>
@@ -283,33 +218,18 @@ export default function SessionGroupForm({
         />
         <Controller
           control={control}
-          name={
-            index !== null
-              ? `sessionGroups.${index}.sessionGroupSubtitle`
-              : 'sessionGroupSubtitle'
-          }
+          name={`sessionGroups.${index}.sessionGroupSubtitle`}
           render={({ field }) => (
             <FormControl
               error={Boolean(
-                index !== null
-                  ? errors.sessionGroups?.[index]?.sessionGroupSubtitle
-                  : errors.sessionGroupSubtitle
+                errors.sessionGroups?.[index]?.sessionGroupSubtitle
               )}
             >
               <InputLabel required>세션 부제목</InputLabel>
               <OutlinedInput {...field} />
-              {index !== null &&
-                errors.sessionGroups?.[index]?.sessionGroupSubtitle && (
-                  <FormHelperText>
-                    {
-                      errors.sessionGroups?.[index]?.sessionGroupSubtitle
-                        ?.message
-                    }
-                  </FormHelperText>
-                )}
-              {!index !== null && errors.sessionGroupSubtitle && (
+              {errors.sessionGroups?.[index]?.sessionGroupSubtitle && (
                 <FormHelperText>
-                  {errors.sessionGroupSubtitle.message}
+                  {errors.sessionGroups?.[index]?.sessionGroupSubtitle?.message}
                 </FormHelperText>
               )}
             </FormControl>
@@ -317,18 +237,10 @@ export default function SessionGroupForm({
         />
         <Controller
           control={control}
-          name={
-            index !== null
-              ? `sessionGroups.${index}.sessionGroupDesc`
-              : 'sessionGroupDesc'
-          }
+          name={`sessionGroups.${index}.sessionGroupDesc`}
           render={({ field }) => (
             <FormControl
-              error={Boolean(
-                index !== null
-                  ? errors.sessionGroups?.[index]?.sessionGroupDesc
-                  : errors.sessionGroupDesc
-              )}
+              error={Boolean(errors.sessionGroups?.[index]?.sessionGroupDesc)}
               fullWidth
             >
               <InputLabel>세션 설명</InputLabel>
@@ -338,15 +250,9 @@ export default function SessionGroupForm({
                 placeholder="e.g Leave package at the door"
                 rows={3}
               />
-              {index !== null &&
-                errors.sessionGroups?.[index]?.sessionGroupDesc && (
-                  <FormHelperText>
-                    {errors.sessionGroups?.[index]?.sessionGroupDesc?.message}
-                  </FormHelperText>
-                )}
-              {!index !== null && errors.sessionGroupDesc && (
+              {errors.sessionGroups?.[index]?.sessionGroupDesc && (
                 <FormHelperText>
-                  {errors.sessionGroupDesc.message}
+                  {errors.sessionGroups?.[index]?.sessionGroupDesc?.message}
                 </FormHelperText>
               )}
             </FormControl>
@@ -355,11 +261,7 @@ export default function SessionGroupForm({
         <Grid md={6} xs={12}>
           <Controller
             control={control}
-            name={
-              index !== null
-                ? `sessionGroups.${index}.sessionGroupStartT`
-                : 'sessionGroupStartT'
-            }
+            name={`sessionGroups.${index}.sessionGroupStartT`}
             render={({ field }) => (
               <DateTimePicker
                 placeholder="1995/11/29 오전 09:00"
@@ -371,16 +273,12 @@ export default function SessionGroupForm({
                 slotProps={{
                   textField: {
                     error: Boolean(
-                      index !== null
-                        ? errors.sessionGroups?.[index]?.sessionGroupStartT
-                        : errors.sessionGroupStartT
+                      errors.sessionGroups?.[index]?.sessionGroupStartT
                     ),
                     fullWidth: true,
                     helperText:
-                      index !== null
-                        ? errors.sessionGroups?.[index]?.sessionGroupStartT
-                            ?.message
-                        : errors.sessionGroupStartT?.message,
+                      errors.sessionGroups?.[index]?.sessionGroupStartT
+                        ?.message,
                   },
                 }}
                 value={dayjs(field.value)}
@@ -391,11 +289,7 @@ export default function SessionGroupForm({
         <Grid md={6} xs={12}>
           <Controller
             control={control}
-            name={
-              index !== null
-                ? `sessionGroups.${index}.sessionGroupEndT`
-                : 'sessionGroupEndT'
-            }
+            name={`sessionGroups.${index}.sessionGroupEndT`}
             render={({ field }) => (
               <DateTimePicker
                 placeholder="1995/11/29 오전 10:00"
@@ -407,16 +301,11 @@ export default function SessionGroupForm({
                 slotProps={{
                   textField: {
                     error: Boolean(
-                      index !== null
-                        ? errors.sessionGroups?.[index]?.sessionGroupEndT
-                        : errors.sessionGroupEndT
+                      errors.sessionGroups?.[index]?.sessionGroupEndT
                     ),
                     fullWidth: true,
                     helperText:
-                      index !== null
-                        ? errors.sessionGroups?.[index]?.sessionGroupEndT
-                            .message
-                        : errors.sessionGroupEndT?.message,
+                      errors.sessionGroups?.[index]?.sessionGroupEndT.message,
                   },
                 }}
                 value={dayjs(field.value)}

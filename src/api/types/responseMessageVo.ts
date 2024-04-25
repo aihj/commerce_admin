@@ -5,19 +5,11 @@
  * 로그인을 제외한 메디스태프 어드민의 모든 API와 학회 관련 API를 구성합니다.
  * OpenAPI spec version: 1.0.0
  */
-
-type ResponseMessageVoContent = { [key: string]: any };
-export interface ResponseMessageVo {
-  content?: ResponseMessageVoContent;
-  enMessage?: string;
-  error?: string;
-  message?: string;
-  status?: number;
-}
 export interface ResponseMessageVo<T = any> {
-  content?: T;
+  content?: T | T[];
   enMessage?: string;
   error?: string;
   message?: string;
   status?: number;
+  totalCount?: number;
 }

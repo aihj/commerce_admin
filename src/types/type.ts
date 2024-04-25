@@ -48,3 +48,14 @@ export interface ConferenceEnterprise {
   languageType: string;
   templateType: string;
 }
+
+export interface Category {}
+
+export interface SessionGroup {
+  sessionGroupStartT?: string;
+  sessionGroupEndT?: string;
+  sessionStartT?: string;
+  sessionEndT?: string;
+  sessionGroupIdx: number;
+}
+export interface Session {}
