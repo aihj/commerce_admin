@@ -8,17 +8,11 @@ import Swal from 'sweetalert2';
 
 // /api/auth/* 의 경로로 요청되는 모든 request는 위 파일에서 hand
 const handler = NextAuth({
-  // TODO: 아래의 값이 올바른지 검증 필요함(사실 백엔드에서 생성했기때문에 이 부분은 삭제 필요함)
-  // session: {
-  //   strategy: "jwt",
-  //   secret: process.env.AUTH_SECRET,
-  //   maxAge: 30 * 24 * 60 * 60, // 30 days
-  // },
   providers: [
     // *********************** 메디스태프 로그인 ***********************
     CredentialsProvider({
       // 인증 제공자의 이름(프로바이더의 이름)을 정의(tbl_web_service.wservice_name)
-      name: 'pco_admin',
+      name: process.env.NEXT_PUBLIC_AUTH_TYPE,
 
       // 실제 로그인 input의 내용
       credentials: {

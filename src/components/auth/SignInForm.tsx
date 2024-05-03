@@ -29,13 +29,13 @@ import Swal from 'sweetalert2';
 import OpenAdminPcoSelect from '@/components/conferences/OpenAdminPcoSelect';
 
 // ----------------------------------------------------------------------------------
-export type signInFormValues = {
+export type SignInFormValues = {
   // [process.env.NEXT_PUBLIC_LOGIN_TYPE]: string;
   email?: string;
   phone?: string;
   password: string;
   serviceType: string;
-  conferenceIdx: number;
+  conferenceIdx: number | null;
 };
 const schema = zod.object({
   // email: zod
@@ -48,7 +48,6 @@ const schema = zod.object({
     .regex(phoneRegex, '잘못된 전화번호 형식입니다.'),
   password: zod.string().min(1, { message: '패스워드는 필수값입니다.' }),
   serviceType: zod.string().min(1, { message: '서비스 타입은 필수값입니다.' }),
-  conferenceIdx: zod.number().min(-1, { message: '학회를 선택해주세요.' }),
 });
 type Values = zod.infer<typeof schema>;
 // ----------------------------------------------------------------------------------
@@ -73,10 +72,10 @@ export function SignInForm(): React.JSX.Element {
     handleSubmit,
     formState: { errors },
     register,
-  } = useForm<signInFormValues>({
+  } = useForm<SignInFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      conferenceIdx: -1,
+      conferenceIdx: null,
     },
   });
   logger.debug('errors', errors);

@@ -1,29 +1,9 @@
 import axios from 'axios';
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { getSession, signOut } from 'next-auth/react';
 import { Session } from 'next-auth';
 import { logger } from '@/lib/logger/defaultLogger';
 
-interface APIResponse<T = any> {
-  code: number;
-  data: T;
-  message: string;
-}
-
-interface CustomInstance extends AxiosInstance {
-  get<T = unknown, R = AxiosResponse<APIResponse<T>>, D = unknown>(
-    url: string,
-    config?: AxiosRequestConfig<D>
-  ): Promise<R>;
-
-  /*
-  	이외에도 post, put, patch, delete를 작성하여 정리할 수 있다.
-    특히 post, put, patch와 같이 헤더에 데이터를 담아 보내는 메소드의 경우
-    get, delete와 다르게 url, config, 그리고 data 객체까지 설정해줘야 한다.
-  */
-}
-
-const adminAxiosInstance: CustomInstance = axios.create({
+const adminAxiosInstance: axios.AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BACKEND_URL,
   withCredentials: true,
   headers: {},

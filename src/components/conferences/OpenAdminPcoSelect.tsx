@@ -1,5 +1,5 @@
 import { Control, Controller, FieldErrors } from 'react-hook-form';
-import { signInFormValues } from '@/components/auth/SignInForm';
+import { SignInFormValues } from '@/components/auth/SignInForm';
 import * as React from 'react';
 import { FormControl, FormHelperText, InputLabel, Select } from '@mui/material';
 import { Option } from '@/components/core/Option';
@@ -8,8 +8,8 @@ import { useQuery } from '@tanstack/react-query';
 import { logger } from '@/lib/logger/defaultLogger';
 
 type OpenAdminPcoSelectTypes = {
-  errors: FieldErrors<signInFormValues>;
-  control: Control<signInFormValues>;
+  errors: FieldErrors<SignInFormValues>;
+  control: Control<SignInFormValues>;
 };
 
 type PcoData = {
@@ -55,14 +55,14 @@ export default function OpenAdminPcoSelect({
   return (
     <>
       <Controller
-        defaultValue={-1}
+        defaultValue={null}
         control={control}
         name="conferenceIdx"
         render={({ field }) => (
           <FormControl error={Boolean(errors.conferenceIdx)} fullWidth>
             <InputLabel required>학회 선택하기</InputLabel>
             <Select {...field}>
-              <Option value={-1}>메디스태프</Option>
+              <Option value={null}>메디스태프</Option>
               {pcoData.map((item) => (
                 <Option key={item.conference_idx} value={item.conference_idx}>
                   {`${item.committee_name}(${item.conference_name})`}

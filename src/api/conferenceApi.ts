@@ -198,7 +198,7 @@ export async function getLocations(confStringIdx: string) {
 export async function getOpenAdminPcoList() {
   console.log('[getOpenAdminPcoList] 실행');
   return axios.get(
-    `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/no-auth/pco/admin-open`,
+    `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/public/pco/admin-open`,
     {}
   );
 }

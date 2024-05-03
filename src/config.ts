@@ -40,7 +40,7 @@ export interface Config {
   gtm?: { id?: string };
 }
 
-export const config = {
+export const config: Config = {
   site: {
     name: 'Pco Admin',
     description: '메디스태프 학회 관리자 페이지',
@@ -84,4 +84,4 @@ export const config = {
   },
   mapbox: { apiKey: process.env.NEXT_PUBLIC_MAPBOX_API_KEY },
   gtm: { id: process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID },
-} satisfies Config;
+};

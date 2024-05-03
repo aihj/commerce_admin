@@ -13,6 +13,9 @@ associate / 연관짓다
 auxiliary / 보조자
 indicate / 나타내다
 accordingly / 따라서
+rescue / 구조하다
+predictable / 예측 가능한
+centralized / 중앙 집중식
 
 현재 필요한 데이터를 불러오고 있습니다.
 이거 스켈레톤으로 변경하거나 로딩 페이지 디자인 따로 해야함
