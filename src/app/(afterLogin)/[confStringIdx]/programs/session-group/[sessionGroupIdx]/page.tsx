@@ -6,7 +6,7 @@ import SessionListForm from '@/components/program/SessionListForm';
 import Swal from 'sweetalert2';
 import { useCallback, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { produce } from 'immer';
 import {
   getSessionGroupDetail,
