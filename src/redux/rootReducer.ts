@@ -3,9 +3,9 @@ import storage from 'redux-persist/lib/storage';
 import { persistReducer } from 'redux-persist';
 
 // import slices
-import pcoSliceReducer from './slices/pcoSlice';
-import userSliceReducer from './slices/userSlice';
-import signUpSlice from './slices/signUpSlice';
+import pcoSliceReducer from '@/redux/slice/pcoSlice';
+import userSliceReducer from '@/redux/slice/userSlice';
+import signUpSlice from '@/redux/slice/signUpSlice';
 
 const rootReducer = combineReducers({
   pco: pcoSliceReducer,

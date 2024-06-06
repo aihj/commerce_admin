@@ -18,6 +18,7 @@ import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import { adminAxiosInstance } from '@/api/authApi';
 import { ResponseMessageVo } from '@/api/types/responseMessageVo';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
+import { Setting, SettingVo } from '@/api/types/setting';
 
 // region *********************** Enterprise Conference 목록 가져오기 ***********************
 /**
@@ -203,3 +204,22 @@ export async function getOpenAdminPcoList() {
     {}
   );
 }
+
+/**
+ * 해당 학회 관리자, 최고 관리자
+ * 학회 세팅 리스트 가져오기
+ * @param conferenceIdx
+ */
+export const getSettings = (
+  conferenceIdx: number
+): Promise<AxiosResponse<SettingVo>> => {
+  return adminAxiosInstance.get(
+    `/api/pco/each-admin/${conferenceIdx}/all-setting`
+  );
+};
+
+/*** 학회 다중 세팅 업데이트*/
+static processConferenceSettings(data) {
+  return adminInstance.post(baseAdminUrl+`/conference/settings`,data,{headers:adminAuthHeader()});
+}
+

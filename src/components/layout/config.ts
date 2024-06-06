@@ -129,6 +129,23 @@ const eachPcoLayoutConfig = {
             },
           ],
         },
+        {
+          key: 'setting',
+          title: '세팅',
+          icon: 'tent',
+          items: [
+            {
+              key: 'setting:editor',
+              title: 'Html 에디터 입력',
+              href: PATH.EACH.SETTING.EDITOR('test2024'),
+            },
+            {
+              key: 'setting:file',
+              title: '파일 관리',
+              href: PATH.EACH.SETTING.FILE('test2024'),
+            },
+          ],
+        },
       ],
     },
   ],

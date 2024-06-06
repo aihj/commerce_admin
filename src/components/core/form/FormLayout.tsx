@@ -36,16 +36,18 @@ export default function FormLayout({
       <Stack spacing={4}>
         <Stack spacing={3}>
           <div>
-            <Link
-              color="text.primary"
-              component={RouterLink}
-              href={backLink}
-              sx={{ alignItems: 'center', display: 'inline-flex', gap: 1 }}
-              variant="subtitle2"
-            >
-              <ArrowLeftIcon fontSize="var(--icon-fontSize-md)" />
-              {backText}
-            </Link>
+            {backLink !== null && (
+              <Link
+                color="text.primary"
+                component={RouterLink}
+                href={backLink}
+                sx={{ alignItems: 'center', display: 'inline-flex', gap: 1 }}
+                variant="subtitle2"
+              >
+                <ArrowLeftIcon fontSize="var(--icon-fontSize-md)" />
+                {backText}
+              </Link>
+            )}
           </div>
           <div>
             <Typography variant="h4">{headText}</Typography>

@@ -10,16 +10,21 @@ import {
 } from '@mui/material';
 import RouterLink from 'next/link';
 import { PATH } from '@/paths';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Pco } from '@/redux/slice/pcoSlice';
 import { useAppSelector } from '@/redux/hooks';
 import Box from '@mui/material/Box';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getSettings } from '@/api/conferenceApi';
+import Swal from 'sweetalert2';
 type HtmlEditorListFormProps = {};
 
-interface FormData {}
+interface FormData {
+  conferenceIdx: number;
+}
 
-const HtmlEditorListForm = ({}: HtmlEditorListFormProps) => {
+const SettingListForm = ({}: HtmlEditorListFormProps) => {
   const pco: Pco = useAppSelector((state) => state.pco);
   // region *********************** FORM 데이터 **************************
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -37,11 +42,16 @@ const HtmlEditorListForm = ({}: HtmlEditorListFormProps) => {
   });
   // endregion *********************** FORM 데이터 ***********************
 
-  // region *********************** 수정 데이터 **************************
-  const { error, data: settingData } = useQuery(
-    ['admin-setting', confStringIdx],
-    () => adminApi.getSetting(confStringIdx).then((res) => res.data.content)
-  );
+  // region *********************** 수정 데이터 가져오기 **************************
+  const {
+    // isLoading:getShortcutsLoading,
+    // error:getShortcutsLoadingError,
+    data: settingData,
+  } = useQuery({
+    queryKey: ['setting', pco.conferenceIdx],
+    queryFn: () => getSettings(pco.conferenceIdx as number),
+    enabled: !!pco.conferenceIdx,
+  });
   useEffect(() => {
     if (
       !!settingData &&
@@ -61,7 +71,36 @@ const HtmlEditorListForm = ({}: HtmlEditorListFormProps) => {
       }
     }
   }, [settingData]);
-  // endregion *********************** 수정 데이터 ***********************
+  // endregion *********************** 수정 데이터 가져오기 ***********************
+  const onSubmit = (data: FormData) => {
+    setIsPending(true);
+    mutation.mutate(data);
+  };
+  const queryClient = useQueryClient();
+  const mutation = useMutation(
+    (data) => adminApi.processConferenceSettings(data),
+    {
+      onSuccess: (result) => {
+        Swal.fire({
+          icon: result.status === 200 ? 'success' : 'error',
+          text: result.data.message,
+        }).then((result) => {
+          mutate(confStringIdx);
+        });
+      },
+      onError: (result) => {
+        Swal.fire({
+          icon: 'error',
+          text: result.response
+            ? result.response.data.message
+            : '현재 서버에 문제가 있습니다. 관리자에게 문의해주세요.',
+        });
+      },
+      onSettled: () => {
+        setIsPending(false);
+      },
+    }
+  );
 
   // -------------------------------------------------------
   return (
@@ -107,4 +146,4 @@ const HtmlEditorListForm = ({}: HtmlEditorListFormProps) => {
   );
 };
 
-export { HtmlEditorListForm };
+export { SettingListForm };

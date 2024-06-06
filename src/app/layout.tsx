@@ -5,7 +5,6 @@ import { config } from '@/config';
 import { ThemeProvider } from '@/components/core/theme-provider';
 import { LocalizationProvider } from '@/components/core/LocalizationProvider';
 import { Toaster } from '@/components/core/Toaster';
-import ReduxProviders from '@/redux/ReduxProvider';
 import { UserProvider } from '@/contexts/auth/user-context';
 import Providers from '@/components/Providers';
 
@@ -22,12 +21,10 @@ export default async function Layout({
         <Providers>
           <LocalizationProvider>
             <UserProvider>
-              <ReduxProviders>
-                <ThemeProvider>
-                  {children}
-                  <Toaster position="bottom-right" />
-                </ThemeProvider>
-              </ReduxProviders>
+              <ThemeProvider>
+                {children}
+                <Toaster position="bottom-right" />
+              </ThemeProvider>
             </UserProvider>{' '}
             {/* NextAuth 인증 관련 */}
           </LocalizationProvider>

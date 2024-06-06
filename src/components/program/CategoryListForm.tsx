@@ -73,7 +73,6 @@ export default function CategoryListForm({
   } = useForm<FormData>({
     defaultValues: { confStringIdx: confStringIdx },
   });
-
   const { fields, append, update, remove } = useFieldArray({
     control,
     name: 'sessionCategories',

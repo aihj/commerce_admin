@@ -35,6 +35,11 @@ export const PATH = {
           `/${confStringIdx}/program/session-groups/${programId}`,
       },
     },
+    SETTING: {
+      EDITOR: (confStringIdx: string) =>
+        `/${confStringIdx}/setting/html-editor`,
+      FILE: (confStringIdx: string) => `/${confStringIdx}/setting/file`,
+    },
   },
   AUTH: {
     NEXT_AUTH: {
