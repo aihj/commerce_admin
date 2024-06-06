@@ -28,7 +28,7 @@ const getEnterprisePcoList = (
   params: TableSearchParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<ResponseMessageVo<EnterpriseListResVo>> | void> => {
-  const url = `/api/pco/top/enterprises`;
+  const url = `/api/pco/medi-admin/enterprises`;
   return adminAxiosInstance
     .post(url, params, options)
     .then((response) => {
@@ -42,7 +42,7 @@ const getEnterprisePcoList = (
 };
 
 const getEnterprisePcoListQueryKey = (params: TableSearchParams) => {
-  const url = `/api/pco/top/enterprises`;
+  const url = `/api/pco/medi-admin/enterprises`;
   return [url, ...(params ? [params] : [])] as const;
 };
 
@@ -113,7 +113,7 @@ const getAlliancePcoList = (
   params: TableSearchParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<EnterpriseListResVo> | void> => {
-  const url = `/api/pco/top/alliances`;
+  const url = `/api/pco/medi-admin/alliances`;
   return adminAxiosInstance
     .post(url, params, options)
     .then((response) => {
@@ -127,7 +127,7 @@ const getAlliancePcoList = (
 };
 
 const getAlliancePcoListQueryKey = (params: TableSearchParams) => {
-  const url = `/api/pco/top/alliances`;
+  const url = `/api/pco/medi-admin/alliances`;
   return [url, ...(params ? [params] : [])] as const;
 };
 
@@ -189,9 +189,10 @@ export const useGetAlliancePcoList = <
 
 // 학회 장소 리스트 가져오기
 export async function getLocations(confStringIdx: string) {
-  return adminAxiosInstance.get(`/api/pco/${confStringIdx}/locations`, {
-    // headers: adminAuthHeader(),
-  });
+  return adminAxiosInstance.get(
+    `/api/pco/each-admin/${confStringIdx}/locations`,
+    {}
+  );
 }
 
 // 어드민 페이지가 오픈 되어 있는 pco 리스트 가져오기(권한 없이 사용할경우)

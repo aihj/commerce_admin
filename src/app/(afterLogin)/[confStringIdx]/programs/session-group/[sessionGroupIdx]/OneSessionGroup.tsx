@@ -25,7 +25,7 @@ type SessionGroupFormTypes = {
   errors: FieldErrors;
   programData: {
     categories?: Category[];
-    sessionGroups?: SessionGroup;
+    sessionGroup?: SessionGroup;
   };
   control: any;
 };
@@ -54,6 +54,7 @@ export default function OneSessionGroup({
       <Typography color="primary" variant="h6">
         세션 상세
       </Typography>
+
       <Grid container rowSpacing={1} columnSpacing={3}>
         <Grid xs={12}>
           <Stack
@@ -83,7 +84,7 @@ export default function OneSessionGroup({
 
         <Grid md={6} xs={12}>
           <Controller
-            defaultValue={programData.sessionGroups.sessionGroupIdx}
+            defaultValue={programData.sessionGroup.sessionGroupIdx}
             control={control}
             name={'sessionCategoryIdx'}
             rules={{ required: '카테고리를 반드시 선택해주세요.' }}
@@ -103,7 +104,7 @@ export default function OneSessionGroup({
                 </Select>
 
                 {errors.sessionCategoryIdx && (
-                  <FormHelperText>
+                  <FormHelperText error>
                     {errors.sessionCategoryIdx?.message}
                   </FormHelperText>
                 )}
@@ -122,14 +123,10 @@ export default function OneSessionGroup({
                 <OutlinedInput {...field} />
 
                 {errors.sessionGroupOrder && (
-                  <FormHelperText>
+                  <FormHelperText error>
                     {errors.sessionGroupOrder.message}
                   </FormHelperText>
                 )}
-
-                <FormHelperText>
-                  값을 입력하지 않을 경우 등록순으로 배치가 됩니다.
-                </FormHelperText>
               </FormControl>
             )}
           />
@@ -137,7 +134,7 @@ export default function OneSessionGroup({
 
         <Grid md={6} xs={12}>
           <Controller
-            defaultValue={programData.sessionGroups.sessionGroupType}
+            defaultValue={programData.sessionGroup.sessionGroupType}
             control={control}
             rules={{ required: '세션 타입은 필수 값입니다.' }}
             name={'sessionGroupType'}
@@ -153,7 +150,7 @@ export default function OneSessionGroup({
                 </Select>
 
                 {errors.sessionGroupType && (
-                  <FormHelperText>
+                  <FormHelperText error>
                     {errors.sessionGroupOrder.message}
                   </FormHelperText>
                 )}
@@ -179,7 +176,7 @@ export default function OneSessionGroup({
                 <OutlinedInput {...field} />
 
                 {errors.sessionGroupTitle && (
-                  <FormHelperText>
+                  <FormHelperText error>
                     {errors.sessionGroupTitle.message}
                   </FormHelperText>
                 )}
@@ -187,21 +184,22 @@ export default function OneSessionGroup({
             )}
           />
         </Grid>
+
         <Grid xs={12}>
           <Controller
             control={control}
-            name={'sessionGroupSubtitle'}
+            name={'sessionGroupubtitle'}
             render={({ field }) => (
               <FormControl
-                error={Boolean(errors.sessionGroupSubtitle)}
+                error={Boolean(errors.sessionGroupubtitle)}
                 fullWidth
               >
-                <InputLabel required>세션 부제목</InputLabel>
+                <InputLabel>세션 부제목</InputLabel>
                 <OutlinedInput {...field} />
 
-                {errors.sessionGroupSubtitle && (
-                  <FormHelperText>
-                    {errors.sessionGroupSubtitle.message}
+                {errors.sessionGroupubtitle && (
+                  <FormHelperText error>
+                    {errors.sessionGroupubtitle.message}
                   </FormHelperText>
                 )}
               </FormControl>
@@ -224,7 +222,7 @@ export default function OneSessionGroup({
                 />
 
                 {errors.sessionGroupDesc && (
-                  <FormHelperText>
+                  <FormHelperText error>
                     {errors.sessionGroupDesc.message}
                   </FormHelperText>
                 )}

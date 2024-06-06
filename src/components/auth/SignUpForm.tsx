@@ -183,7 +183,9 @@ export function SignUpForm(): React.JSX.Element {
                   <InputLabel>First name</InputLabel>
                   <OutlinedInput {...field} />
                   {errors.firstName ? (
-                    <FormHelperText>{errors.firstName.message}</FormHelperText>
+                    <FormHelperText error>
+                      {errors.firstName.message}
+                    </FormHelperText>
                   ) : null}
                 </FormControl>
               )}
@@ -197,7 +199,9 @@ export function SignUpForm(): React.JSX.Element {
                   <InputLabel>Last name</InputLabel>
                   <OutlinedInput {...field} />
                   {errors.lastName ? (
-                    <FormHelperText>{errors.lastName.message}</FormHelperText>
+                    <FormHelperText error>
+                      {errors.lastName.message}
+                    </FormHelperText>
                   ) : null}
                 </FormControl>
               )}
@@ -210,7 +214,9 @@ export function SignUpForm(): React.JSX.Element {
                   <InputLabel>Email address</InputLabel>
                   <OutlinedInput {...field} type="email" />
                   {errors.email ? (
-                    <FormHelperText>{errors.email.message}</FormHelperText>
+                    <FormHelperText error>
+                      {errors.email.message}
+                    </FormHelperText>
                   ) : null}
                 </FormControl>
               )}
@@ -223,7 +229,9 @@ export function SignUpForm(): React.JSX.Element {
                   <InputLabel>Password</InputLabel>
                   <OutlinedInput {...field} type="password" />
                   {errors.password ? (
-                    <FormHelperText>{errors.password.message}</FormHelperText>
+                    <FormHelperText error>
+                      {errors.password.message}
+                    </FormHelperText>
                   ) : null}
                 </FormControl>
               )}

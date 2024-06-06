@@ -65,8 +65,13 @@ adminAxiosInstance.interceptors.response.use(
   async (error) => {
     const { config, response } = error;
     logger.error('[adminAxiosInstance.interceptors.response] error : ', error);
+    logger.error(
+      '[adminAxiosInstance.interceptors.response] response : ',
+      response
+    );
     const session = (await getSession()) as Session;
-    if (error?.code === 'ERR_CANCELED') return Promise.reject(error);
+    if (error?.code === 'ERR_CANCELED' || error?.code === 'ERR_NETWORK')
+      return Promise.reject(error);
     /* 만료된 토큰일경우 */
     if (response.status === 1000) {
       // 401에러 이면서 Unauthorized에러가 발생할 경우 리프레스 토큰으로 access token 값 갱신하기

@@ -213,7 +213,7 @@ export default function CategoryListForm({
                         </Box>
                         {errors.sessionCategories?.[index]
                           ?.sessionCategoryTitle ? (
-                          <FormHelperText>
+                          <FormHelperText error>
                             {
                               errors.sessionCategories?.[index]
                                 ?.sessionCategoryTitle?.message

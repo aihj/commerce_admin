@@ -70,7 +70,9 @@ export default function OpenAdminPcoSelect({
               ))}
             </Select>
             {errors.conferenceIdx ? (
-              <FormHelperText>{errors.conferenceIdx.message}</FormHelperText>
+              <FormHelperText error>
+                {errors.conferenceIdx.message}
+              </FormHelperText>
             ) : null}
           </FormControl>
         )}

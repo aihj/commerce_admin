@@ -119,7 +119,7 @@ export default function SessionGroupItem({
                   ))}
                 </Select>
                 {errors.sessionGroups?.[index]?.sessionCategoryIdx && (
-                  <FormHelperText>
+                  <FormHelperText error>
                     {errors.sessionGroups?.[index]?.sessionCategoryIdx?.message}
                   </FormHelperText>
                 )}
@@ -142,14 +142,10 @@ export default function SessionGroupItem({
                 <OutlinedInput {...field} />
 
                 {errors.sessionGroups?.[index]?.sessionGroupOrder && (
-                  <FormHelperText>
+                  <FormHelperText error>
                     {errors.sessionGroups?.[index]?.sessionGroupOrder?.message}
                   </FormHelperText>
                 )}
-
-                <FormHelperText>
-                  값을 입력하지 않을 경우 등록순으로 배치가 됩니다.
-                </FormHelperText>
               </FormControl>
             )}
           />
@@ -177,7 +173,7 @@ export default function SessionGroupItem({
                   </Select>
 
                   {errors.sessionGroups?.[index]?.sessionGroupType && (
-                    <FormHelperText>
+                    <FormHelperText error>
                       {errors.sessionGroups?.[index]?.sessionGroupType?.message}
                     </FormHelperText>
                   )}
@@ -209,7 +205,7 @@ export default function SessionGroupItem({
               <OutlinedInput {...field} />
 
               {errors.sessionGroups?.[index]?.sessionGroupTitle && (
-                <FormHelperText>
+                <FormHelperText error>
                   {errors.sessionGroups?.[index]?.sessionGroupTitle?.message}
                 </FormHelperText>
               )}
@@ -225,10 +221,10 @@ export default function SessionGroupItem({
                 errors.sessionGroups?.[index]?.sessionGroupSubtitle
               )}
             >
-              <InputLabel required>세션 부제목</InputLabel>
+              <InputLabel>세션 부제목</InputLabel>
               <OutlinedInput {...field} />
               {errors.sessionGroups?.[index]?.sessionGroupSubtitle && (
-                <FormHelperText>
+                <FormHelperText error>
                   {errors.sessionGroups?.[index]?.sessionGroupSubtitle?.message}
                 </FormHelperText>
               )}
@@ -251,7 +247,7 @@ export default function SessionGroupItem({
                 rows={3}
               />
               {errors.sessionGroups?.[index]?.sessionGroupDesc && (
-                <FormHelperText>
+                <FormHelperText error>
                   {errors.sessionGroups?.[index]?.sessionGroupDesc?.message}
                 </FormHelperText>
               )}

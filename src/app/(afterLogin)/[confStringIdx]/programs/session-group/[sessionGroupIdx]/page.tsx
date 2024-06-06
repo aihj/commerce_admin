@@ -1,5 +1,5 @@
 'use client';
-
+import { DevTool } from '@hookform/devtools';
 import { PATH } from '@/paths';
 import OneSessionGroup from '@/app/(afterLogin)/[confStringIdx]/programs/session-group/[sessionGroupIdx]/OneSessionGroup';
 import SessionListForm from '@/components/program/SessionListForm';
@@ -24,6 +24,7 @@ import {
 } from '@mui/material';
 import FormLayout from '@/components/core/form/FormLayout';
 import { Category, Session } from '@/types/type';
+import LoadingPage from '@/components/core/Loading';
 
 type SessionGroupDetailTypeProps = {
   params: {
@@ -42,18 +43,15 @@ interface FormData {
   sessions?: Session[];
 }
 
-interface SessionGroupDetailData {
+export interface SessionGroupDetailData {
   categories: Category[];
-  sessionGroups: {
-    [key: string]: sessionGroup;
-    sessions?: Session[];
-  };
+  sessionGroup: any;
 }
 
+// 하나의 세션 그룹에 대한 상세 정보
 export default function SessionGroupDetail({
   params,
 }: SessionGroupDetailTypeProps) {
-  // region ***************************** POST: 카테고리 데이터 요청하기 ********************************
   const {
     isLoading: isQueryLoading,
     error: sessionGroupDetailError,
@@ -65,9 +63,7 @@ export default function SessionGroupDetail({
         (res) => res.data.content
       ),
   });
-
   window.sessionGroupDetailData = sessionGroupDetailData;
-  // endregion ***************************** POST: 데이터 요청하기 *****************************
 
   // region *********************** FORM 데이터 ***********************
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -80,6 +76,7 @@ export default function SessionGroupDetail({
   } = useForm<FormData>({
     defaultValues: {
       sessionGroupIdx: params.sessionGroupIdx,
+      confStringIdx: params.confStringIdx,
     },
   });
 
@@ -99,35 +96,27 @@ export default function SessionGroupDetail({
   );
 
   // const [count, setCount] = useState(0);
-  const { append, update } = useFieldArray({
-    control,
-    name: 'sessions',
-  });
 
   useEffect(() => {
-    if (sessionGroupDetailData?.sessionGroups) {
-      applyModifyDataToForm(sessionGroupDetailData.sessionGroups);
+    if (sessionGroupDetailData?.sessionGroup) {
+      applyModifyDataToForm(sessionGroupDetailData.sessionGroup);
     }
-  }, [applyModifyDataToForm, sessionGroupDetailData?.sessionGroups]);
+  }, [applyModifyDataToForm, sessionGroupDetailData?.sessionGroup]);
 
-  useEffect(() => {
-    sessionGroupDetailData?.sessionGroups.sessions.forEach((item, index) => {
-      const dataToAppend: any = {};
-      Object.keys(item).forEach((key) => {
-        if (item[key] !== null) {
-          if (isDate(item[key])) dataToAppend[key] = new Date(item[key]);
-          else dataToAppend[key] = item[key];
-        }
-      });
-      update(index, dataToAppend);
-    });
-  }, [sessionGroupDetailData?.sessionGroups.sessions, update]);
   // endregion *********************** FORM 데이터 ***********************
 
   // region *********************** 데이터 제출 **************************
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     setSubmitLoading(true);
+    if (!data.confStringIdx || !data.sessionGroupIdx) {
+      setSubmitLoading(false);
+      Swal.fire({
+        icon: 'error',
+        text: '데이터를 업데이트하기 위한 필수값들이 없습니다. 에러가 계속되면 관리자에게 문의하여주세요.',
+      });
+      return;
+    }
 
     // 데이터 가공
     const newData = produce(data, (draft) => {
@@ -135,8 +124,8 @@ export default function SessionGroupDetail({
         data.sessionGroupStartT &&
         dayjs(data.sessionGroupStartT).format('YYYY-MM-DD HH:mm:ss');
       draft.sessionGroupEndT =
-        data.sessionGroupStartT &&
-        dayjs(data.sessionGroupStartT).format('YYYY-MM-DD HH:mm:ss');
+        data.sessionGroupEndT &&
+        dayjs(data.sessionGroupEndT).format('YYYY-MM-DD HH:mm:ss');
       draft.sessions = formatDatePickerTimeInList(
         data.sessions,
         'sessionStartT',
@@ -146,9 +135,10 @@ export default function SessionGroupDetail({
     console.log(newData);
     updateSessionGroupDetail(newData)
       .then((result) => {
+        console.log();
         Swal.fire({
-          icon: result.data.message,
-          text: result.data.content,
+          icon: 'success',
+          text: result.data.message,
         });
       })
       .catch((result) => {
@@ -166,8 +156,7 @@ export default function SessionGroupDetail({
   };
 
   // endregion *********************** 데이터 제출 **************************
-  if (isQueryLoading)
-    return <div>데이터를 가져오고 있는 중입니다. 잠시만 기다려주세요.</div>;
+  if (isQueryLoading) return <LoadingPage />;
   if (sessionGroupDetailError)
     return (
       <div>
@@ -181,7 +170,9 @@ export default function SessionGroupDetail({
       headText={'세션 상세'}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/*<DevTool control={control} />*/}
+        <input type="hidden" {...register('confStringIdx')} />
+        <input type="hidden" {...register('sessionGroupIdx')} />
+        <DevTool control={control} />
         <Card>
           <CardContent>
             <Stack divider={<Divider />} spacing={4}>
@@ -203,7 +194,11 @@ export default function SessionGroupDetail({
         register={register} control={control} errors={errors} trigger={trigger}
       />*/}
               </Stack>
-              <SessionListForm append={append} />
+              <SessionListForm
+                control={control}
+                errors={errors}
+                sessionGroupDetailData={sessionGroupDetailData}
+              />
             </Stack>
           </CardContent>
           <CardActions sx={{ justifyContent: 'flex-end' }}>
@@ -212,7 +207,7 @@ export default function SessionGroupDetail({
               variant="contained"
               disabled={!!submitLoading}
             >
-              저장하기
+              세션 정보 저장하기
             </Button>
           </CardActions>
         </Card>

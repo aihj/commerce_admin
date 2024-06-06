@@ -152,7 +152,9 @@ export function SignInForm(): React.JSX.Element {
                       <InputLabel required>Email address</InputLabel>
                       <OutlinedInput {...field} type="email" />
                       {errors.email ? (
-                        <FormHelperText>{errors.email.message}</FormHelperText>
+                        <FormHelperText error>
+                          {errors.email.message}
+                        </FormHelperText>
                       ) : null}
                     </FormControl>
                   )}
@@ -166,7 +168,9 @@ export function SignInForm(): React.JSX.Element {
                       <InputLabel required>Phone Number</InputLabel>
                       <OutlinedInput {...field} type="phone" />
                       {errors.phone ? (
-                        <FormHelperText>{errors.phone.message}</FormHelperText>
+                        <FormHelperText error>
+                          {errors.phone.message}
+                        </FormHelperText>
                       ) : null}
                     </FormControl>
                   )}
@@ -203,7 +207,9 @@ export function SignInForm(): React.JSX.Element {
                       type={showPassword ? 'text' : 'password'}
                     />
                     {errors.password ? (
-                      <FormHelperText>{errors.password.message}</FormHelperText>
+                      <FormHelperText error>
+                        {errors.password.message}
+                      </FormHelperText>
                     ) : null}
                   </FormControl>
                 )}

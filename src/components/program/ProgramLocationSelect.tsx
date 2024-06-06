@@ -120,13 +120,15 @@ export default function ProgramLocationSelect({
               {/*))}*/}
             </Select>
             {index !== null && errors[filedName]?.index?.locationIdx && (
-              <FormHelperText>
+              <FormHelperText error>
                 {errors[filedName]?.index?.locationIdx.message}
               </FormHelperText>
             )}
             {index === null ||
               (errors.locationIdx && (
-                <FormHelperText>{errors.locationIdx.message}</FormHelperText>
+                <FormHelperText error>
+                  {errors.locationIdx.message}
+                </FormHelperText>
               ))}
           </FormControl>
         )}

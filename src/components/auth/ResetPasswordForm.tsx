@@ -83,7 +83,7 @@ export function ResetPasswordForm(): React.JSX.Element {
                 <InputLabel>Email address</InputLabel>
                 <OutlinedInput {...field} type="email" />
                 {errors.email ? (
-                  <FormHelperText>{errors.email.message}</FormHelperText>
+                  <FormHelperText error>{errors.email.message}</FormHelperText>
                 ) : null}
               </FormControl>
             )}
