@@ -210,12 +210,10 @@ export async function getOpenAdminPcoList() {
  * 학회 세팅 리스트 가져오기
  * @param conferenceIdx
  */
-export const getSettings = (
-  conferenceIdx: number
-): Promise<AxiosResponse<SettingVo>> => {
-  return adminAxiosInstance.get(
-    `/api/pco/each-admin/${conferenceIdx}/all-setting`
-  );
+export const getSettings = (conferenceIdx: number): Promise<SettingVo[]> => {
+  return adminAxiosInstance
+    .get(`/api/pco/each-admin/${conferenceIdx}/all-setting`)
+    .then((result) => result.data.content);
 };
 
 /*** 학회 다중 세팅 업데이트*/

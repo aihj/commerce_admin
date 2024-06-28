@@ -6,6 +6,7 @@ import { PATH } from '@/paths';
 import { logger } from '@/lib/logger/defaultLogger';
 import { useAppSelector } from '@/redux/hooks';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 // import { useSession } from 'next-auth/react';
 
 export interface GuestGuardProps {

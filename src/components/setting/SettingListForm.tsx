@@ -63,7 +63,7 @@ const SettingListForm = ({}: HtmlEditorListFormProps) => {
   });
 
   useEffect(() => {
-    settingData.forEach((item, index) => {
+    settingData?.forEach((item, index) => {
       const dataToAppend: any = {};
       Object.keys(item).forEach((key) => {
         if (item[key] !== null) {
