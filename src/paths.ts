@@ -1,4 +1,11 @@
 export const PATH = {
+  AUTH: {
+    NEXT_AUTH: {
+      LOGIN: '/auth/sign-in',
+      REGISTER: '/auth/sign-up',
+      RESET_PASSWORD: '/auth/set-password',
+    },
+  },
   TEST: '/test',
   // dashboard
   HOME: '/',
@@ -22,8 +29,9 @@ export const PATH = {
 
   // 각 학회마다 경로가 다를 경우
   EACH: {
+    MAIN: (confStringIdx: string) => `/${confStringIdx}`,
     CONFERENCE: {
-      DETAIL: (confStringIdx: string) => `/${confStringIdx}`,
+      DETAIL: (confStringIdx: string) => `/${confStringIdx}/detail`,
     },
     PROGRAM: {
       LIST: (confStringIdx: string) => `/${confStringIdx}/programs`,
@@ -35,17 +43,17 @@ export const PATH = {
           `/${confStringIdx}/program/session-groups/${programId}`,
       },
     },
+    ATTENDEE: {
+      JOIN_LIST: (confStringIdx: string) => `/${confStringIdx}/join-users`,
+      REGISTER_LIST: (confStringIdx: string) =>
+        `/${confStringIdx}/register-users`,
+      CREATE: (confStringIdx: string, attendeeIdx: number) =>
+        `/${confStringIdx}/users/${attendeeIdx}`,
+    },
     SETTING: {
       EDITOR: (confStringIdx: string) =>
         `/${confStringIdx}/setting/html-editor`,
       FILE: (confStringIdx: string) => `/${confStringIdx}/setting/file`,
-    },
-  },
-  AUTH: {
-    NEXT_AUTH: {
-      LOGIN: '/auth/sign-in',
-      REGISTER: '/auth/sign-up',
-      RESET_PASSWORD: '/auth/set-password',
     },
   },
   SETTING: {

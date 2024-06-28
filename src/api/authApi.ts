@@ -13,6 +13,13 @@ const adminAxiosInstance: axios.AxiosInstance = axios.create({
 adminAxiosInstance.interceptors.request.use(
   async (config) => {
     const session = (await getSession()) as Session;
+
+    // console.log('<axiosInstance.interceptors.request> session : ', session);
+
+    // 리프레시 토큰 갱신 실패했을 경우 사용자 로그아웃
+    if (session?.user?.error === 'refresh_token_update_failed') {
+      await signOut();
+    }
     // refreshToken후 새로운 값이 아닌 옛날값이 들어감
     config.headers.Authorization =
       config.headers.Authorization || `Bearer ${session.user.accessToken}`;
@@ -20,20 +27,41 @@ adminAxiosInstance.interceptors.request.use(
     return config;
   },
   async (err) => {
-    console.log('axios response 실패 err : ', err);
+    logger.error('axios response 실패 err : ', err);
     if (axios.isAxiosError(err)) {
       const status = err.response?.status;
       // 임시 코드
       if (status === 400) {
-        console.log('데이터가 존재하지 않아요!');
+        logger.error('데이터가 존재하지 않아요!');
       }
       if (status === 404) {
-        console.log('잘못된 값을 넣었어요!');
+        logger.error('잘못된 값을 넣었어요!');
       }
     }
     return Promise.reject(err);
   }
 );
+
+// 리프레시 토큰 API SES
+export function adminPostRefreshTokenSES(
+  accessToken: string,
+  refreshToken: string,
+  serviceType: string
+) {
+  return axios.post(
+    `${process.env.AUTH_BACKEND_URL}/refresh_token`,
+    {
+      accessToken,
+      refreshToken,
+      serviceType,
+    },
+    {
+      headers: {
+        Authorization: 'Bearer ' + accessToken,
+      },
+    }
+  );
+}
 
 // 리프레시 토큰 API
 function adminPostRefreshToken(session: Session) {

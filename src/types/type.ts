@@ -1,3 +1,22 @@
+// 페이지 첫 로딩시 가져오는 학회 기본 정보
+export interface PcoBaseInfoVo {
+  committeeAddr?: string;
+  committeeCompanyRegiNumber?: string;
+  committeeName?: string;
+  conferenceEndT?: string;
+  conferenceIdx?: number;
+  conferenceName?: string;
+  conferencePreRegiEndT?: string;
+  conferencePreRegiStartT?: string;
+  conferenceStartT?: string;
+  conferenceStringIdx?: string;
+  frontendServerUrl?: string;
+  logoHost?: string;
+  logoName?: string;
+  logoPath?: string;
+  sendPaymentReceiptEmail?: string;
+}
+
 export interface Committee {
   committeeIdx: number;
   committeeName: string;

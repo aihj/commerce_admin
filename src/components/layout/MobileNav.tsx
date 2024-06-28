@@ -241,7 +241,7 @@ function NavItem({
                   setOpen(!open);
                 }
               },
-              role: 'button',
+              wroleName: 'button',
             }
           : {
               ...(href
@@ -254,7 +254,7 @@ function NavItem({
                       onClose?.();
                     },
                   }
-                : { role: 'button' }),
+                : { wroleName: 'button' }),
             })}
         sx={{
           alignItems: 'center',

@@ -4,7 +4,7 @@ import { RootState } from '../store';
 
 const initialState: User = {
   serviceType: process.env.NEXT_PUBLIC_AUTH_TYPE,
-  role: '',
+  wroleName: '',
   phone: '',
   email: '',
   password: '',

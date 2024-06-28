@@ -1,16 +1,15 @@
 import axios from 'axios';
+import { PcoBaseInfoVo } from '@/types/type';
 
 // 학회 기본 데이터 가져오기
-export async function getPcoInfoForFirst(
+export const getPcoInfoForFirst = (
   url?: string,
   confStringIdx?: string | null
-) {
-  // logger.debug(
-  //   `<getPcoInfoForFirst> url : ${url} / confStringIdx : ${confStringIdx}`
-  // );
-  return axios.post(
-    `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/public/pco/pco-info`,
-    { url, confStringIdx },
-    {}
-  );
-}
+): Promise<PcoBaseInfoVo> => {
+  return axios
+    .post(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/public/pco/pco-info`,
+      { url, confStringIdx }
+    )
+    .then((result) => result.data.content);
+};

@@ -103,6 +103,28 @@ const eachPcoLayoutConfig = {
       title: '학회 각각의 정보',
       items: [
         {
+          key: 'attendee',
+          title: '유저',
+          icon: 'tent',
+          items: [
+            {
+              key: 'attendee:list-join',
+              title: '회원 목록(가입)',
+              href: PATH.EACH.ATTENDEE.JOIN_LIST('test2024'),
+            },
+            {
+              key: 'attendee:list-register',
+              title: '회원 목록(등록)',
+              href: PATH.EACH.ATTENDEE.REGISTER_LIST('test2024'),
+            },
+            {
+              key: 'attendee:detail',
+              title: '회원 생성',
+              href: PATH.EACH.ATTENDEE.CREATE('test2024', 1),
+            },
+          ],
+        },
+        {
           key: 'programs',
           title: '프로그램',
           icon: 'tent',

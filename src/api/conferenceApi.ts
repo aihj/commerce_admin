@@ -18,7 +18,7 @@ import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import { adminAxiosInstance } from '@/api/authApi';
 import { ResponseMessageVo } from '@/api/types/responseMessageVo';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
-import { Setting, SettingVo } from '@/api/types/setting';
+import { SettingVo } from '@/api/types/setting';
 
 // region *********************** Enterprise Conference 목록 가져오기 ***********************
 /**
@@ -219,7 +219,6 @@ export const getSettings = (
 };
 
 /*** 학회 다중 세팅 업데이트*/
-static processConferenceSettings(data) {
-  return adminInstance.post(baseAdminUrl+`/conference/settings`,data,{headers:adminAuthHeader()});
-}
-
+export const processConferenceSettings = (data: any): Promise<SettingVo[]> => {
+  return adminAxiosInstance.post(`/api/conference/settings`, data);
+};

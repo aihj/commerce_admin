@@ -1,4 +1,3 @@
-import { DevTool } from '@hookform/devtools';
 import {
   Button,
   Card,
@@ -8,35 +7,45 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import RouterLink from 'next/link';
-import { PATH } from '@/paths';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { Pco } from '@/redux/slice/pcoSlice';
+import { Pco } from '@/redux/slices/pcoSlice';
 import { useAppSelector } from '@/redux/hooks';
 import Box from '@mui/material/Box';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getSettings } from '@/api/conferenceApi';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { getSettings, processConferenceSettings } from '@/api/conferenceApi';
 import Swal from 'sweetalert2';
-type HtmlEditorListFormProps = {};
+import { isDate } from '@/utils/dateFunctions';
+import { SettingVo } from '@/api/types/setting';
+
+type HtmlEditorListFormProps = NonNullable<unknown>;
 
 interface FormData {
   conferenceIdx: number;
+  settings: {
+    sessionCategoryIdx?: number | undefined;
+    sessionCategoryTitle?: string;
+    sessionCategoryDate?: string;
+  };
 }
 
+// eslint-disable-next-line no-empty-pattern
 const SettingListForm = ({}: HtmlEditorListFormProps) => {
   const pco: Pco = useAppSelector((state) => state.pco);
   // region *********************** FORM 데이터 **************************
   const [isPending, setIsPending] = useState<boolean>(false);
+
   const {
-    register,
-    control,
     handleSubmit,
-    formState: { errors },
+    control,
+    // formState: { errors },
   } = useForm<FormData>({
-    defaultValues: { conferenceIdx: pco.conferenceIdx },
+    defaultValues: {
+      conferenceIdx: pco.conferenceIdx as number,
+    },
   });
-  const { fields, append, remove } = useFieldArray({
+
+  const { fields, append, update } = useFieldArray({
     control,
     name: 'settings',
   });
@@ -52,61 +61,44 @@ const SettingListForm = ({}: HtmlEditorListFormProps) => {
     queryFn: () => getSettings(pco.conferenceIdx as number),
     enabled: !!pco.conferenceIdx,
   });
-  useEffect(() => {
-    if (
-      !!settingData &&
-      settingData.length !== 0 &&
-      settingData.length !== fields.length
-    ) {
-      for (const item of settingData) {
-        const dataToAppend = {};
 
-        // 모든 속성을 dataToAppend 객체에 추가
-        for (const key in item) {
-          if (item.hasOwnProperty(key)) {
-            dataToAppend[key] = item[key];
-          }
+  useEffect(() => {
+    settingData.forEach((item, index) => {
+      const dataToAppend: any = {};
+      Object.keys(item).forEach((key) => {
+        if (item[key] !== null) {
+          if (isDate(item[key])) dataToAppend[key] = new Date(item[key]);
+          else dataToAppend[key] = item[key];
         }
-        append(dataToAppend);
-      }
-    }
-  }, [settingData]);
+      });
+      update(index, dataToAppend);
+    });
+  }, [settingData, update]);
   // endregion *********************** 수정 데이터 가져오기 ***********************
   const onSubmit = (data: FormData) => {
     setIsPending(true);
     mutation.mutate(data);
   };
-  const queryClient = useQueryClient();
-  const mutation = useMutation(
-    (data) => adminApi.processConferenceSettings(data),
-    {
-      onSuccess: (result) => {
-        Swal.fire({
-          icon: result.status === 200 ? 'success' : 'error',
-          text: result.data.message,
-        }).then((result) => {
-          mutate(confStringIdx);
-        });
-      },
-      onError: (result) => {
-        Swal.fire({
-          icon: 'error',
-          text: result.response
-            ? result.response.data.message
-            : '현재 서버에 문제가 있습니다. 관리자에게 문의해주세요.',
-        });
-      },
-      onSettled: () => {
-        setIsPending(false);
-      },
-    }
-  );
+
+  const mutation = useMutation<SettingVo[]>({
+    mutationFn: (data) => processConferenceSettings(data),
+    onSuccess: () => {},
+    onError: (result) => {
+      Swal.fire({
+        icon: 'error',
+        text: result.response
+          ? result.response.data.message
+          : '현재 서버에 문제가 있습니다. 관리자에게 문의해주세요.',
+      });
+    },
+    onSettled: () => {
+      setIsPending(false);
+    },
+  });
 
   // -------------------------------------------------------
   return (
-    <form
-    // onSubmit={handleSubmit(onSubmit)}
-    >
+    <form onSubmit={handleSubmit(onSubmit)}>
       {/*<DevTool control={control} />*/}
       <Card>
         <CardContent>
@@ -130,8 +122,6 @@ const SettingListForm = ({}: HtmlEditorListFormProps) => {
             onClick={() =>
               append({
                 sessionCategoryIdx: undefined,
-                sessionCategoryTitle: undefined,
-                sessionCategoryDate: undefined,
               })
             }
           >

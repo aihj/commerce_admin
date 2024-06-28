@@ -9,6 +9,9 @@ export interface Pco {
   conferenceEndT: string;
   conferencePreRegiStartT: string;
   conferencePreRegiEndT: string;
+  logoHost: string;
+  logoPath: string;
+  logoName: string;
 }
 
 const initialState: Pco = {
@@ -19,6 +22,9 @@ const initialState: Pco = {
   conferenceEndT: '',
   conferencePreRegiStartT: '',
   conferencePreRegiEndT: '',
+  logoHost: '',
+  logoPath: '',
+  logoName: '',
 };
 
 // Create a Redux slice for managing card data
@@ -36,5 +42,8 @@ export const { UPDATE_PCO } = pcoSlice.actions;
 
 export const selectConferenceIdx = (state: RootState) =>
   state.pco.conferenceIdx;
+
+export const selectConferenceStringIdx = (state: RootState) =>
+  state.pco.conferenceStringIdx;
 
 export default pcoSlice.reducer;

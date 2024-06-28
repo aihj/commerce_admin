@@ -7,17 +7,16 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Pco } from '@/redux/slice/pcoSlice';
-import { useAppSelector } from '@/redux/hooks';
+// import { Pco } from '@/redux/slices/pcoSlice';
+// import { useAppSelector } from '@/redux/hooks';
 
-type HtmlEditorListFormProps = {};
+type HtmlEditorListFormProps = NonNullable<unknown>;
 
+// eslint-disable-next-line no-empty-pattern
 const HtmlEditorListForm = ({}: HtmlEditorListFormProps) => {
-  const pco: Pco = useAppSelector((state) => state.pco);
+  // const pco: Pco = useAppSelector((state) => state.pco);
   // region *********************** FORM 데이터 **************************
-  const [isPending, setIsPending] = useState<boolean>(false);
+  /* const [isPending, setIsPending] = useState<boolean>(false);
   const {
     register,
     control,
@@ -25,7 +24,7 @@ const HtmlEditorListForm = ({}: HtmlEditorListFormProps) => {
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: { conferenceIdx: pco.conferenceIdx },
-  });
+  });*/
   // endregion *********************** FORM 데이터 ***********************
   return (
     <form

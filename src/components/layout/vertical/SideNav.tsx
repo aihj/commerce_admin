@@ -214,7 +214,7 @@ function NavItem({
                   setOpen(!open);
                 }
               },
-              role: 'button',
+              wroleName: 'button',
             }
           : {
               ...(href
@@ -224,7 +224,7 @@ function NavItem({
                     target: external ? '_blank' : undefined,
                     rel: external ? 'noreferrer' : undefined,
                   }
-                : { role: 'button' }),
+                : { wroleName: 'button' }),
             })}
         sx={{
           alignItems: 'center',

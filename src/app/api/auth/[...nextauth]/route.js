@@ -1,8 +1,7 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios';
-import { useUser } from '../../../../hooks/useUser';
-import Swal from 'sweetalert2';
+import { adminPostRefreshTokenSES } from '../../../../api/authApi';
 
 // import Swal from "sweetalert2";
 
@@ -35,28 +34,30 @@ const handler = NextAuth({
         email: 'fsdafsd',
         password: 'fsdf'
       \*/
-      async authorize(credentials, req) {
+      async authorize(credentials, response, req) {
         try {
           console.log('<authorize> credentials', credentials);
-          const user = axios
+          const user = await axios
+            // TODO
             .post(`${process.env.AUTH_BACKEND_URL}/request_token`, credentials)
+            // .post(`https://testauth.medistaff.co.kr/request_token`, credentials)
             .then((response) => {
               console.log('<authorize> success');
               if (response.data.content.accessToken) {
                 return response.data.content;
               } else {
-                throw new Error('Invalid credentials');
+                throw new Error(response.data.message);
               }
             })
             .catch((result) => {
-              console.log('<authorize> error', result.response.data.message);
-              throw new Error(result.response.data.message); // 이렇게 하면 다른 경로로 이동해버림
+              console.log('<authorize> error', result);
+              throw new Error(result.response.data.message);
             });
-          // const user = authClient.nextAuthLogin(credentials);
-
-          // null이 아닌것을 리턴할 경우 nextAuth는 로그인으로 감주함
-          // 이때의 user는 promise 객체
+          // null이 아닌것을 리턴할 경우 nextAuth는 로그인으로 감주함(이때의 user는 promise 객체)
           if (user) {
+            // const cookies = user.headers['refreshToken'];
+            // response.setHeader('Set-Cookie', cookies);
+
             console.log('로그인 성공 user info : ', user);
             return user;
           } else {
@@ -67,21 +68,10 @@ const handler = NextAuth({
             // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
           }
         } catch (error) {
-          console.log('<authorize> 실패', error);
-          return null;
+          throw new Error(error);
         }
       },
     }),
-    // CredentialsProvider({
-    //   id: "register",
-    //   async authorize(credentials) {
-    //     try {
-    //       return await Auth.signup(credentials);
-    //     } catch (error) {
-    //       throw new Error(error.message);
-    //     }
-    //   },
-    // }),
   ],
 
   // 사용자가 로그인을 한 경우 발생하는 함수들
@@ -102,34 +92,91 @@ const handler = NextAuth({
     async signIn({ user }) {
       if (user) {
         console.log('<signIn> user 로그인 성공', user);
-
         return true;
       }
       return false;
     },
 
-    // 2. signIn 이후 JWT 컬백이 호출
     /*<jwt> token {
-      name: undefined,
-      email: undefined,
-      picture: undefined,
-      sub: undefined
-    }*/
-
+      email: null,
+      serviceType: 'pco_client',
+      wuserIdx: 829,
+      wroleName: null,
+      phone: 'WB37qYlBSY2k72CWfNWBtA==',
+      accessTokenExpires: '2024-06-09T02:06:31.000+00:00',
+      accessToken: 'eyJzZXJ2aWNlX3R5cGUiOiJwY29fY2xpZW50IiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJkY2RkYzA1Yi01OTdkLTQ2NmEtODE4MC0yZmJhM2UyMjNlYTkiLCJpYXQiOjE3MTc4OTU2NjIsInd1c2VyX2lkeCI6ODI5LCJleHAiOjE3MTc4OTc0NjJ9.6eiShTbiZAQzcuKOpX7GtlEMT-q4C0NlwFb7N32F5TM',
+      refreshToken: 'eyJzZXJ2aWNlX3R5cGUiOiJwY29fY2xpZW50IiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI0Mjk5ZGEyZi03Y2Q3LTQ0Y2MtYTVlMC02YjdlZmE2YWRhMTciLCJpYXQiOjE3MTc4OTU2NjIsInd1c2VyX2lkeCI6ODI5LCJleHAiOjE3MTc5MDY0NjJ9.rGEwB9CxmWJInAqOdlgBTEchl-jp639YsrbnfwGxOdo',
+      conferenceIdx: 3111,
+      iat: 1717895662,
+      exp: 1720487662,
+      jti: 'fe9bd956-cc53-4d4a-afc8-46140dce8c8e'
+    }
+    <jwt> user undefined*/
     // TODO : user 정보를 받아서 token에 전달해야함
-    async jwt({ token, user }) {
-      console.log('<jwt> user', user);
+    // token으로 리턴될때가 있고 유저로 리턴될때가 있네...
+    // 사용자가 useSession이나 getSession 등 기존 저장된 세션정보를 확인하려 할 때 호출
+    async jwt({ token, user, account, profile, isNewUser }) {
+      // return { ...token, ...user };
       console.log('<jwt> token', token);
-      let newToken = { ...token };
-
-      if (user) {
-        newToken = {
-          ...newToken,
-          user,
-        };
+      console.log('<jwt> user', user); // undefined
+      console.log('<jwt> account', account); // undefined
+      console.log('<jwt> profile', profile); // undefined
+      console.log('<jwt> isNewUser', isNewUser); // undefined
+      // 최초 로그인 시 토큰 정보에 만료시간과 refreshToken 세팅하기
+      if (account) {
+        console.log('<jwt> 최초 로그인을 진행합니다.');
+      } else {
+        console.log('<jwt> callback을 실행합니다.');
       }
 
-      return newToken;
+      // access 토큰의 만료시간을 확인하고 토큰 만료 10분전이라면 미리 새로운 토큰 갱신하기
+      // accessTokenExpires: '2024-06-09T02:06:31.000+00:00',
+      const accessTokenExpirationTime = Date.parse(token.accessTokenExpires); // 문자열을 시간으로 변환
+      const currentTime = new Date().getTime(); // 현재 시간을 밀리초로 가져옴
+      const timeRemaining =
+        accessTokenExpirationTime - (currentTime + 10 * 60 * 1000); // 밀리초로 토큰 만료까지 남은 시간 계산 timeRemaining 1186905
+      console.log(
+        '<jwt> accessToken의 만료시간 10분전 1: timeRemaining',
+        timeRemaining
+      );
+      console.log('<jwt> token.refreshToken', token.refreshToken);
+      if (!token.refreshToken) {
+        console.log('<jwt> token의 refresh 토큰 정보가 없네요?');
+        return { ...token, ...user };
+      }
+      if (timeRemaining > 0 || isNaN(timeRemaining))
+        return { ...token, ...user };
+      if (timeRemaining <= 0) {
+        const newToken = await adminPostRefreshTokenSES(
+          token.accessToken,
+          token.refreshToken,
+          token.serviceType
+        )
+          .then((result) => {
+            console.log(
+              '<adminPostRefreshToken> result.data.content : ',
+              result.data.content
+            );
+            // axiosInstance.headers.Authorization = `Bearer ${result.data.content.accessToken}`;
+            return {
+              ...token,
+              ...user,
+              accessToken: result.data.content.accessToken,
+              accessTokenExpires: result.data.content.accessTokenExpires,
+            };
+          })
+          .catch((error) => {
+            console.log(
+              '<jwt> refresh 토큰 갱신에 실패하였습니다. error : ',
+              error
+            );
+
+            return {
+              error: 'refresh_token_update_failed',
+            };
+          });
+        return { ...newToken };
+      }
     },
 
     // 3. JWT에서 저장된 모든 정보는 세션 콜백에서 즉시 사용 가능
@@ -143,12 +190,13 @@ const handler = NextAuth({
       jti: 'cc384c15-c142-4e72-893d-3fd3c83c9856'
     }*/
 
-    async session({ session, token }) {
+    async session({ session, token, user }) {
       console.log('<session> session', session);
       console.log('<session> token', token);
+      console.log('<session> user', user);
       if (token) {
         session.user = {
-          ...token.user,
+          ...token,
           isLoggedIn: true,
         };
       }
@@ -157,15 +205,13 @@ const handler = NextAuth({
       return session;
     },
   },
-  // A database is optional, but required to persist accounts in a database
-  // database: process.env.DATABASE_URL,
   secret: process.env.NEXTAUTH_SECRET,
 
   // NextAuth의 기본 페이지말고 커스텀 페이지로 대체하기
-  pages: {
-    signIn: '/auth/sign-in',
-    signOut: '/auth/logout',
-    signUp: '/auth/register', // 회원가입
-  },
+  // pages: {
+  //   signIn: '/auth/login',
+  //   signOut: '/auth/logout',
+  //   signUp: '/auth/register', // 회원가입
+  // },
 });
 export { handler as GET, handler as POST };
