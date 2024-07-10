@@ -6,87 +6,100 @@ export interface LayoutConfig {
 
 // TODO: 권한마다 보여주는 레이아웃을 다르게 할려면 어떻게 해야할까?
 // TODO : 생각해보니 권한마다가 아니라 경로마다임 confStringIdx를 포함할경우에는
+// TODO : 이모티콘 뭘로 할지 정하는건 필요함
 const layoutConfig = {
   navItems: [
     {
-      key: 'dashboards',
-      title: 'Dashboards',
+      key: 'MEDI/PCO',
+      title: '최고 관리자',
       items: [
         {
-          key: 'overview',
-          title: 'Overview',
-          href: '/',
-          icon: 'house',
-          auth: '',
-        },
-      ],
-    },
-    {
-      key: 'general',
-      title: '모든 학회 관리',
-      items: [
-        {
-          key: 'committee',
-          title: '사무국',
+          key: 'MEDI/PCO',
+          title: '학회 관리',
           icon: 'tent',
           items: [
             {
-              key: 'committee:create',
-              title: '사무국 생성하기',
-              href: PATH.COMMITTEE.CREATE,
-              auth: '',
+              key: 'MEDI/COMMITTEE/B',
+              title: '사무국',
+              icon: 'tent',
+              items: [
+                {
+                  key: 'MEDI/COMMITTEE',
+                  title: '사무국 생성하기',
+                  href: PATH.MEDI.COMMITTEE.CREATE,
+                  auth: '',
+                },
+              ],
             },
             {
-              key: 'customers:details',
-              title: '사무국 수정하기',
-              href: PATH.COMMITTEE.DETAIL('1'),
-              auth: '',
+              key: 'MEDI/CONFERENCE/ENTERPRISE/B',
+              title: 'Enterprise 학회',
+              icon: 'users',
+              items: [
+                {
+                  key: 'MEDI/CONFERENCE/ENTERPRISE',
+                  title: 'Enterprise 학회 생성',
+                  href: PATH.MEDI.CONFERENCE.ENTERPRISE.CREATE,
+                },
+                {
+                  key: 'MEDI/CONFERENCE/ENTERPRISE/LIST',
+                  title: 'Enterprise 학회 목록',
+                  href: PATH.MEDI.CONFERENCE.ENTERPRISE.LIST,
+                },
+              ],
+            },
+            {
+              key: 'MEDI/CONFERENCE/ALLIANCE/B',
+              title: 'Alliance 학회',
+              icon: 'users',
+              items: [
+                {
+                  key: 'MEDI/CONFERENCE/ALLIANCE',
+                  title: 'Alliance 학회 생성',
+                  href: PATH.MEDI.CONFERENCE.ALLIANCE.CREATE,
+                },
+                {
+                  key: 'MEDI/CONFERENCE/ALLIANCE/LIST',
+                  title: 'Alliance 학회 목록',
+                  href: PATH.MEDI.CONFERENCE.ALLIANCE.LIST,
+                },
+              ],
             },
           ],
         },
-
-        // TODO : 이모티콘 뭘로 할지 정하는건 필요함
         {
-          key: 'enterprise-conference',
-          title: 'Enterprise 학회',
-          icon: 'users',
+          key: 'MEDI/MANAGER',
+          title: '관리자',
+          icon: 'tent',
           items: [
             {
-              key: 'enterprise-conferences',
-              title: 'Enterprise 학회 목록',
-              href: PATH.CONFERENCE.ENTERPRISE.LIST,
+              key: 'MEDI/MANAGER',
+              title: '관리자',
+              icon: 'tent',
+              items: [
+                {
+                  key: 'MEDI/MANAGER',
+                  title: '관리자 생성하기',
+                  href: PATH.MEDI.MANAGER.CREATE,
+                },
+                {
+                  key: 'MEDI/MANAGER/CREATE',
+                  title: '관리자 목록',
+                  href: PATH.MEDI.MANAGER.LIST,
+                },
+              ],
             },
             {
-              key: 'conference:create',
-              title: 'Enterprise 학회 생성',
-              href: PATH.CONFERENCE.ENTERPRISE.CREATE,
-            },
-            {
-              key: 'conference:details',
-              title: 'Enterprise 학회 수정',
-              href: PATH.CONFERENCE.ENTERPRISE.DETAIL('1'),
-            },
-          ],
-        },
-        {
-          key: 'alliance-conference',
-          title: 'Alliance 학회',
-          icon: 'users',
-          items: [
-            {
-              key: 'alliance-conferences',
-              title: 'Alliance 학회 목록',
-              href: PATH.CONFERENCE.ALLIANCE.LIST,
-            },
-            {
-              key: 'alliance:create',
-              title: 'Alliance 학회 생성',
-              href: PATH.CONFERENCE.ALLIANCE.CREATE,
-            },
-            {
-              key: 'alliance:details',
-              title: 'Alliance 학회 수정',
-              href: PATH.CONFERENCE.ALLIANCE.DETAIL('1'),
+              key: 'MEDI/ETC',
+              title: '기타',
+              icon: 'tent',
+              items: [
+                {
+                  key: 'MEDI/ETC/MENU',
+                  title: '메뉴 아이템 관리',
+                  href: PATH.MEDI.MANAGER.CREATE,
+                },
+              ],
             },
           ],
         },
@@ -99,72 +112,231 @@ const eachPcoLayoutConfig = {
   navItems: [
     // TODO : 이모티콘 뭘로 할지 정하는건 필요함
     {
-      key: 'eath-pco',
-      title: '학회 각각의 정보',
+      key: 'EACH/PAYMENT',
+      title: '대한미용학회',
       items: [
         {
-          key: 'attendee',
+          key: 'EACH/PAYMENT/B',
+          title: '결제',
+          icon: 'tent',
+          items: [
+            {
+              key: 'EACH/PAYMENT/LIST',
+              title: '결제 목록',
+              href: PATH.EACH.PAYMENT.LIST('test2024'),
+            },
+            {
+              key: 'EACH/PAYMENT/SETTING',
+              title: '결제 설정',
+              href: PATH.EACH.PAYMENT.SETTING('test2024'),
+            },
+          ],
+        },
+        {
+          key: 'EACH/USER',
           title: '유저',
           icon: 'tent',
           items: [
             {
-              key: 'attendee:list-join',
-              title: '회원 목록(가입)',
-              href: PATH.EACH.ATTENDEE.JOIN_LIST('test2024'),
+              key: 'EACH/USER/ATTENDEE',
+              title: '회원 관리',
+              icon: 'tent',
+              items: [
+                {
+                  key: 'EACH/USER/ATTENDEE/CREATE',
+                  title: 'X 유저 생성 X',
+                  href: PATH.EACH.USER.ATTENDEE.CREATE('test2024'),
+                },
+                {
+                  key: 'EACH/USER/ATTENDEE/JOIN/LIST',
+                  title: '가입 회원 목록',
+                  href: PATH.EACH.USER.ATTENDEE.JOIN_LIST('test2024'),
+                },
+                {
+                  key: 'EACH/USER/ATTENDEE/REGISTER/LIST',
+                  title: '등록 회원 목록',
+                  href: PATH.EACH.USER.ATTENDEE.REGISTER_LIST('test2024'),
+                },
+              ],
             },
             {
-              key: 'attendee:list-register',
-              title: '회원 목록(등록)',
-              href: PATH.EACH.ATTENDEE.REGISTER_LIST('test2024'),
-            },
-            {
-              key: 'attendee:detail',
-              title: '회원 생성',
-              href: PATH.EACH.ATTENDEE.CREATE('test2024', 1),
+              key: 'EACH/USER/FACULTY',
+              title: '연자 관리',
+              icon: 'tent',
+              items: [
+                {
+                  key: 'EACH/USER/FACULTY',
+                  title: 'X 연자 생성 X',
+                  href: PATH.EACH.USER.FACULTY.CREATE('test2024'),
+                },
+                {
+                  key: 'EACH/USER/FACULTY/LIST',
+                  title: 'X 연자 목록 X',
+                  href: PATH.EACH.USER.FACULTY.LIST('test2024'),
+                },
+                {
+                  // executives
+                  key: 'EACH/USER/EXECUTIVES/LIST',
+                  title: 'X 임원진 목록 X',
+                  href: PATH.EACH.USER.EXECUTIVES.LIST('test2024'),
+                },
+              ],
             },
           ],
         },
         {
-          key: 'programs',
+          key: 'EACH/ME',
+          title: '문자 & 이메일',
+          icon: 'tent',
+          items: [
+            {
+              key: 'EACH/ME/MESSAGE',
+              title: '문자 관리',
+              icon: 'tent',
+              items: [
+                {
+                  key: 'EACH/ME/MESSAGE/TEMPLATE',
+                  title: '문자 양식 확인',
+                  href: PATH.EACH.ME.MESSAGE.TEMPLATE('test2024'),
+                },
+                {
+                  key: 'EACH/ME/MESSAGE/SEND',
+                  title: '문자 보내기',
+                  href: PATH.EACH.ME.MESSAGE.SEND('test2024'),
+                },
+                {
+                  key: 'EACH/ME/MESSAGE/LIST',
+                  title: '문자 리스트',
+                  href: PATH.EACH.ME.MESSAGE.LIST('test2024'),
+                },
+              ],
+            },
+            {
+              key: 'EACH/ME/B',
+              title: '이메일 관리',
+              icon: 'tent',
+              items: [
+                {
+                  key: 'EACH/ME/EMAIL/TEMPLATE',
+                  title: '이메일 양식 확인',
+                  href: PATH.EACH.ME.EMAIL.TEMPLATE('test2024'),
+                },
+                {
+                  key: 'EACH/ME/EMAIL/SEND',
+                  title: '이메일 보내기',
+                  href: PATH.EACH.ME.EMAIL.SEND('test2024'),
+                },
+                {
+                  key: 'EACH/ME/EMAIL/LIST',
+                  title: '이메일 리스트',
+                  href: PATH.EACH.ME.EMAIL.LIST('test2024'),
+                },
+              ],
+            },
+          ],
+        },
+        {
+          key: 'EACH/PROGRAM/B',
           title: '프로그램',
           icon: 'tent',
           items: [
             {
-              key: 'programs:list',
+              key: 'EACH/PROGRAM/LIST',
               title: '프로그램 목록',
               href: PATH.EACH.PROGRAM.LIST('test2024'),
             },
             {
-              key: 'program:create',
+              key: 'EACH/PROGRAM',
               title: '프로그램 생성하기',
               href: PATH.EACH.PROGRAM.CREATE('test2024'),
             },
             {
-              key: 'program:details',
+              key: 'EACH/PROGRAM/DETAIL',
               title: '프로그램 수정하기',
               href: PATH.EACH.PROGRAM.DETAIL('test2024', 1),
-            },
-            {
-              key: 'session:details',
-              title: '프로그램 세션 수정하기',
-              href: PATH.EACH.PROGRAM.SESSION_GROUP.DETAIL('test2024', 1),
             },
           ],
         },
         {
-          key: 'setting',
-          title: '세팅',
+          key: 'EACH/TERMS',
+          title: '약관',
           icon: 'tent',
           items: [
             {
-              key: 'setting:editor',
-              title: 'Html 에디터 입력',
-              href: PATH.EACH.SETTING.EDITOR('test2024'),
+              key: 'EACH/TERMS/TERMS_OF_USE',
+              title: '이용약관',
+              href: PATH.EACH.TERMS.TU('test2024'),
             },
             {
-              key: 'setting:file',
-              title: '파일 관리',
-              href: PATH.EACH.SETTING.FILE('test2024'),
+              key: 'EACH/TERMS/PRIVACY_POLICY',
+              title: '개인정보 처리방침',
+              href: PATH.EACH.TERMS.PP('test2024'),
+            },
+          ],
+        },
+        {
+          key: 'EACH/GALLERY/B',
+          title: '갤러리',
+          icon: 'tent',
+          items: [
+            {
+              key: 'EACH/GALLERY/LIST',
+              title: '갤러리 보기',
+              href: PATH.EACH.GALLERY.LIST('test2024'),
+            },
+            {
+              key: 'EACH/GALLERY',
+              title: '갤러리 추가하기',
+              href: PATH.EACH.GALLERY.CREATE('test2024'),
+            },
+          ],
+        },
+        {
+          key: 'EACH/NOTICE/B',
+          title: '공지사항',
+          icon: 'tent',
+          items: [
+            {
+              key: 'EACH/NOTICE/LIST',
+              title: '공지사항 보기',
+              href: PATH.EACH.NOTICE.LIST('test2024'),
+            },
+            {
+              key: 'EACH/NOTICE',
+              title: '공지사항 추가하기',
+              href: PATH.EACH.NOTICE.CREATE('test2024'),
+            },
+          ],
+        },
+        {
+          key: 'EACH/ETC',
+          title: '기타',
+          icon: 'tent',
+          items: [
+            {
+              key: 'EACH/ETC/GREETINGS',
+              title: '인사말',
+              href: PATH.EACH.ETC.GREETINGS('test2024'),
+            },
+            {
+              key: 'EACH/ETC/VENUE_INFORMATION',
+              title: '오시는 길',
+              href: PATH.EACH.ETC.VENUE_INFORMATION('test2024'),
+            },
+            {
+              key: 'EACH/ETC/CONSTITUTION',
+              title: '학회 회칙',
+              href: PATH.EACH.ETC.CONSTITUTION('test2024'),
+            },
+            {
+              key: 'EACH/ETC/FOOTER',
+              title: '푸터 관리',
+              href: PATH.EACH.ETC.FOOTER('test2024'),
+            },
+            {
+              key: 'EACH/ETC/MENU',
+              title: '메뉴 관리',
+              href: PATH.EACH.ETC.FOOTER('test2024'),
             },
           ],
         },
