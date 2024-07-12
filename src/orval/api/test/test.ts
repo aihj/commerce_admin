@@ -27,11 +27,11 @@ import type {
 export const testSuccessReturnVo = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<TestSuccessReturnVo200>> => {
-  return axios.get(`/api/test/success/vo`, options);
+  return axios.get(`/api/public/test/success/vo`, options);
 };
 
 export const getTestSuccessReturnVoQueryKey = () => {
-  return [`/api/test/success/vo`] as const;
+  return [`/api/public/test/success/vo`] as const;
 };
 
 export const getTestSuccessReturnVoQueryOptions = <
@@ -101,11 +101,11 @@ export const useTestSuccessReturnVo = <
 export const testSuccessReturnMap = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<TestSuccessReturnMap200>> => {
-  return axios.get(`/api/test/success/map`, options);
+  return axios.get(`/api/public/test/success/map`, options);
 };
 
 export const getTestSuccessReturnMapQueryKey = () => {
-  return [`/api/test/success/map`] as const;
+  return [`/api/public/test/success/map`] as const;
 };
 
 export const getTestSuccessReturnMapQueryOptions = <
@@ -175,11 +175,11 @@ export const useTestSuccessReturnMap = <
 export const testFailReturnMap = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<TestFailReturnMap200>> => {
-  return axios.get(`/api/test/fail/map`, options);
+  return axios.get(`/api/public/test/fail/map`, options);
 };
 
 export const getTestFailReturnMapQueryKey = () => {
-  return [`/api/test/fail/map`] as const;
+  return [`/api/public/test/fail/map`] as const;
 };
 
 export const getTestFailReturnMapQueryOptions = <

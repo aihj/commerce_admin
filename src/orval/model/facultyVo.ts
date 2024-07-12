@@ -7,14 +7,9 @@
  */
 
 export interface FacultyVo {
-  auth?: string;
   conferenceIdx?: number;
-  conferenceUserContactNumber?: string;
-  conferenceUserCreateT?: string;
-  conferenceUserEmail?: string;
   conferenceUserIdx?: number;
-  conferenceUserName?: string;
-  conferenceUserPwd?: string;
+  email?: string;
   facultyAffiliation?: string;
   facultyCreateT?: string;
   facultyFile?: Blob;
@@ -28,11 +23,16 @@ export interface FacultyVo {
   facultyProgramRole?: string;
   facultyTempPwd?: string;
   facultyType?: string;
+  name?: string;
+  password?: string;
+  phone?: string;
   programPay?: string;
   sessionCategoryIdx?: number;
   sessionGroupIdx?: number;
   sessionIdx?: number;
   totalCount?: number;
-  uniqueName?: string;
   userIdx?: number;
+  wroleName?: string;
+  wuserCreateT?: string;
+  wuserIdx?: number;
 }

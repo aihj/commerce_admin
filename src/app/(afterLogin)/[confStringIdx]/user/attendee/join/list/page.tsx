@@ -17,8 +17,11 @@ import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { PATH } from '@/paths';
 import { EnterpriseListFilters } from '@/components/conferences/EnterpriseListFilters';
 import { logger } from '@/lib/logger/defaultLogger';
-import { useGetEnterprisePcoList } from '@/api/conferenceApi';
-
+import { useParams, useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { getJoinAttendeeDt } from '@/api/attendeeApi';
+import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
+import { useSelector } from 'react-redux';
 interface Filter {
   searchParams: SearchParamsType;
 }
@@ -30,13 +33,23 @@ export interface SearchParamsType {
   sortType?: string; // 어떤 타입을 가지고 정렬 할 것인지
   sortDir?: 'asc' | 'desc'; // 어떤 방향으로 정렬할 것인지
 
-  birthYear?: string;
+  birthYearStart?: string;
+  birthYearEnd?: string;
   gender?: string;
   wuserStatus?: string; // 회원 상태
   registrationStatus?: string; // 등록 상태
 }
 
 const JoinAttendeeList = ({ searchParams }: Filter) => {
+  const { confStringIdx } = useParams();
+  const conferenceIdx = useSelector(selectConferenceIdx);
+  const router = useRouter();
+
+  // 유저 상세 페이지로 이동하기
+  function moveUserDetail(attendeeIdx) {
+    router.push(PATH.EACH.USER.ATTENDEE.DETAIL(confStringIdx, attendeeIdx));
+  }
+
   const columnHelper = createColumnHelper();
   const columns = useMemo(
     () => [
@@ -48,10 +61,8 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
               size="small"
               variant="outlined"
               color="success"
-              // onClick={() =>
-              //   moveConferencePage(info.row.original.conferenceStringIdx)
-              // }
-              title={`${info.row.original.conferenceIdx}`}
+              onClick={() => moveUserDetail(info.row.original.attendeeIdx)}
+              title={`${info.row.original.name}`}
             >
               {`${info.getValue()}`}
             </Button>
@@ -150,26 +161,29 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
         size: 110,
       }),
     ],
-    [columnHelper]
+    [columnHelper, moveUserDetail]
   );
   // endregion ****************************** 열 구성 설정 ******************************
   const filterInitialData = {
+    conferenceIdx,
     currentPage: 0,
     rowsPerPage: 10,
 
-    sortType: 'tbl_conference.conference_idx',
+    sortType: 'tbl_conference_attendee.attendee_idx',
     sortDir: 'desc',
   };
   logger.debug('[searchParams', searchParams);
   const mergedSearchParams = mergeSearchParams(searchParams, filterInitialData);
-  const { data, isLoading, isError } = useGetEnterprisePcoList({
-    ...mergedSearchParams,
+  const { isLoading, error, data } = useQuery({
+    queryKey: ['getJoinAttendeeDt', mergedSearchParams],
+    queryFn: () => getJoinAttendeeDt(mergedSearchParams),
+    enabled: !!conferenceIdx,
   });
-  window.data = data;
+
   // **********************************************************
   if (isLoading) return <div>Loading...</div>;
   if (
-    isError ||
+    error ||
     !data.content ||
     data.totalCount === undefined ||
     data.totalCount === null
@@ -196,7 +210,7 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
           <div>
             <Button
               component={RouterLink}
-              href={PATH.CONFERENCE.ENTERPRISE.CREATE}
+              href={PATH.MEDI.CONFERENCE.ENTERPRISE.CREATE}
               startIcon={<PlusIcon />}
               variant="contained"
             >

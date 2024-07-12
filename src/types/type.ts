@@ -1,4 +1,10 @@
 // 페이지 첫 로딩시 가져오는 학회 기본 정보
+import {
+  ResponseMessageVoErrorCause,
+  ResponseMessageVoErrorStackTraceItem,
+  ResponseMessageVoErrorSuppressedItem,
+} from '@/orval/model';
+
 export interface PcoBaseInfoVo {
   committeeAddr?: string;
   committeeCompanyRegiNumber?: string;
@@ -78,3 +84,21 @@ export interface SessionGroup {
   sessionGroupIdx: number;
 }
 export interface Session {}
+
+export interface ResponseMessageVo<T> {
+  code?: string;
+  content?: T;
+  error?: ResponseMessageVoError;
+  message?: string;
+  status?: number;
+  totalCount?: ResponseMessageVoTotalCount;
+}
+export type ResponseMessageVoTotalCount = { [key: string]: any };
+
+export type ResponseMessageVoError = {
+  cause?: ResponseMessageVoErrorCause;
+  localizedMessage?: string;
+  message?: string;
+  stackTrace?: ResponseMessageVoErrorStackTraceItem[];
+  suppressed?: ResponseMessageVoErrorSuppressedItem[];
+};

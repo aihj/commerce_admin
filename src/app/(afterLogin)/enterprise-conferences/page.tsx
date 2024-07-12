@@ -218,7 +218,7 @@ const EnterpriseList = ({ searchParams }: Filter) => {
           <div>
             <Button
               component={RouterLink}
-              href={PATH.CONFERENCE.ENTERPRISE.CREATE}
+              href={PATH.MEDI.CONFERENCE.ENTERPRISE.CREATE}
               startIcon={<PlusIcon />}
               variant="contained"
             >

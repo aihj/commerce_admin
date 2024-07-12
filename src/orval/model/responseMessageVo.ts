@@ -10,8 +10,8 @@ import type { ResponseMessageVoError } from './responseMessageVoError';
 import type { ResponseMessageVoTotalCount } from './responseMessageVoTotalCount';
 
 export interface ResponseMessageVo {
+  code?: string;
   content?: ResponseMessageVoContent;
-  enMessage?: string;
   error?: ResponseMessageVoError;
   message?: string;
   status?: number;
