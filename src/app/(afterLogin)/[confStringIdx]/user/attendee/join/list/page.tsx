@@ -12,32 +12,32 @@ import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { mergeSearchParams } from '@/lib/table';
-import RouterLink from 'next/link';
-import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { PATH } from '@/paths';
-import { EnterpriseListFilters } from '@/components/conferences/EnterpriseListFilters';
 import { logger } from '@/lib/logger/defaultLogger';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { getJoinAttendeeDt } from '@/api/attendeeApi';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { useSelector } from 'react-redux';
+import { JoinAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/JoinAttendeeListFilters';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 interface Filter {
-  searchParams: SearchParamsType;
+  searchParams: JoinAttendeeListSearchParamsType;
 }
 
-export interface SearchParamsType {
+export interface JoinAttendeeListSearchParamsType {
   currentPage?: number;
   rowsPerPage?: number;
 
   sortType?: string; // 어떤 타입을 가지고 정렬 할 것인지
   sortDir?: 'asc' | 'desc'; // 어떤 방향으로 정렬할 것인지
+  searchText: undefined;
 
-  birthYearStart?: string;
-  birthYearEnd?: string;
+  birthDateStartT?: string | undefined;
+  birthDateEndT?: string;
   gender?: string;
   wuserStatus?: string; // 회원 상태
-  registrationStatus?: string; // 등록 상태
+  registrationStatus?: 'not_registered' | 'pre' | 'onsite'; // 등록 상태
 }
 
 const JoinAttendeeList = ({ searchParams }: Filter) => {
@@ -46,9 +46,12 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
   const router = useRouter();
 
   // 유저 상세 페이지로 이동하기
-  function moveUserDetail(attendeeIdx) {
-    router.push(PATH.EACH.USER.ATTENDEE.DETAIL(confStringIdx, attendeeIdx));
-  }
+  const moveUserDetail = useMemo(
+    (attendeeIdx) => {
+      router.push(PATH.EACH.USER.ATTENDEE.DETAIL(confStringIdx, attendeeIdx));
+    },
+    [confStringIdx, router]
+  );
 
   const columnHelper = createColumnHelper();
   const columns = useMemo(
@@ -56,7 +59,7 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
       columnHelper.accessor('name', {
         header: '이름',
         cell: (info) => (
-          <div className="flex flex-row text-left">
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Button
               size="small"
               variant="outlined"
@@ -65,37 +68,31 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
               title={`${info.row.original.name}`}
             >
               {`${info.getValue()}`}
+              {info.row.original.memo && <AssignmentOutlinedIcon />}
             </Button>
-          </div>
+          </Box>
         ),
       }),
-      columnHelper.accessor('birthYear', {
+      columnHelper.accessor('birthDate', {
         header: '생년',
         cell: (info) => (
-          <Button
-            size="small"
-            className="text-center va"
-            // onClick={() =>
-            //   moveCommitteeDetail(info.row.original.conferenceStringIdx)
-            // }
-          >
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             {info.getValue()}
-          </Button>
+          </Box>
         ),
-        size: 200,
+        size: 10,
       }),
       columnHelper.display({
         header: '성별',
         cell: (info) => {
           if (info.row.original.gender === 'F') {
             return (
-              <div className="text-center va text-sm">
-                {info.getValue()}
-                <Chip label="남성" color="primary" />
-              </div>
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>여성</Box>
             );
           } else {
-            return <div className="text-center va text-sm">여성</div>;
+            return (
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>남성</Box>
+            );
           }
         },
         size: 110,
@@ -104,7 +101,11 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
       columnHelper.accessor('phone', {
         header: '휴대폰 번호',
         cell: (info) => {
-          return <div className="text-center va">{info.getValue()}</div>;
+          return (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              {info.getValue()}
+            </Box>
+          );
         },
         size: 110,
       }),
@@ -112,7 +113,9 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
         header: '이메일',
         cell: (info) => {
           return (
-            <div className="text-center va text-sm">{info.getValue()}</div>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              {info.getValue()}
+            </Box>
           );
         },
         size: 110,
@@ -122,14 +125,22 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
         cell: (info) => {
           if (info.row.original.wuserStatus === 'active') {
             return (
-              <div className="text-center va text-sm">
-                <Chip label="회원" color="primary" />
-              </div>
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Chip label="회원" color="primary" size="small" />
+              </Box>
             );
           } else if (info.row.original.wuserStatus === 'temp') {
-            return <div className="text-center va text-sm">기회원</div>;
+            return (
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Chip label="기회원" color="default" size="small" />
+              </Box>
+            );
           } else {
-            return <div className="text-center va text-sm">탈퇴</div>;
+            return (
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Chip label="탈퇴" color="error" size="small" />
+              </Box>
+            );
           }
         },
         size: 110,
@@ -138,7 +149,9 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
         header: '가입 날짜',
         cell: (info) => {
           return (
-            <div className="text-center va text-sm">{info.getValue()}</div>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              {info.getValue()}
+            </Box>
           );
         },
         size: 110,
@@ -146,16 +159,24 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
       columnHelper.display({
         header: '등록 상태',
         cell: (info) => {
-          if (info.row.original.registrationStatus === 'active') {
+          if (info.row.original.registrationStatus === 'not_registered') {
             return (
-              <div className="text-center va text-sm">
-                <Chip label="사전 등록" color="primary" />
-              </div>
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Chip label="등록 안함" color="secondary" size="small" />
+              </Box>
             );
-          } else if (info.row.original.registrationStatus === 'temp') {
-            return <div className="text-center va text-sm">현장 등록</div>;
+          } else if (info.row.original.registrationStatus === 'pre') {
+            return (
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Chip label="사전 등록" color="primary" size="small" />
+              </Box>
+            );
           } else {
-            return <div className="text-center va text-sm">미등록</div>;
+            return (
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Chip label="현장 등록" color="secondary" size="small" />
+              </Box>
+            );
           }
         },
         size: 110,
@@ -183,6 +204,7 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
   // **********************************************************
   if (isLoading) return <div>Loading...</div>;
   if (
+    !data ||
     error ||
     !data.content ||
     data.totalCount === undefined ||
@@ -205,9 +227,9 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
           sx={{ alignItems: 'flex-start' }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">Enterprise 학회 목록</Typography>
+            <Typography variant="h4">가입 회원 목록</Typography>
           </Box>
-          <div>
+          {/*          <div>
             <Button
               component={RouterLink}
               href={PATH.MEDI.CONFERENCE.ENTERPRISE.CREATE}
@@ -216,11 +238,11 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
             >
               Enterprise 학회 등록
             </Button>
-          </div>
+          </div>*/}
         </Stack>
 
         <Card>
-          <EnterpriseListFilters filters={searchParams} />
+          <JoinAttendeeListFilters filters={searchParams} />
           <TableBody<EnterpriseListResVo>
             data={data.content}
             columns={columns}
@@ -230,7 +252,7 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
             isHover={true}
             size="medium"
           />
-          <TablePagination count={data.totalCount} />
+          <TablePagination count={data.totalCount as number} />
         </Card>
       </Stack>
     </Box>

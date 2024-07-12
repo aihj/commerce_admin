@@ -36,7 +36,7 @@ export function useFilterContext(): FilterContextValue {
 }
 
 interface FilterButtonProps {
-  displayValue?: string;
+  displayValue?: string | undefined;
   label: string;
   onFilterApply?: (value: unknown) => void;
   onFilterDelete?: () => void;

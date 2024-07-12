@@ -1,24 +1,25 @@
 'use client';
 
 import React, { useCallback, useMemo } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
 import { PATH } from '@/paths';
 import { FilterButton } from '@/components/core/FilterButton';
-import { SearchParamsType } from '@/app/(afterLogin)/test/mui-table/page';
-import TableTextFilterPopover from '@/components/core/table/filter/TableTextFilterPopover';
 import TableOneSelectFilterPopover from '@/components/core/table/filter/TableOneSelectFilterPopover';
 import { TableDateFilterPopover } from '@/components/core/table/filter/TableDateFilterPopover';
+import { JoinAttendeeListSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/page';
+import TableTextFilter from '@/components/core/table/filter/TableTextFilter';
 
 interface EnterpriseListFiltersProps {
-  filters?: SearchParamsType;
+  filters?: JoinAttendeeListSearchParamsType;
 }
 
-const EnterpriseListFilters = ({
+const JoinAttendeeListFilters = ({
   filters = {},
 }: EnterpriseListFiltersProps): JSX.Element => {
+  const { confStringIdx } = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -28,9 +29,11 @@ const EnterpriseListFilters = ({
     (_selected: any) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set([_selected.name], _selected.value);
-      router.push(`${PATH.CONFERENCE.ENTERPRISE.LIST}?${params.toString()}`);
+      router.push(
+        `${PATH.EACH.USER.ATTENDEE.JOIN_LIST(confStringIdx)}?${params.toString()}`
+      );
     },
-    [router, searchParams]
+    [confStringIdx, router, searchParams]
   );
 
   // 검색 초기화
@@ -45,7 +48,9 @@ const EnterpriseListFilters = ({
       params.delete(key);
     });
 
-    router.push(`${PATH.CONFERENCE.ENTERPRISE.LIST}?${params.toString()}`);
+    router.push(
+      `${PATH.EACH.USER.ATTENDEE.JOIN_LIST(confStringIdx)}?${params.toString()}`
+    );
   }, [router, searchParams]);
 
   const hasFilters = (filters: any): boolean => {
@@ -61,13 +66,22 @@ const EnterpriseListFilters = ({
     return false; // 모든 값이 undefined 또는 null일 경우 false 반환
   };
 
-  const clientOpenStatusFilterData = useMemo(
+  const genderFilterData = useMemo(
     () => [
-      { value: 'active', label: '활성화' },
-      { value: 'inactive', label: '비활성화' },
+      { value: 'F', label: '여성' },
+      { value: 'M', label: '남성' },
     ],
     []
   );
+  const registrationStatusData = useMemo(
+    () => [
+      { value: 'not_registered', label: '미등록' },
+      { value: 'pre', label: '사전등록' },
+      { value: 'onsite', label: '현장등록' },
+    ],
+    []
+  );
+
   return (
     <div>
       <Stack
@@ -81,36 +95,36 @@ const EnterpriseListFilters = ({
           sx={{ alignItems: 'center', flex: '1 1 auto', flexWrap: 'wrap' }}
         >
           <FilterButton
-            displayValue={filters.conferenceStartT || undefined}
-            label="학회 시작 날짜"
+            displayValue={filters?.birthDateStartT}
+            label="생년 시작 년도"
             onFilterApply={(value) => {
               onChangeSelect({
-                name: 'conferenceStartT',
+                name: 'birthDateStartT',
                 value,
               });
             }}
             onFilterDelete={() => {
-              onChangeSelect({ name: 'conferenceStartT', value: null });
+              onChangeSelect({ name: 'birthDateStartT', value: null });
             }}
             popover={
               <TableDateFilterPopover
                 format="YYYY-MM-DD"
-                title="학회 시작 날짜로 검색"
+                title="생년 시작 년도로 검색"
               />
             }
-            value={filters.conferenceStartT || undefined}
+            value={filters?.birthDateStartT}
           />
           <FilterButton
-            displayValue={filters.conferenceEndT || undefined}
-            label="학회 종료 날짜"
+            displayValue={filters?.birthDateEndT}
+            label="생년 종료 년도"
             onFilterApply={(value) => {
               onChangeSelect({
-                name: 'conferenceEndT',
+                name: 'birthDateEndT',
                 value,
               });
             }}
             onFilterDelete={() => {
-              onChangeSelect({ name: 'conferenceEndT', value: null });
+              onChangeSelect({ name: 'birthDateEndT', value: null });
             }}
             popover={
               <TableDateFilterPopover
@@ -118,46 +132,61 @@ const EnterpriseListFilters = ({
                 title="학회 종료 날짜로 검색"
               />
             }
-            value={filters.conferenceEndT || undefined}
+            value={filters?.birthDateEndT}
           />
 
           <FilterButton
-            displayValue={filters.committeeName || undefined}
-            label="사무국"
+            displayValue={filters?.gender}
+            label="회원 상태"
             onFilterApply={(value) => {
-              onChangeSelect({ name: 'committeeName', value });
+              onChangeSelect({ name: 'gender', value });
             }}
             onFilterDelete={() => {
-              onChangeSelect({ name: 'committeeName', value: null });
-            }}
-            popover={<TableTextFilterPopover title="사무국 이름으로 검색" />}
-            value={filters.committeeName || undefined}
-          />
-
-          <FilterButton
-            displayValue={filters.clientOpenStatus || undefined}
-            label="Client 페이지 Open 여부"
-            onFilterApply={(value) => {
-              onChangeSelect({ name: 'clientOpenStatus', value });
-            }}
-            onFilterDelete={() => {
-              onChangeSelect({ name: 'clientOpenStatus', value: null });
+              onChangeSelect({ name: 'gender', value: null });
             }}
             popover={
               <TableOneSelectFilterPopover
                 title="Filter by category"
-                data={clientOpenStatusFilterData}
+                data={genderFilterData}
               />
             }
-            value={filters.clientOpenStatus || undefined}
+            value={filters?.gender || undefined}
+          />
+
+          <FilterButton
+            displayValue={filters?.gender}
+            label="등록 상태"
+            onFilterApply={(value) => {
+              onChangeSelect({ name: 'registrationStatus', value });
+            }}
+            onFilterDelete={() => {
+              onChangeSelect({ name: 'registrationStatus', value: null });
+            }}
+            popover={
+              <TableOneSelectFilterPopover
+                title="Filter by category"
+                data={registrationStatusData}
+              />
+            }
+            value={filters?.gender || undefined}
+          />
+
+          <TableTextFilter
+            displayValue={filters?.searchText || undefined}
+            onFilterApply={(value) => {
+              onChangeSelect({ name: 'searchText', value });
+            }}
+            onFilterDelete={() => {
+              onChangeSelect({ name: 'searchText', value: null });
+            }}
           />
 
           {hasFilters(filters) ? (
-            <Button onClick={handleClearFilters}>Clear filters</Button>
+            <Button onClick={handleClearFilters}>조건 초기화</Button>
           ) : null}
         </Stack>
       </Stack>
     </div>
   );
 };
-export { EnterpriseListFilters };
+export { JoinAttendeeListFilters };
