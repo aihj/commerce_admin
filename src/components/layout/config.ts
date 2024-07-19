@@ -322,19 +322,26 @@ export const eachPcoLayoutConfig = (confStringIdx) => {
             icon: 'tent',
             items: [
               {
-                key: 'EACH/ETC/GREETINGS',
-                title: '인사말',
-                href: PATH.EACH.ETC.GREETINGS(confStringIdx),
-              },
-              {
-                key: 'EACH/ETC/VENUE_INFORMATION',
-                title: '오시는 길',
-                href: PATH.EACH.ETC.VENUE_INFORMATION(confStringIdx),
-              },
-              {
-                key: 'EACH/ETC/CONSTITUTION',
-                title: '학회 회칙',
-                href: PATH.EACH.ETC.CONSTITUTION(confStringIdx),
+                key: 'EACH/ETC/HTML',
+                title: 'HTML 에디터',
+                icon: 'tent',
+                items: [
+                  {
+                    key: 'EACH/ETC/HTML/GREETINGS',
+                    title: '인사말',
+                    href: PATH.EACH.ETC.HTML.GREETINGS(confStringIdx),
+                  },
+                  {
+                    key: 'EACH/ETC/HTML/VENUE_INFORMATION',
+                    title: '오시는 길',
+                    href: PATH.EACH.ETC.HTML.VENUE_INFORMATION(confStringIdx),
+                  },
+                  {
+                    key: 'EACH/ETC/HTML/CONSTITUTION',
+                    title: '학회 회칙',
+                    href: PATH.EACH.ETC.HTML.CONSTITUTION(confStringIdx),
+                  },
+                ],
               },
               {
                 key: 'EACH/ETC/FOOTER',

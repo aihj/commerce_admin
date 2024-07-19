@@ -12,6 +12,7 @@ import { logger } from '@/lib/logger/defaultLogger';
 export const getJoinAttendeeDt = (
   params: TableSearchParams
 ): Promise<ResponseMessageVo<JoinAttendeeDtVo>> => {
+  logger.debug('<getJoinAttendeeDt> params ', params);
   return adminAxiosInstance
     .post(`/api/pco/admin/all/join-attendee-dt`, params)
     .then((response) => {

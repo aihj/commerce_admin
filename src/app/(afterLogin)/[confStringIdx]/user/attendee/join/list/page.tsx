@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
@@ -8,9 +8,6 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
-import TableBody from '@/components/core/table/TableBody';
-import { TablePagination } from '@/components/core/table/TablePagination';
 import { mergeSearchParams } from '@/lib/table';
 import { PATH } from '@/paths';
 import { logger } from '@/lib/logger/defaultLogger';
@@ -19,7 +16,6 @@ import { useQuery } from '@tanstack/react-query';
 import { getJoinAttendeeDt } from '@/api/attendeeApi';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { useSelector } from 'react-redux';
-import { JoinAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/JoinAttendeeListFilters';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 interface Filter {
   searchParams: JoinAttendeeListSearchParamsType;
@@ -46,7 +42,7 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
   const router = useRouter();
 
   // 유저 상세 페이지로 이동하기
-  const moveUserDetail = useMemo(
+  const moveUserDetail = useCallback(
     (attendeeIdx) => {
       router.push(PATH.EACH.USER.ATTENDEE.DETAIL(confStringIdx, attendeeIdx));
     },
@@ -242,17 +238,17 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
         </Stack>
 
         <Card>
-          <JoinAttendeeListFilters filters={searchParams} />
-          <TableBody<EnterpriseListResVo>
-            data={data.content}
-            columns={columns}
-            selectable={false}
-            hideHead={false}
-            uniqueRowId={'conferenceIdx'}
-            isHover={true}
-            size="medium"
-          />
-          <TablePagination count={data.totalCount as number} />
+          {/*<JoinAttendeeListFilters filters={searchParams} />*/}
+          {/*<TableBody<EnterpriseListResVo>*/}
+          {/*  data={data.content}*/}
+          {/*  columns={columns}*/}
+          {/*  selectable={false}*/}
+          {/*  hideHead={false}*/}
+          {/*  uniqueRowId={'conferenceIdx'}*/}
+          {/*  isHover={true}*/}
+          {/*  size="medium"*/}
+          {/*/>*/}
+          {/*<TablePagination count={data.totalCount as number} />*/}
         </Card>
       </Stack>
     </Box>

@@ -51,7 +51,7 @@ const JoinAttendeeListFilters = ({
     router.push(
       `${PATH.EACH.USER.ATTENDEE.JOIN_LIST(confStringIdx)}?${params.toString()}`
     );
-  }, [router, searchParams]);
+  }, [confStringIdx, router, searchParams]);
 
   const hasFilters = (filters: any): boolean => {
     for (const key in filters) {
@@ -182,7 +182,7 @@ const JoinAttendeeListFilters = ({
           />
 
           {hasFilters(filters) ? (
-            <Button onClick={handleClearFilters}>조건 초기화</Button>
+            <Button onClick={() => handleClearFilters()}>조건 초기화</Button>
           ) : null}
         </Stack>
       </Stack>
