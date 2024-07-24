@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import { Card } from '@mui/material';
 import MuiTest from '@/app/test/MuiTest';
 import MuiFormTest from '@/app/test/MuiFormTest';
+import { QuillFormTest } from '@/app/test/QuillFormTest';
 
 type TestTypeProps = NonNullable<unknown>;
 
@@ -16,7 +17,7 @@ export default function Test({}: TestTypeProps) {
   return (
     <article>
       <h2>간단한 테스트용 페이지</h2>
-      <Card>
+      {/*      <Card>
         <>
           <DatePicker
             // timezone="Asia/Seoul"
@@ -30,9 +31,13 @@ export default function Test({}: TestTypeProps) {
           />
           value = {JSON.stringify(value)}
         </>
+      </Card>*/}
+      <Card>
+        <QuillFormTest />
       </Card>
-      <MuiTest />
-      <MuiFormTest />
+      {/*<MuiTest />*/}
+      {/*<MuiFormTest /
+      >*/}
     </article>
   );
 }

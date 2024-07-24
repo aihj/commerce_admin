@@ -22,7 +22,6 @@ import TableBody from '@/components/core/table/TableBody';
 import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import { TablePagination } from '@/components/core/TablePagination';
 import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
-import { RegisterAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListFilters';
 interface Filter {
   searchParams: JoinAttendeeListSearchParamsType;
 }
@@ -229,7 +228,7 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
           sx={{ alignItems: 'flex-start' }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">등록 회원 목록</Typography>
+            <Typography variant="h4">가입 회원 목록</Typography>
           </Box>
           {/*          <div>
             <Button
@@ -244,7 +243,7 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
         </Stack>
 
         <Card>
-          <RegisterAttendeeListFilters filters={searchParams} />
+          <JoinAttendeeListFilters filters={searchParams} />
           <TableBody<JoinAttendeeDtVo>
             data={data.content}
             columns={columns}

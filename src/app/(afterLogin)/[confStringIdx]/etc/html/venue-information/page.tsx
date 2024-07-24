@@ -39,25 +39,27 @@ export default function VenueInformationPage(
   const [isPending, setIsPending] = useState<boolean>(false);
   const onSubmit: SubmitHandler<HtmlSettingFormType> = (data) => {
     setIsPending(true);
-    updateHtmlSetting(data)
-      .then((result) => {
-        Swal.fire({
-          icon: 'success',
-          text: result.message,
-        });
-      })
-      .catch((result) => {
-        console.log(result);
-        Swal.fire({
-          icon: 'error',
-          text: result.response
-            ? result.response.data.message
-            : '현재 서버에 문제가 있습니다. 관리자에게 문의해주세요.',
-        });
-      })
-      .finally(() => {
-        setIsPending(false);
-      });
+
+    alert(data);
+    // updateHtmlSetting(data)
+    //   .then((result) => {
+    //     Swal.fire({
+    //       icon: 'success',
+    //       text: result.message,
+    //     });
+    //   })
+    //   .catch((result) => {
+    //     console.log(result);
+    //     Swal.fire({
+    //       icon: 'error',
+    //       text: result.response
+    //         ? result.response.data.message
+    //         : '현재 서버에 문제가 있습니다. 관리자에게 문의해주세요.',
+    //     });
+    //   })
+    //   .finally(() => {
+    //     setIsPending(false);
+    //   });
   };
 
   return (

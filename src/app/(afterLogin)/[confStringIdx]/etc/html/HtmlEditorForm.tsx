@@ -3,6 +3,7 @@ import { reactQuillSetting } from '@/lib/quill';
 import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
 import { FormControl, InputLabel } from '@mui/material';
+import { useState } from 'react';
 
 type HtmlEditorFormTypes = NonNullable<unknown>;
 
@@ -11,8 +12,11 @@ const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 // https://stackoverflow.com/questions/72762180/react-quill-in-nextjs-has-a-duplicate-tab
 
 const HtmlEditorForm = ({ register, control }: HtmlEditorFormTypes) => {
+  const [data, setData] = useState();
+  console.log('data : ', data);
   return (
     <>
+      {data}
       <input type="hidden" {...register(`conferenceIdx`)} />
       <input
         type="hidden"
@@ -29,7 +33,10 @@ const HtmlEditorForm = ({ register, control }: HtmlEditorFormTypes) => {
           render={({ field }) => (
             <ReactQuill
               value={field.value}
-              onChange={(date) => field.onChange(date)}
+              onChange={(date) => {
+                field.onChange(date);
+                setData(data);
+              }}
               style={{ height: '400px', backgroundColor: 'white' }}
               theme="snow"
               modules={reactQuillSetting}
