@@ -9,8 +9,8 @@ import { MainNav } from './MainNav';
 import { SideNav } from './SideNav';
 import { User } from '@/types/user';
 import { useAppSelector } from '@/redux/hooks';
-// import { useSearchParams } from 'next/navigation';
-// import { logger } from '@/lib/logger/defaultLogger';
+import { useSelector } from 'react-redux';
+import { selectConferenceStringIdx } from '@/redux/slices/pcoSlice';
 
 export interface VerticalLayoutProps {
   children?: React.ReactNode;
@@ -20,19 +20,18 @@ export function VerticalLayout({
   children,
 }: VerticalLayoutProps): React.JSX.Element {
   const user: User = useAppSelector((state) => state.user);
-  /*
-  TODO : 현재 url에 따라서 보여주는 navItem이 달라야함
-  confStringIdx를 현재 param으로 가지고 있다면 eathPcolayoutConfig을 그렇지 않으면서 탑 권한을 가지고 있으면 layoutConfig를 보여줘야함
-  */
-  // const params = useSearchParams();
-  // logger.debug('<VerticalLayout> params', params);
-  let navItem = eachPcoLayoutConfig.navItems; // 각각의 학회 정보만 보여주기
-  if (user.wroleName === 'pco_admin_all_top') {
-    // 최고 관리자의 경우 모든 학회 정보까지 보여주기
-    navItem = navItem.concat(layoutConfig.navItems as any);
-  }
+  const conferenceStringIdx = useSelector(selectConferenceStringIdx);
 
-  // logger.debug('<VerticalLayout> navItem', navItem);
+  // region ************* 메뉴 화면 정의 *************
+  let navItem = undefined;
+  if (conferenceStringIdx) {
+    navItem = eachPcoLayoutConfig(conferenceStringIdx).navItems;
+    if (user.wroleName === 'pco_admin_all_top') {
+      // 최고 관리자의 경우 모든 학회 정보까지 보여주기
+      navItem = navItem.concat(layoutConfig().navItems as any);
+    }
+  } else navItem = layoutConfig().navItems;
+  // endregion ************* 메뉴 화면 정의 *************
 
   return (
     <React.Fragment>

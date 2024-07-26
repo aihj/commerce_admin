@@ -109,11 +109,15 @@ export const PATH = {
       PP: (confStringIdx: string) => `/${confStringIdx}/terms/privacy-policy`,
     },
     ETC: {
-      GREETINGS: (confStringIdx: string) => `/${confStringIdx}/etc/greetings`,
-      VENUE_INFORMATION: (confStringIdx: string) =>
-        `/${confStringIdx}/etc/venue-information`,
-      CONSTITUTION: (confStringIdx: string) =>
-        `/${confStringIdx}/etc/constitution`,
+      HTML: {
+        GREETINGS: (confStringIdx: string) =>
+          `/${confStringIdx}/etc/html/greetings`, // 인사말
+        VENUE_INFORMATION: (confStringIdx: string) =>
+          `/${confStringIdx}/etc/html/venue-information`, // 오시는 길
+        CONSTITUTION: (confStringIdx: string) =>
+          `/${confStringIdx}/etc/html/constitution`, // 학회 회칙
+      },
+
       FOOTER: (confStringIdx: string) => `/${confStringIdx}/etc/footer`,
       MENU: (confStringIdx: string) => `/${confStringIdx}/etc/menu`,
     },

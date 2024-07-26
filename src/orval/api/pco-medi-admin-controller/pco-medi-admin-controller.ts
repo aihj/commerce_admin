@@ -22,11 +22,11 @@ import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 export const getAdminOpenStatusActivePcoList = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<string>> => {
-  return axios.get(`/api/pco/medi-admin/admin-active-pco`, options);
+  return axios.get(`/api/pco/admin/medi/middle/admin-active-pco`, options);
 };
 
 export const getGetAdminOpenStatusActivePcoListQueryKey = () => {
-  return [`/api/pco/medi-admin/admin-active-pco`] as const;
+  return [`/api/pco/admin/medi/middle/admin-active-pco`] as const;
 };
 
 export const getGetAdminOpenStatusActivePcoListQueryOptions = <

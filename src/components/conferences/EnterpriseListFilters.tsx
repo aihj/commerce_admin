@@ -8,9 +8,9 @@ import Stack from '@mui/material/Stack';
 import { PATH } from '@/paths';
 import { FilterButton } from '@/components/core/FilterButton';
 import { SearchParamsType } from '@/app/(afterLogin)/test/mui-table/page';
-import TableTextFilterPopover from '@/components/core/table/TableTextFilterPopover';
-import TableOneSelectFilterPopover from '@/components/core/table/TableOneSelectFilterPopover';
-import { TableDateFilterPopover } from '@/components/core/table/TableDateFilterPopover';
+import TableTextFilterPopover from '@/components/core/table/filter/TableTextFilterPopover';
+import TableOneSelectFilterPopover from '@/components/core/table/filter/TableOneSelectFilterPopover';
+import { TableDateFilterPopover } from '@/components/core/table/filter/TableDateFilterPopover';
 
 interface EnterpriseListFiltersProps {
   filters?: SearchParamsType;

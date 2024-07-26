@@ -8,8 +8,8 @@ import Stack from '@mui/material/Stack';
 import { PATH } from '@/paths';
 import { FilterButton } from '@/components/core/FilterButton';
 import { SearchParamsType } from '@/app/(afterLogin)/test/mui-table/page';
-import TableTextFilterPopover from '@/components/core/table/TableTextFilterPopover';
-import { TableDateFilterPopover } from '@/components/core/table/TableDateFilterPopover';
+import TableTextFilterPopover from '@/components/core/table/filter/TableTextFilterPopover';
+import { TableDateFilterPopover } from '@/components/core/table/filter/TableDateFilterPopover';
 
 interface EnterpriseListFiltersProps {
   filters?: SearchParamsType;
@@ -102,7 +102,7 @@ const ProgramListFilters = ({
               onChangeSelect({ name: 'sessionCategoryTitle', value: null });
             }}
             popover={<TableTextFilterPopover title="카테고리 제목으로 검색" />}
-            value={filters.sessionCategoryTitle || undefined}
+            value={filters?.sessionCategoryTitle}
           />
 
           <FilterButton

@@ -12,7 +12,7 @@ export const getAdminOpenStatusActivePcoList = (): Promise<
   }[]
 > => {
   return adminAxiosInstance
-    .get(`/api/pco/medi-admin/admin-active-pco`)
+    .get(`/api/pco/admin/medi/middle/admin-active-pco`)
     .then((response) => {
       /*logger.debug(
         '<getAdminOpenStatusActivePcoList> data : ',

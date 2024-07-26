@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack';
 import { PATH } from '@/paths';
 import { FilterButton } from '@/components/core/FilterButton';
 import { SearchParamsType } from '@/app/(afterLogin)/test/mui-table/page';
-import TableFilterPopover from '@/components/core/table/TableTextFilterPopover';
+import TableFilterPopover from '@/components/core/table/filter/TableTextFilterPopover';
 
 interface EnterpriseListFiltersProps {
   filters?: SearchParamsType;

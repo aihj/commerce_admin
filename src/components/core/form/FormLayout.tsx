@@ -13,8 +13,8 @@ export const metadata = {
 
 type FormHeaderTypeProps = {
   children: React.ReactNode;
-  backLink: string;
-  backText: string;
+  backLink: string | null;
+  backText?: string;
   headText: string;
 };
 
