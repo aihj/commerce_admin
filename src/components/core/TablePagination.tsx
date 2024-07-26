@@ -1,32 +1,44 @@
 'use client';
 
 import * as React from 'react';
+import { useCallback } from 'react';
 import { TablePagination as TablePaginationMui } from '@mui/material';
 
-function noop(): void {
-  return undefined;
+interface ProductsPaginationProps<T> {
+  cSearchParams: T;
+  setCSearchParams: () => T;
+  totalCount: number;
 }
 
-interface ProductsPaginationProps {
-  count: number;
-  page: number;
-}
+const TablePagination = <T extends object>({
+  totalCount,
+  cSearchParams,
+  setCSearchParams,
+}: ProductsPaginationProps<T>): React.JSX.Element => {
+  const onRowsPerPageChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setCSearchParams({ rowsPerPage: event.target.value });
+    },
 
-const TablePagination = ({
-  count,
-  page,
-}: ProductsPaginationProps): React.JSX.Element => {
-  // You should implement the pagination using a similar logic as the filters.
-  // Note that when page change, you should keep the filter search params.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
+  const onPageChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setCSearchParams({ currentPage: event.target.value });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
   return (
     <TablePaginationMui
       component="div"
-      count={count}
-      onPageChange={noop}
-      onRowsPerPageChange={noop}
-      page={page}
-      rowsPerPage={10}
+      count={totalCount}
+      onPageChange={onPageChange}
+      onRowsPerPageChange={onRowsPerPageChange}
+      page={cSearchParams.currentPage}
+      rowsPerPage={cSearchParams.rowsPerPage}
       rowsPerPageOptions={[5, 10, 25]}
     />
   );

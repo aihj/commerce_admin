@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, OutlinedInput } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { logger } from '@/lib/logger/defaultLogger';
 
 type TableTextFilterTypes = {
   displayValue?: string | undefined;
@@ -16,7 +15,6 @@ const TableTextFilter = ({
   onFilterApply,
 }: TableTextFilterTypes) => {
   const [value, setValue] = React.useState<string>('');
-  logger.debug('value', value);
   React.useEffect(() => {
     setValue((displayValue as string | undefined) ?? '');
   }, [displayValue]);

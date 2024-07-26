@@ -8,33 +8,21 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import { mergeSearchParams } from '@/lib/table';
 import { PATH } from '@/paths';
-import { logger } from '@/lib/logger/defaultLogger';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { getJoinAttendeeDt } from '@/api/attendeeApi';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { useSelector } from 'react-redux';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
-import { JoinAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/JoinAttendeeListFilters';
 import TableBody from '@/components/core/table/TableBody';
-import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
-import { TablePagination } from '@/components/core/TablePagination';
 import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
-import { RegisterAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListFilters';
-interface Filter {
-  searchParams: JoinAttendeeListSearchParamsType;
-}
+import useCustomSearchParams from '@/hooks/useCustomSearchParams';
+import { TableSearchParams } from '@/api/types/tableSearchParams';
+import { TablePagination } from '@/components/core/table/TablePagination';
+import { JoinAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/JoinAttendeeListFilters';
 
-export interface JoinAttendeeListSearchParamsType {
-  currentPage?: number;
-  rowsPerPage?: number;
-
-  sortType?: string; // 어떤 타입을 가지고 정렬 할 것인지
-  sortDir?: 'asc' | 'desc'; // 어떤 방향으로 정렬할 것인지
-  searchText: undefined;
-
+export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
   birthDateStartT?: string | undefined;
   birthDateEndT?: string;
   gender?: string;
@@ -42,10 +30,25 @@ export interface JoinAttendeeListSearchParamsType {
   registrationStatus?: 'not_registered' | 'pre' | 'onsite'; // 등록 상태
 }
 
-const JoinAttendeeList = ({ searchParams }: Filter) => {
+const JoinAttendeeList = () => {
   const { confStringIdx } = useParams();
   const conferenceIdx = useSelector(selectConferenceIdx);
   const router = useRouter();
+
+  // region ***************** params 동기화 *****************
+  const initSearchParam = useMemo(() => {
+    return {
+      conferenceIdx,
+      currentPage: 0,
+      rowsPerPage: 10,
+
+      sortType: 'tbl_conference_attendee.attendee_idx',
+      sortDir: 'desc',
+    };
+  }, [conferenceIdx]);
+  const { cSearchParams, setCSearchParams } =
+    useCustomSearchParams<JoinAttendeeListSearchParamsType>(initSearchParam);
+  // endregion ***************** params 동기화 *****************
 
   // 유저 상세 페이지로 이동하기
   const moveUserDetail = useCallback(
@@ -187,19 +190,15 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
     [columnHelper, moveUserDetail]
   );
   // endregion ****************************** 열 구성 설정 ******************************
-  const filterInitialData = {
-    conferenceIdx,
-    currentPage: 0,
-    rowsPerPage: 10,
+  // const currentLink: string = useMemo(
+  //   () => `${PATH.EACH.USER.ATTENDEE.JOIN_LIST(confStringIdx)}`,
+  //   [confStringIdx]
+  // );
 
-    sortType: 'tbl_conference_attendee.attendee_idx',
-    sortDir: 'desc',
-  };
-  logger.debug('[searchParams', searchParams);
-  const mergedSearchParams = mergeSearchParams(searchParams, filterInitialData);
   const { isLoading, error, data } = useQuery({
-    queryKey: ['getJoinAttendeeDt', mergedSearchParams],
-    queryFn: () => getJoinAttendeeDt(mergedSearchParams),
+    queryKey: ['getJoinAttendeeDt', cSearchParams],
+    queryFn: () =>
+      getJoinAttendeeDt<JoinAttendeeListSearchParamsType>(cSearchParams),
     enabled: !!conferenceIdx,
   });
 
@@ -229,7 +228,7 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
           sx={{ alignItems: 'flex-start' }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">등록 회원 목록</Typography>
+            <Typography variant="h4">가입 회원 목록</Typography>
           </Box>
           {/*          <div>
             <Button
@@ -244,7 +243,10 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
         </Stack>
 
         <Card>
-          <RegisterAttendeeListFilters filters={searchParams} />
+          <JoinAttendeeListFilters<JoinAttendeeListSearchParamsType>
+            cSearchParams={cSearchParams}
+            setCSearchParams={setCSearchParams}
+          />
           <TableBody<JoinAttendeeDtVo>
             data={data.content}
             columns={columns}
@@ -254,7 +256,11 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
             isHover={true}
             size="medium"
           />
-          <TablePagination count={data.totalCount as number} />
+          <TablePagination<JoinAttendeeListSearchParamsType>
+            cSearchParams={cSearchParams}
+            setCSearchParams={setCSearchParams}
+            totalCount={data.totalCount as number}
+          />
         </Card>
       </Stack>
     </Box>

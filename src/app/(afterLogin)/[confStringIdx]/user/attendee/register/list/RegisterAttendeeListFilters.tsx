@@ -1,57 +1,32 @@
 'use client';
 
 import React, { useCallback, useMemo } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-
-import { PATH } from '@/paths';
 import { FilterButton } from '@/components/core/FilterButton';
 import TableOneSelectFilterPopover from '@/components/core/table/filter/TableOneSelectFilterPopover';
 import { TableDateFilterPopover } from '@/components/core/table/filter/TableDateFilterPopover';
-import { JoinAttendeeListSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/page';
 import TableTextFilter from '@/components/core/table/filter/TableTextFilter';
 
-interface EnterpriseListFiltersProps {
-  filters?: JoinAttendeeListSearchParamsType;
-}
-
-const RegisterAttendeeListFilters = ({
-  filters = {},
-}: EnterpriseListFiltersProps): JSX.Element => {
-  const { confStringIdx } = useParams();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
+const RegisterAttendeeListFilters = <T extends object>(
+  cSearchParams: T,
+  setCSearchParams: () => Promise<any>
+) => {
   // const [value, setValue] = useState<string>('');
-
-  const onChangeSelect = useCallback(
-    (_selected: any) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set([_selected.name], _selected.value);
-      router.push(
-        `${PATH.EACH.USER.ATTENDEE.JOIN_LIST(confStringIdx)}?${params.toString()}`
-      );
-    },
-    [confStringIdx, router, searchParams]
-  );
+  const onChangeSelect = useCallback((_selected: any) => {
+    setCSearchParams({ [_selected.name]: _selected.value });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 검색 초기화
   const handleClearFilters = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    console.log('params', params);
-
     // 모든 매개변수를 삭제
-    const keysToDelete = Array.from(params.keys());
-    console.log('params keysToDelete', keysToDelete);
+    const keysToDelete = Array.from(cSearchParams.keys());
     keysToDelete.forEach((key) => {
-      params.delete(key);
+      setCSearchParams({ [key]: null });
     });
-
-    router.push(
-      `${PATH.EACH.USER.ATTENDEE.JOIN_LIST(confStringIdx)}?${params.toString()}`
-    );
-  }, [confStringIdx, router, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cSearchParams]);
 
   const hasFilters = (filters: any): boolean => {
     for (const key in filters) {
@@ -95,7 +70,7 @@ const RegisterAttendeeListFilters = ({
           sx={{ alignItems: 'center', flex: '1 1 auto', flexWrap: 'wrap' }}
         >
           <FilterButton
-            displayValue={filters?.birthDateStartT}
+            displayValue={cSearchParams?.birthDateStartT}
             label="생년 시작 년도"
             onFilterApply={(value) => {
               onChangeSelect({
@@ -112,10 +87,10 @@ const RegisterAttendeeListFilters = ({
                 title="생년 시작 년도로 검색"
               />
             }
-            value={filters?.birthDateStartT}
+            value={cSearchParams?.birthDateStartT}
           />
           <FilterButton
-            displayValue={filters?.birthDateEndT}
+            displayValue={cSearchParams?.birthDateEndT}
             label="생년 종료 년도"
             onFilterApply={(value) => {
               onChangeSelect({
@@ -132,11 +107,11 @@ const RegisterAttendeeListFilters = ({
                 title="학회 종료 날짜로 검색"
               />
             }
-            value={filters?.birthDateEndT}
+            value={cSearchParams?.birthDateEndT}
           />
 
           <FilterButton
-            displayValue={filters?.gender}
+            displayValue={cSearchParams?.gender}
             label="회원 상태"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'gender', value });
@@ -150,11 +125,11 @@ const RegisterAttendeeListFilters = ({
                 data={genderFilterData}
               />
             }
-            value={filters?.gender || undefined}
+            value={cSearchParams?.gender || undefined}
           />
 
           <FilterButton
-            displayValue={filters?.gender}
+            displayValue={cSearchParams?.gender}
             label="등록 상태"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'registrationStatus', value });
@@ -168,11 +143,11 @@ const RegisterAttendeeListFilters = ({
                 data={registrationStatusData}
               />
             }
-            value={filters?.gender || undefined}
+            value={cSearchParams?.gender || undefined}
           />
 
           <TableTextFilter
-            displayValue={filters?.searchText || undefined}
+            displayValue={cSearchParams?.searchText || undefined}
             onFilterApply={(value) => {
               onChangeSelect({ name: 'searchText', value });
             }}
@@ -181,7 +156,7 @@ const RegisterAttendeeListFilters = ({
             }}
           />
 
-          {hasFilters(filters) ? (
+          {hasFilters(cSearchParams) ? (
             <Button onClick={() => handleClearFilters()}>조건 초기화</Button>
           ) : null}
         </Stack>

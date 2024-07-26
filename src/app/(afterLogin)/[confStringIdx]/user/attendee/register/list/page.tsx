@@ -19,9 +19,9 @@ import { useSelector } from 'react-redux';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import { JoinAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/JoinAttendeeListFilters';
 import TableBody from '@/components/core/table/TableBody';
-import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import { TablePagination } from '@/components/core/TablePagination';
 import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
+
 interface Filter {
   searchParams: JoinAttendeeListSearchParamsType;
 }
@@ -228,7 +228,7 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
           sx={{ alignItems: 'flex-start' }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">가입 회원 목록</Typography>
+            <Typography variant="h4">등록 회원 목록</Typography>
           </Box>
           {/*          <div>
             <Button
