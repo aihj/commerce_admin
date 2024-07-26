@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import { NavItemConfig } from '@/types/nav';
 import { MobileNav } from '@/components/layout/MobileNav';
-import { UserButton } from '@/components/user/UserButton';
+import { LogoutButton } from './mainNavMenu';
 
 export interface MainNavProps {
   items: NavItemConfig[];
@@ -65,7 +65,7 @@ const MainNav = ({ items }: MainNavProps): React.JSX.Element => {
               justifyContent: 'flex-end',
             }}
           >
-            <UserButton />
+            <LogoutButton />
           </Stack>
         </Box>
       </Box>

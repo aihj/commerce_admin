@@ -11,12 +11,12 @@ import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/Car
 
 import type { NavItemConfig } from '@/types/nav';
 import { isNavItemActive } from '@/lib/isNavItemActive';
-import { Logo } from '@/components/core/Logo';
 
 import { icons } from '../NavIcons';
 import { navColorStyles } from './styles';
 import { WorkspacesSwitch } from '@/components/layout/WorkspacesSwitch';
 import { PATH } from '@/paths';
+import { Logo } from '@/components/core/logo';
 
 interface SideNavProps {
   items?: NavItemConfig[];
