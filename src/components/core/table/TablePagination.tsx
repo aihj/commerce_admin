@@ -16,7 +16,7 @@ const TablePagination = <T extends object>({
   cSearchParams,
   setCSearchParamsFunc,
 }: ProductsPaginationProps<T>) => {
-  window.cSearchParams = cSearchParams;
+  // window.cSearchParams = cSearchParams;
 
   const onRowsPerPageChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

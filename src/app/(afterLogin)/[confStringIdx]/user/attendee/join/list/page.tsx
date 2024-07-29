@@ -26,8 +26,8 @@ export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
   birthDateStartT?: string | undefined;
   birthDateEndT?: string;
   gender?: string;
-  wuserStatus?: string; // 회원 상태
   registrationStatus?: 'not_registered' | 'pre' | 'onsite'; // 등록 상태
+  wuserStatus?: 'temp' | 'active' | 'delete'; // 회원 상태
 }
 
 const JoinAttendeeList = () => {
@@ -46,7 +46,7 @@ const JoinAttendeeList = () => {
       sortDir: 'desc',
     };
   }, [conferenceIdx]);
-  const { cSearchParams, setCSearchParamsFunc } =
+  const { cSearchParams, setCSearchParamsFunc, deleteCSearchParams } =
     useCustomSearchParams<JoinAttendeeListSearchParamsType>(initSearchParam);
   // endregion ***************** params 동기화 *****************
 
@@ -246,6 +246,7 @@ const JoinAttendeeList = () => {
           <JoinAttendeeListFilters<JoinAttendeeListSearchParamsType>
             cSearchParams={cSearchParams}
             setCSearchParamsFunc={setCSearchParamsFunc}
+            deleteCSearchParams={deleteCSearchParams}
           />
           <TableBody<JoinAttendeeDtVo>
             data={data.content}
