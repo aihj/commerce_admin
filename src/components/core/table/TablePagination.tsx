@@ -1,51 +1,57 @@
 'use client';
 
 import * as React from 'react';
-import { TablePagination as TablePaginationMui } from '@mui/material';
 import { useCallback } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/navigation';
+import { TablePagination as TablePaginationMui } from '@mui/material';
+import { logger } from '@/lib/logger/defaultLogger';
 
-interface ProductsPaginationProps {
-  count: number;
+interface ProductsPaginationProps<T> {
+  cSearchParams: T;
+  setCSearchParamsFunc: (parma: any) => any;
+  totalCount: number;
 }
 
-const TablePagination = ({
-  count,
-}: ProductsPaginationProps): React.JSX.Element => {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
+const TablePagination = <T extends object>({
+  totalCount,
+  cSearchParams,
+  setCSearchParamsFunc,
+}: ProductsPaginationProps<T>) => {
+  window.cSearchParams = cSearchParams;
 
-  // 현재 내가 보고 있는 페이지 변경하기
-  const handleChangePage = useCallback(
-    (page: number) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('currentPage', page.toString());
-      router.push(`${pathname}?${params.toString()}`);
-    },
-    [router]
-  );
-
-  // 페이지당 몇개의 rows를 보여줄 것인지 변경하기
   const onRowsPerPageChange = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | null) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('rowsPerPage', e.target.value);
-      router.push(`${pathname}?${params.toString()}`);
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      logger.debug(
+        '<onRowsPerPageChange> event.target.value : ',
+        event.target.value
+      );
+
+      setCSearchParamsFunc({ rowsPerPage: event.target.value });
     },
-    [router]
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
-  // -------------------------------------------------------------------------------------
+
+  const onPageChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, _page: number) => {
+      let page = event.target.value;
+      if (event.target.value === undefined) page = _page;
+      logger.debug('<onPageChange> page : ', page);
+      setCSearchParamsFunc({ currentPage: page || 0 });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+  if (!cSearchParams || totalCount === undefined) return null;
   return (
     <TablePaginationMui
       component="div"
-      count={count}
-      onPageChange={(e, page) => handleChangePage(page)}
-      onRowsPerPageChange={(e) => onRowsPerPageChange(e)}
-      page={searchParams.get('currentPage') || 0}
-      rowsPerPage={searchParams.get('rowsPerPage') || 10}
-      rowsPerPageOptions={[5, 10, 25]}
+      count={totalCount}
+      onPageChange={onPageChange}
+      onRowsPerPageChange={onRowsPerPageChange}
+      page={cSearchParams.currentPage}
+      rowsPerPage={cSearchParams.rowsPerPage}
+      rowsPerPageOptions={[5, 10, 25, 50, 100]}
     />
   );
 };

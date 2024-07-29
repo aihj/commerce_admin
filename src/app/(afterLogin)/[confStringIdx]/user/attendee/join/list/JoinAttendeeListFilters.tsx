@@ -7,22 +7,31 @@ import { FilterButton } from '@/components/core/FilterButton';
 import TableOneSelectFilterPopover from '@/components/core/table/filter/TableOneSelectFilterPopover';
 import { TableDateFilterPopover } from '@/components/core/table/filter/TableDateFilterPopover';
 import TableTextFilter from '@/components/core/table/filter/TableTextFilter';
+import { logger } from '@/lib/logger/defaultLogger';
 
-const JoinAttendeeListFilters = <T extends object>(
-  cSearchParams: T,
-  setCSearchParams: () => Promise<any>
-) => {
+interface JoinAttendeeListFiltersProps<T> {
+  cSearchParams: T;
+  setCSearchParamsFunc: (parma: any) => any;
+}
+
+const JoinAttendeeListFilters = <T extends object>({
+  cSearchParams,
+  setCSearchParamsFunc,
+}: JoinAttendeeListFiltersProps<T>) => {
   const onChangeSelect = useCallback((_selected: any) => {
-    setCSearchParams({ [_selected.name]: _selected.value });
+    const data = { [_selected.name]: _selected.value };
+    setCSearchParamsFunc(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 검색 초기화
   const handleClearFilters = useCallback(() => {
+    logger.debug('cSearchParams : ', cSearchParams);
     // 모든 매개변수를 삭제
     const keysToDelete = Array.from(cSearchParams.keys());
+    1;
     keysToDelete.forEach((key) => {
-      setCSearchParams({ [key]: null });
+      setCSearchParamsFunc({ [key]: null });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cSearchParams]);
@@ -55,7 +64,14 @@ const JoinAttendeeListFilters = <T extends object>(
     ],
     []
   );
-
+  // const wuserStatus = useMemo(
+  //   () => [
+  //     { value: 'temp', label: '기회원' },
+  //     { value: 'active', label: '회원' },
+  //     { value: 'delete', label: '탈퇴' },
+  //   ],
+  //   []
+  // );
   return (
     <div>
       <Stack
@@ -111,7 +127,7 @@ const JoinAttendeeListFilters = <T extends object>(
 
           <FilterButton
             displayValue={cSearchParams?.gender}
-            label="회원 상태"
+            label="성별"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'gender', value });
             }}
@@ -122,6 +138,24 @@ const JoinAttendeeListFilters = <T extends object>(
               <TableOneSelectFilterPopover
                 title="Filter by category"
                 data={genderFilterData}
+              />
+            }
+            value={cSearchParams?.gender || undefined}
+          />
+
+          <FilterButton
+            displayValue={cSearchParams?.gender}
+            label="회원 상태"
+            onFilterApply={(value) => {
+              onChangeSelect({ name: 'registrationStatus', value });
+            }}
+            onFilterDelete={() => {
+              onChangeSelect({ name: 'registrationStatus', value: null });
+            }}
+            popover={
+              <TableOneSelectFilterPopover
+                title="Filter by category"
+                data={registrationStatusData}
               />
             }
             value={cSearchParams?.gender || undefined}

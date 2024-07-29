@@ -7,6 +7,7 @@ import { FilterButton } from '@/components/core/FilterButton';
 import TableOneSelectFilterPopover from '@/components/core/table/filter/TableOneSelectFilterPopover';
 import { TableDateFilterPopover } from '@/components/core/table/filter/TableDateFilterPopover';
 import TableTextFilter from '@/components/core/table/filter/TableTextFilter';
+import { logger } from '@/lib/logger/defaultLogger';
 
 const RegisterAttendeeListFilters = <T extends object>(
   cSearchParams: T,
@@ -21,6 +22,7 @@ const RegisterAttendeeListFilters = <T extends object>(
   // 검색 초기화
   const handleClearFilters = useCallback(() => {
     // 모든 매개변수를 삭제
+    logger.debug('cSearchParams : ', cSearchParams);
     const keysToDelete = Array.from(cSearchParams.keys());
     keysToDelete.forEach((key) => {
       setCSearchParams({ [key]: null });

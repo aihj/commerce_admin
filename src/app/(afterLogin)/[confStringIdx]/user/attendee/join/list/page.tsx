@@ -17,10 +17,10 @@ import { useSelector } from 'react-redux';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import TableBody from '@/components/core/table/TableBody';
 import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
-import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { JoinAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/JoinAttendeeListFilters';
+import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 
 export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
   birthDateStartT?: string | undefined;
@@ -46,7 +46,7 @@ const JoinAttendeeList = () => {
       sortDir: 'desc',
     };
   }, [conferenceIdx]);
-  const { cSearchParams, setCSearchParams } =
+  const { cSearchParams, setCSearchParamsFunc } =
     useCustomSearchParams<JoinAttendeeListSearchParamsType>(initSearchParam);
   // endregion ***************** params 동기화 *****************
 
@@ -245,7 +245,7 @@ const JoinAttendeeList = () => {
         <Card>
           <JoinAttendeeListFilters<JoinAttendeeListSearchParamsType>
             cSearchParams={cSearchParams}
-            setCSearchParams={setCSearchParams}
+            setCSearchParamsFunc={setCSearchParamsFunc}
           />
           <TableBody<JoinAttendeeDtVo>
             data={data.content}
@@ -258,7 +258,7 @@ const JoinAttendeeList = () => {
           />
           <TablePagination<JoinAttendeeListSearchParamsType>
             cSearchParams={cSearchParams}
-            setCSearchParams={setCSearchParams}
+            setCSearchParamsFunc={setCSearchParamsFunc}
             totalCount={data.totalCount as number}
           />
         </Card>

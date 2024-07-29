@@ -17,9 +17,8 @@ import { getJoinAttendeeDt } from '@/api/attendeeApi';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { useSelector } from 'react-redux';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
-import { JoinAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/JoinAttendeeListFilters';
 import TableBody from '@/components/core/table/TableBody';
-import { TablePagination } from '@/components/core/TablePagination';
+import { TablePagination } from '@/components/core/table/TablePagination';
 import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
 
 interface Filter {
@@ -243,7 +242,7 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
         </Stack>
 
         <Card>
-          <JoinAttendeeListFilters filters={searchParams} />
+          {/*<JoinAttendeeListFilters filters={searchParams} />*/}
           <TableBody<JoinAttendeeDtVo>
             data={data.content}
             columns={columns}
