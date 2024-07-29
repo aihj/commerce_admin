@@ -5,8 +5,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { logger } from '@/lib/logger/defaultLogger';
 import { produce } from 'immer';
 
-type NewParamsType = { [key: string]: string };
-
 const useCustomSearchParams = <T>(initialParams: T) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -14,27 +12,34 @@ const useCustomSearchParams = <T>(initialParams: T) => {
 
   // router 파라미터에 값 삽입
   const setCSearchParamsFunc = useCallback(
-    (_params: NewParamsType) => {
-      if (_params === null) setCSearchParams({});
+    (_params: T) => {
       logger.debug('<setCSearchParamsFunc> _params : ', _params);
-      const newData = produce(cSearchParams, (draft) => {
+      console.log('cSearchParams--', cSearchParams);
+      const newData = produce(cSearchParams, (draft: T) => {
         return { ...draft, ..._params };
       });
       setCSearchParams(newData);
-      router.push(`${pathname}?${newData.toString()}`);
+      console.log();
+      if (newData) {
+        router.push(`${pathname}?${new URLSearchParams(newData).toString()}`);
+      }
     },
     [cSearchParams, pathname, router]
   );
 
+  const deleteCSearchParams = useCallback(() => {
+    setCSearchParamsFunc(initialParams);
+  }, []);
+
   useEffect(() => {
     logger.debug('setCSearchParams 초기화');
     setCSearchParamsFunc(initialParams);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialParams]);
-
+  }, []);
+  console.log('cc', cSearchParams);
   return {
     cSearchParams,
     setCSearchParamsFunc,
+    deleteCSearchParams,
   };
 };
 

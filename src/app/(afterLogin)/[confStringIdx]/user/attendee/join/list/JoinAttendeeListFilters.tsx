@@ -7,18 +7,19 @@ import { FilterButton } from '@/components/core/FilterButton';
 import TableOneSelectFilterPopover from '@/components/core/table/filter/TableOneSelectFilterPopover';
 import { TableDateFilterPopover } from '@/components/core/table/filter/TableDateFilterPopover';
 import TableTextFilter from '@/components/core/table/filter/TableTextFilter';
+import { JoinAttendeeListSearchParamsType } from './page';
 
-interface JoinAttendeeListFiltersProps<T> {
-  cSearchParams: T;
-  setCSearchParamsFunc: (parma: any) => any;
+interface JoinAttendeeListFiltersProps {
+  cSearchParams: JoinAttendeeListSearchParamsType | { [x: number]: any };
+  setCSearchParamsFunc: (param: any) => any;
   deleteCSearchParams: () => any;
 }
 
-const JoinAttendeeListFilters = <T extends object>({
+const JoinAttendeeListFilters = ({
   cSearchParams,
   setCSearchParamsFunc,
   deleteCSearchParams,
-}: JoinAttendeeListFiltersProps<T>) => {
+}: JoinAttendeeListFiltersProps) => {
   const onChangeSelect = useCallback((_selected: any) => {
     const data = { [_selected.name]: _selected.value };
     setCSearchParamsFunc(data);
@@ -79,7 +80,11 @@ const JoinAttendeeListFilters = <T extends object>({
           sx={{ alignItems: 'center', flex: '1 1 auto', flexWrap: 'wrap' }}
         >
           <FilterButton
-            displayValue={cSearchParams?.birthDateStartT}
+            displayValue={
+              'birthDateStartT' in cSearchParams
+                ? (cSearchParams?.birthDateStartT as string)
+                : ''
+            }
             label="생년 시작 년도"
             onFilterApply={(value) => {
               onChangeSelect({
@@ -96,10 +101,18 @@ const JoinAttendeeListFilters = <T extends object>({
                 title="생년 시작 년도로 검색"
               />
             }
-            value={cSearchParams?.birthDateStartT}
+            value={
+              'birthDateStartT' in cSearchParams
+                ? (cSearchParams?.birthDateStartT as string)
+                : ''
+            }
           />
           <FilterButton
-            displayValue={cSearchParams?.birthDateEndT}
+            displayValue={
+              'birthDateEndT' in cSearchParams
+                ? (cSearchParams?.birthDateEndT as string)
+                : ''
+            }
             label="생년 종료 년도"
             onFilterApply={(value) => {
               onChangeSelect({
@@ -116,11 +129,19 @@ const JoinAttendeeListFilters = <T extends object>({
                 title="학회 종료 날짜로 검색"
               />
             }
-            value={cSearchParams?.birthDateEndT}
+            value={
+              'birthDateEndT' in cSearchParams
+                ? (cSearchParams?.birthDateEndT as string)
+                : ''
+            }
           />
 
           <FilterButton
-            displayValue={cSearchParams?.gender}
+            displayValue={
+              'gender' in cSearchParams
+                ? (cSearchParams?.gender as string)
+                : undefined
+            }
             label="성별"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'gender', value });
@@ -134,11 +155,19 @@ const JoinAttendeeListFilters = <T extends object>({
                 data={genderFilterData}
               />
             }
-            value={cSearchParams?.gender || undefined}
+            value={
+              'gender' in cSearchParams
+                ? (cSearchParams?.gender as string)
+                : undefined
+            }
           />
 
           <FilterButton
-            displayValue={cSearchParams?.gender}
+            displayValue={
+              'wuserStatus' in cSearchParams
+                ? (cSearchParams?.wuserStatus as string)
+                : undefined
+            }
             label="회원 상태"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'wuserStatus', value });
@@ -152,11 +181,18 @@ const JoinAttendeeListFilters = <T extends object>({
                 data={wuserStatusData}
               />
             }
-            value={cSearchParams?.gender || undefined}
+            value={
+              'wuserStatus' in cSearchParams
+                ? (cSearchParams?.wuserStatus as string)
+                : undefined
+            }
           />
-
           <FilterButton
-            displayValue={cSearchParams?.gender}
+            displayValue={
+              'registrationStatus' in cSearchParams
+                ? (cSearchParams?.registrationStatus as string)
+                : undefined
+            }
             label="등록 상태"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'registrationStatus', value });
@@ -170,11 +206,19 @@ const JoinAttendeeListFilters = <T extends object>({
                 data={registrationStatusData}
               />
             }
-            value={cSearchParams?.gender || undefined}
+            value={
+              'registrationStatus' in cSearchParams
+                ? (cSearchParams?.registrationStatus as string)
+                : undefined
+            }
           />
 
           <TableTextFilter
-            displayValue={cSearchParams?.searchText || undefined}
+            displayValue={
+              'searchText' in cSearchParams
+                ? (cSearchParams?.searchText as string)
+                : undefined
+            }
             onFilterApply={(value) => {
               onChangeSelect({ name: 'searchText', value });
             }}

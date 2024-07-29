@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { getSession, signOut } from 'next-auth/react';
 import { Session } from 'next-auth';
 import { logger } from '@/lib/logger/defaultLogger';
 
-const adminAxiosInstance: axios.AxiosInstance = axios.create({
+const adminAxiosInstance: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BACKEND_URL,
   withCredentials: true,
   headers: {},

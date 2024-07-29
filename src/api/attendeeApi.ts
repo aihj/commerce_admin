@@ -11,7 +11,7 @@ import { JoinAttendeeListSearchParamsType } from '@/app/(afterLogin)/[confString
  */
 export const getJoinAttendeeDt = (
   params: JoinAttendeeListSearchParamsType
-): Promise<ResponseMessageVo<JoinAttendeeDtVo>> => {
+): Promise<ResponseMessageVo<JoinAttendeeDtVo[]>> => {
   logger.debug('<getJoinAttendeeDt> params ', params);
   return adminAxiosInstance
     .post(`/api/pco/admin/all/join-attendee-dt`, params)

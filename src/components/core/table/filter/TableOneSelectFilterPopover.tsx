@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 
 interface TableOneSelectFilterPopoverProps {
   title?: string;
-  data: [{ label: string; value: string }];
+  data: { label: string; value: string }[];
 }
 
 export default function TableOneSelectFilterPopover({

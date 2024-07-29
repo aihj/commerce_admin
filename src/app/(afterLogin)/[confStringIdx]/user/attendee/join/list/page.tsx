@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useMemo } from 'react';
-import { createColumnHelper } from '@tanstack/react-table';
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
@@ -17,10 +17,10 @@ import { useSelector } from 'react-redux';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import TableBody from '@/components/core/table/TableBody';
 import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
-import { TableSearchParams } from '@/api/types/tableSearchParams';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { JoinAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/JoinAttendeeListFilters';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
+import { TableSearchParams } from '@/api/types/tableSearchParams';
 
 export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
   birthDateStartT?: string | undefined;
@@ -32,11 +32,11 @@ export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
 
 const JoinAttendeeList = () => {
   const { confStringIdx } = useParams();
-  const conferenceIdx = useSelector(selectConferenceIdx);
+  const conferenceIdx: number = useSelector(selectConferenceIdx) as number;
   const router = useRouter();
 
   // region ***************** params 동기화 *****************
-  const initSearchParam = useMemo(() => {
+  const initSearchParam = useMemo((): JoinAttendeeListSearchParamsType => {
     return {
       conferenceIdx,
       currentPage: 0,
@@ -52,13 +52,18 @@ const JoinAttendeeList = () => {
 
   // 유저 상세 페이지로 이동하기
   const moveUserDetail = useCallback(
-    (attendeeIdx) => {
-      router.push(PATH.EACH.USER.ATTENDEE.DETAIL(confStringIdx, attendeeIdx));
+    (attendeeIdx: number) => {
+      router.push(
+        PATH.EACH.USER.ATTENDEE.DETAIL(
+          confStringIdx as string,
+          attendeeIdx as number
+        )
+      );
     },
     [confStringIdx, router]
   );
 
-  const columnHelper = createColumnHelper();
+  const columnHelper = createColumnHelper<JoinAttendeeDtVo>();
   const columns = useMemo(
     () => [
       columnHelper.accessor('name', {
@@ -69,7 +74,9 @@ const JoinAttendeeList = () => {
               size="small"
               variant="outlined"
               color="success"
-              onClick={() => moveUserDetail(info.row.original.attendeeIdx)}
+              onClick={() =>
+                moveUserDetail(info.row.original.attendeeIdx as number)
+              }
               title={`${info.row.original.name}`}
             >
               {`${info.getValue()}`}
@@ -198,7 +205,7 @@ const JoinAttendeeList = () => {
   const { isLoading, error, data } = useQuery({
     queryKey: ['getJoinAttendeeDt', cSearchParams],
     queryFn: () =>
-      getJoinAttendeeDt<JoinAttendeeListSearchParamsType>(cSearchParams),
+      getJoinAttendeeDt(cSearchParams as JoinAttendeeListSearchParamsType),
     enabled: !!conferenceIdx,
   });
 
@@ -243,24 +250,24 @@ const JoinAttendeeList = () => {
         </Stack>
 
         <Card>
-          <JoinAttendeeListFilters<JoinAttendeeListSearchParamsType>
-            cSearchParams={cSearchParams}
+          <JoinAttendeeListFilters
+            cSearchParams={cSearchParams as JoinAttendeeListSearchParamsType}
             setCSearchParamsFunc={setCSearchParamsFunc}
             deleteCSearchParams={deleteCSearchParams}
           />
           <TableBody<JoinAttendeeDtVo>
             data={data.content}
-            columns={columns}
+            columns={columns as ColumnDef<JoinAttendeeDtVo>[]}
             selectable={false}
             hideHead={false}
-            uniqueRowId={'attendeeIdx'}
+            uniqueRowId={(row: JoinAttendeeDtVo) => row.attendeeIdx as number}
             isHover={true}
-            size="medium"
+            // size="medium"
           />
           <TablePagination<JoinAttendeeListSearchParamsType>
-            cSearchParams={cSearchParams}
+            cSearchParams={cSearchParams as JoinAttendeeListSearchParamsType}
             setCSearchParamsFunc={setCSearchParamsFunc}
-            totalCount={data.totalCount as number}
+            totalCount={data.totalCount as unknown as number}
           />
         </Card>
       </Stack>

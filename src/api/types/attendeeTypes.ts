@@ -3,7 +3,7 @@
  */
 export interface JoinAttendeeDtVo {
   attendeeIdx?: number;
-  birthYear?: string;
+  birthDate?: string;
   email?: string;
   gender?: string;
   name?: string;
@@ -11,4 +11,5 @@ export interface JoinAttendeeDtVo {
   registrationStatus?: string;
   wuserCreateT?: string;
   wuserStatus?: string;
+  memo: string;
 }
