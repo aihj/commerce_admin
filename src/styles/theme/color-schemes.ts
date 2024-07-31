@@ -34,9 +34,11 @@ const primarySchemes: Record<
     },
     light: {
       ...neonBlue,
-      light: neonBlue[400],
-      main: neonBlue[500],
-      dark: neonBlue[600],
+      lightest: '#F5F7FF',
+      light: '#F3F4F6',
+      main: '#384250',
+      dark: '#1C2536',
+      darkest: '#111927',
       contrastText: 'var(--mui-palette-common-white)',
       activated:
         'rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-activatedOpacity))',
@@ -169,9 +171,11 @@ export function colorSchemes(
         dividerChannel: '220 223 228',
         error: {
           ...redOrange,
-          light: redOrange[400],
-          main: redOrange[500],
-          dark: redOrange[600],
+          lightest: '#FEF3F2',
+          light: '#FEE4E2',
+          main: '#F04438',
+          dark: '#B42318',
+          darkest: '#7A271A',
           contrastText: 'var(--mui-palette-common-white)',
           activated:
             'rgba(var(--mui-palette-error-mainChannel) / var(--mui-palette-action-activatedOpacity))',
@@ -182,9 +186,11 @@ export function colorSchemes(
         },
         info: {
           ...shakespeare,
-          light: shakespeare[400],
-          main: shakespeare[500],
-          dark: shakespeare[600],
+          lightest: '#ECFDFF',
+          light: '#CFF9FE',
+          main: '#06AED4',
+          dark: '#0E7090',
+          darkest: '#164C63',
           contrastText: 'var(--mui-palette-common-white)',
           activated:
             'rgba(var(--mui-palette-info-mainChannel) / var(--mui-palette-action-activatedOpacity))',
@@ -197,9 +203,11 @@ export function colorSchemes(
         primary: primary.light,
         secondary: {
           ...nevada,
-          light: nevada[600],
-          main: nevada[700],
-          dark: nevada[800],
+          lightest: '#F8F9FA',
+          light: '#F3F4F6',
+          main: '#384250',
+          dark: '#1C2536',
+          darkest: '#111927',
           contrastText: 'var(--mui-palette-common-white)',
           activated:
             'rgba(var(--mui-palette-secondary-mainChannel) / var(--mui-palette-action-activatedOpacity))',
@@ -210,9 +218,11 @@ export function colorSchemes(
         },
         success: {
           ...kepple,
-          light: kepple[400],
-          main: kepple[500],
-          dark: kepple[600],
+          lightest: '#F0FDF9',
+          light: '#CCFBEF',
+          main: '#15B79E',
+          dark: '#107569',
+          darkest: '#134E48',
           contrastText: 'var(--mui-palette-common-white)',
           activated:
             'rgba(var(--mui-palette-success-mainChannel) / var(--mui-palette-action-activatedOpacity))',
@@ -230,9 +240,11 @@ export function colorSchemes(
         },
         warning: {
           ...california,
-          light: california[400],
-          main: california[500],
-          dark: california[600],
+          lightest: '#FFFAEB',
+          light: '#FEF0C7',
+          main: '#F79009',
+          dark: '#B54708',
+          darkest: '#7A2E0E',
           contrastText: 'var(--mui-palette-common-white)',
           activated:
             'rgba(var(--mui-palette-warning-mainChannel) / var(--mui-palette-action-activatedOpacity))',
