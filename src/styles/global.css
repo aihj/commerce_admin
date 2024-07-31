@@ -1,17 +1,39 @@
 /* Remove if fonts are not used */
-@import '~@fontsource/inter/100.css';
-@import '~@fontsource/inter/200.css';
-@import '~@fontsource/inter/300.css';
-@import '~@fontsource/inter/400.css';
-@import '~@fontsource/inter/500.css';
-@import '~@fontsource/inter/600.css';
-@import '~@fontsource/inter/700.css';
-@import '~@fontsource/inter/800.css';
-@import '~@fontsource/inter/900.css';
-@import '~@fontsource/roboto-mono/300.css';
-@import '~@fontsource/roboto-mono/400.css';
-@import '~@fontsource/plus-jakarta-sans/600.css';
-@import '~@fontsource/plus-jakarta-sans/700.css';
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/Pretendard-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/Pretendard-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/Pretendard-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/Pretendard-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Remove is recharts is not used */
 .recharts-cartesian-axis-tick-value {
@@ -117,6 +139,10 @@
   --maxWidth-md: 900px;
   --maxWidth-lg: 1200px;
   --maxWidth-xl: 1440px;
+
+  /* color */
+  --color-secondary-darkest: #111927;
+  --color-secondary-light: #f3f4f6;
 }
 
 *:focus-visible {
@@ -129,4 +155,5 @@ html {
 
 body {
   height: 100%;
+  color: var(--color-secondary-darkest);
 }
