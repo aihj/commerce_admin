@@ -61,7 +61,7 @@ const JoinAttendeeListFilters = ({
   );
   const wuserStatusData = useMemo(
     () => [
-      { value: 'temp', label: '기회원' },
+      { value: 'prospective', label: '기회원' },
       { value: 'active', label: '회원' },
       { value: 'delete', label: '탈퇴' },
     ],

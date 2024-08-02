@@ -1,5 +1,8 @@
 import { adminAxiosInstance } from '@/api/authApi';
-import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
+import {
+  JoinAttendeeDtVo,
+  RegisterAttendeeDtVo,
+} from '@/api/types/attendeeTypes';
 import { ResponseMessageVo } from '@/types/type';
 import { logger } from '@/lib/logger/defaultLogger';
 import { JoinAttendeeListSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/page';
@@ -15,6 +18,22 @@ export const getJoinAttendeeDt = (
   logger.debug('<getJoinAttendeeDt> params ', params);
   return adminAxiosInstance
     .post(`/api/pco/admin/all/join-attendee-dt`, params)
+    .then((response) => {
+      logger.debug('<getJoinAttendeeDt> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 등록 회원 리스트 가져오기
+ * @param params
+ */
+export const getRegisterAttendeeDt = (
+  params: JoinAttendeeListSearchParamsType
+): Promise<ResponseMessageVo<RegisterAttendeeDtVo>> => {
+  logger.debug('<getRegisterAttendeeDt> params ', params);
+  return adminAxiosInstance
+    .post(`/api/pco/admin/all/register-attendee-dt`, params)
     .then((response) => {
       logger.debug('<getJoinAttendeeDt> response.data : ', response.data);
       return response.data;

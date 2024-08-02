@@ -27,7 +27,7 @@ export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
   birthDateEndT?: string;
   gender?: string;
   registrationStatus?: 'not_registered' | 'pre' | 'onsite'; // 등록 상태
-  wuserStatus?: 'temp' | 'active' | 'delete'; // 회원 상태
+  wuserStatus?: 'prospective' | 'active' | 'delete'; // 회원 상태
 }
 
 const JoinAttendeeList = () => {
@@ -48,6 +48,7 @@ const JoinAttendeeList = () => {
   }, [conferenceIdx]);
   const { cSearchParams, setCSearchParamsFunc, deleteCSearchParams } =
     useCustomSearchParams<JoinAttendeeListSearchParamsType>(initSearchParam);
+  window.cSearchParams = cSearchParams;
   // endregion ***************** params 동기화 *****************
 
   // 유저 상세 페이지로 이동하기
@@ -141,7 +142,7 @@ const JoinAttendeeList = () => {
                 <Chip label="회원" color="primary" size="small" />
               </Box>
             );
-          } else if (info.row.original.wuserStatus === 'temp') {
+          } else if (info.row.original.wuserStatus === 'prospective') {
             return (
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Chip label="기회원" color="default" size="small" />
@@ -197,18 +198,12 @@ const JoinAttendeeList = () => {
     [columnHelper, moveUserDetail]
   );
   // endregion ****************************** 열 구성 설정 ******************************
-  // const currentLink: string = useMemo(
-  //   () => `${PATH.EACH.USER.ATTENDEE.JOIN_LIST(confStringIdx)}`,
-  //   [confStringIdx]
-  // );
-
   const { isLoading, error, data } = useQuery({
     queryKey: ['getJoinAttendeeDt', cSearchParams],
     queryFn: () =>
       getJoinAttendeeDt(cSearchParams as JoinAttendeeListSearchParamsType),
     enabled: !!conferenceIdx,
   });
-
   // **********************************************************
   if (isLoading) return <div>Loading...</div>;
   if (

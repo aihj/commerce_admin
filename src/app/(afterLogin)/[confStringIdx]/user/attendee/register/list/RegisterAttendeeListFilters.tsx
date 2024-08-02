@@ -7,28 +7,30 @@ import { FilterButton } from '@/components/core/FilterButton';
 import TableOneSelectFilterPopover from '@/components/core/table/filter/TableOneSelectFilterPopover';
 import { TableDateFilterPopover } from '@/components/core/table/filter/TableDateFilterPopover';
 import TableTextFilter from '@/components/core/table/filter/TableTextFilter';
-import { logger } from '@/lib/logger/defaultLogger';
+import { RegisterAttendeeListSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/page';
 
-const RegisterAttendeeListFilters = <T extends object>(
-  cSearchParams: T,
-  setCSearchParams: () => Promise<any>
-) => {
+interface RegisterAttendeeListFiltersProps {
+  cSearchParams: RegisterAttendeeListSearchParamsType;
+  setCSearchParamsFunc: (parma: any) => any;
+  deleteCSearchParams: () => any;
+}
+
+const RegisterAttendeeListFilters = ({
+  cSearchParams,
+  setCSearchParamsFunc,
+  deleteCSearchParams,
+}: RegisterAttendeeListFiltersProps) => {
   // const [value, setValue] = useState<string>('');
   const onChangeSelect = useCallback((_selected: any) => {
-    setCSearchParams({ [_selected.name]: _selected.value });
+    const data = { [_selected.name]: _selected.value };
+    setCSearchParamsFunc(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 검색 초기화
   const handleClearFilters = useCallback(() => {
-    // 모든 매개변수를 삭제
-    logger.debug('cSearchParams : ', cSearchParams);
-    const keysToDelete = Array.from(cSearchParams.keys());
-    keysToDelete.forEach((key) => {
-      setCSearchParams({ [key]: null });
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cSearchParams]);
+    deleteCSearchParams();
+  }, [deleteCSearchParams]);
 
   const hasFilters = (filters: any): boolean => {
     for (const key in filters) {
@@ -50,11 +52,44 @@ const RegisterAttendeeListFilters = <T extends object>(
     ],
     []
   );
-  const registrationStatusData = useMemo(
+
+  /*
+  무료 등록
+  */
+  const paymentStatusFD = useMemo(
     () => [
-      { value: 'not_registered', label: '미등록' },
-      { value: 'pre', label: '사전등록' },
-      { value: 'onsite', label: '현장등록' },
+      { value: 'freeRegi', label: '무료 등록' },
+      { value: 'freeRegiCancelled', label: '무료 등록 취소' },
+      { value: 'paymentCompleted', label: '결제 완료' },
+      { value: 'refundCompleted', label: '환불 완료' },
+      { value: 'pendingPayment', label: '결제 대기' },
+    ],
+    []
+  );
+
+  const registrationStatusFD = useMemo(
+    () => [
+      { value: 'preRegi', label: '사전 등록' },
+      { value: 'onSiteRegi', label: '현장 등록' },
+      { value: 'cancelled', label: '등록 취소' },
+    ],
+    []
+  );
+
+  const paymentMethodFD = useMemo(
+    () => [
+      { value: 'card', label: '카드' },
+      { value: 'eWallet', label: '간편 결제' },
+      { value: 'free', label: '무료 결제' },
+      { value: 'manual', label: '수동 계좌이체' },
+    ],
+    []
+  );
+
+  const memoFD = useMemo(
+    () => [
+      { value: 'y', label: '메모 있음' },
+      { value: 'n', label: '메모 없음' },
     ],
     []
   );
@@ -114,7 +149,7 @@ const RegisterAttendeeListFilters = <T extends object>(
 
           <FilterButton
             displayValue={cSearchParams?.gender}
-            label="회원 상태"
+            label="성별"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'gender', value });
             }}
@@ -131,8 +166,44 @@ const RegisterAttendeeListFilters = <T extends object>(
           />
 
           <FilterButton
-            displayValue={cSearchParams?.gender}
-            label="등록 상태"
+            displayValue={cSearchParams?.hasMemo}
+            label="메모 여부"
+            onFilterApply={(value) => {
+              onChangeSelect({ name: 'hasMemo', value });
+            }}
+            onFilterDelete={() => {
+              onChangeSelect({ name: 'hasMemo', value: null });
+            }}
+            popover={
+              <TableOneSelectFilterPopover
+                title="Filter by category"
+                data={memoFD}
+              />
+            }
+            value={cSearchParams?.hasMemo || undefined}
+          />
+
+          <FilterButton
+            displayValue={cSearchParams?.wuserStatus}
+            label="결제 상태"
+            onFilterApply={(value) => {
+              onChangeSelect({ name: 'wuserStatus', value });
+            }}
+            onFilterDelete={() => {
+              onChangeSelect({ name: 'wuserStatus', value: null });
+            }}
+            popover={
+              <TableOneSelectFilterPopover
+                title="Filter by category"
+                data={paymentStatusFD}
+              />
+            }
+            value={cSearchParams?.wuserStatus || undefined}
+          />
+
+          <FilterButton
+            displayValue={cSearchParams?.registrationStatus}
+            label="등록 구분"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'registrationStatus', value });
             }}
@@ -142,10 +213,27 @@ const RegisterAttendeeListFilters = <T extends object>(
             popover={
               <TableOneSelectFilterPopover
                 title="Filter by category"
-                data={registrationStatusData}
+                data={registrationStatusFD}
               />
             }
-            value={cSearchParams?.gender || undefined}
+            value={cSearchParams?.registrationStatus || undefined}
+          />
+          <FilterButton
+            displayValue={cSearchParams?.paymentMethod}
+            label="결제 수단"
+            onFilterApply={(value) => {
+              onChangeSelect({ name: 'paymentMethod', value });
+            }}
+            onFilterDelete={() => {
+              onChangeSelect({ name: 'paymentMethod', value: null });
+            }}
+            popover={
+              <TableOneSelectFilterPopover
+                title="Filter by category"
+                data={paymentMethodFD}
+              />
+            }
+            value={cSearchParams?.paymentMethod || undefined}
           />
 
           <TableTextFilter

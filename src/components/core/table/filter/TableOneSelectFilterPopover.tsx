@@ -7,6 +7,7 @@ import {
   useFilterContext,
 } from '@/components/core/FilterButton';
 import { useEffect, useState } from 'react';
+import { logger } from '@/lib/logger/defaultLogger';
 
 interface TableOneSelectFilterPopoverProps {
   title?: string;
@@ -29,6 +30,10 @@ export default function TableOneSelectFilterPopover({
 
   const [value, setValue] = useState<string>('');
   useEffect(() => {
+    logger.debug(
+      'TableOneSelectFilterPopoverProps initialValue : ',
+      initialValue
+    );
     setValue((initialValue as string | undefined) ?? '');
   }, [initialValue]);
 
@@ -42,7 +47,6 @@ export default function TableOneSelectFilterPopover({
       <FormControl>
         <Select
           onChange={(event) => {
-            console.log('Select event.target.value : ', event.target.value);
             setValue(event.target.value);
           }}
           value={value}

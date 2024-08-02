@@ -3,47 +3,57 @@
 import React, { useCallback, useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import { mergeSearchParams } from '@/lib/table';
 import { PATH } from '@/paths';
-import { logger } from '@/lib/logger/defaultLogger';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { getJoinAttendeeDt } from '@/api/attendeeApi';
+import { getRegisterAttendeeDt } from '@/api/attendeeApi';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { useSelector } from 'react-redux';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
-import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
+import { RegisterAttendeeDtVo } from '@/api/types/attendeeTypes';
+import { RegisterAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListFilters';
+import { TableSearchParams } from '@/api/types/tableSearchParams';
+import useCustomSearchParams from '@/hooks/useCustomSearchParams';
+import { JoinAttendeeListSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/page';
 
-interface Filter {
-  searchParams: JoinAttendeeListSearchParamsType;
-}
-
-export interface JoinAttendeeListSearchParamsType {
-  currentPage?: number;
-  rowsPerPage?: number;
-
-  sortType?: string; // 어떤 타입을 가지고 정렬 할 것인지
-  sortDir?: 'asc' | 'desc'; // 어떤 방향으로 정렬할 것인지
-  searchText: undefined;
-
+export interface RegisterAttendeeListSearchParamsType
+  extends TableSearchParams {
   birthDateStartT?: string | undefined;
   birthDateEndT?: string;
-  gender?: string;
-  wuserStatus?: string; // 회원 상태
-  registrationStatus?: 'not_registered' | 'pre' | 'onsite'; // 등록 상태
+  gender?: 'F' | 'N';
+  registrationStatus?: 'preRegi' | 'onSiteRegi' | 'cancelled'; // 등록 상태
+  paymentStatus?: string;
+  paymentMethod?: string;
+  wuserStatus?: 'prospective' | 'active' | 'delete'; // 회원 상태
+  hasMemo?: boolean;
 }
 
-const JoinAttendeeList = ({ searchParams }: Filter) => {
+const RegisterAttendeeList = () => {
   const { confStringIdx } = useParams();
   const conferenceIdx = useSelector(selectConferenceIdx);
   const router = useRouter();
+
+  // region ***************** params 동기화 *****************
+  const initSearchParam = useMemo(() => {
+    return {
+      conferenceIdx,
+      currentPage: 0,
+      rowsPerPage: 10,
+
+      sortType: 'tbl_conference_attendee.attendee_idx',
+      sortDir: 'desc',
+    };
+  }, [conferenceIdx]);
+  const { cSearchParams, setCSearchParamsFunc, deleteCSearchParams } =
+    useCustomSearchParams<JoinAttendeeListSearchParamsType>(initSearchParam);
+  window.cSearchParams = cSearchParams;
+  // endregion ***************** params 동기화 *****************
 
   // 유저 상세 페이지로 이동하기
   const moveUserDetail = useCallback(
@@ -65,7 +75,7 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
               variant="outlined"
               color="success"
               onClick={() => moveUserDetail(info.row.original.attendeeIdx)}
-              title={`${info.row.original.name}`}
+              title={`${info.row.original.wuserIdx}`}
             >
               {`${info.getValue()}`}
               {info.row.original.memo && <AssignmentOutlinedIcon />}
@@ -98,55 +108,116 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
         size: 110,
       }),
 
-      columnHelper.accessor('phone', {
-        header: '휴대폰 번호',
+      // (기본 프로그램 등록 기준, 추후 추가 프로그램 현장등록했다고 해도 사전등록으로 인정)
+      columnHelper.accessor('registrationStatus', {
+        header: '등록구분',
         cell: (info) => {
-          return (
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              {info.getValue()}
-            </Box>
-          );
-        },
-        size: 110,
-      }),
-      columnHelper.accessor('email', {
-        header: '이메일',
-        cell: (info) => {
-          return (
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              {info.getValue()}
-            </Box>
-          );
-        },
-        size: 110,
-      }),
-      columnHelper.display({
-        header: '회원상태',
-        cell: (info) => {
-          if (info.row.original.wuserStatus === 'active') {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="회원" color="primary" size="small" />
-              </Box>
-            );
-          } else if (info.row.original.wuserStatus === 'temp') {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="기회원" color="default" size="small" />
-              </Box>
-            );
-          } else {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="탈퇴" color="error" size="small" />
-              </Box>
-            );
+          switch (info.row.original.registrationStatus) {
+            case 'preRegi':
+              return (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  사전 등록
+                </Box>
+              );
+            case 'onSiteRegi':
+              return (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  현장 등록
+                </Box>
+              );
+            case 'cancelled':
+              return (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  등록 취소
+                </Box>
+              );
           }
         },
         size: 110,
       }),
-      columnHelper.accessor('wuserCreateT', {
-        header: '가입 날짜',
+      columnHelper.display({
+        header: '결제 상태',
+        cell: (info) => {
+          switch (info.row.original.paymentStatus) {
+            case 'freeRegi':
+              return (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  무료 등록
+                </Box>
+              );
+            case 'freeRegiCancelled':
+              return (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  무료 등록 취소
+                </Box>
+              );
+            case 'paymentCompleted':
+              return (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  결제 완료
+                </Box>
+              );
+            case 'refundCompleted':
+              return (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  환불 완료
+                </Box>
+              );
+            case 'pendingPayment':
+              return (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  결제 대기
+                </Box>
+              );
+          }
+        },
+        size: 110,
+      }),
+      columnHelper.accessor('paymentMethod', {
+        header: '결제수단',
+        cell: (info) => {
+          switch (info.row.original.paymentMethod) {
+            case 'card':
+              return (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  카드
+                </Box>
+              );
+            case 'eWallet':
+              return (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  간편 결제
+                </Box>
+              );
+            case 'free':
+              return (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  무료 결제
+                </Box>
+              );
+            case 'manual':
+              return (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  수동 계좌이체
+                </Box>
+              );
+          }
+        },
+        size: 110,
+      }),
+
+      // TODO : 현재 해당값 없음
+      columnHelper.accessor('additionalPaidPrograms', {
+        header: '추가 결제',
+        cell: () => {
+          return (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>-</Box>
+          );
+        },
+        size: 110,
+      }),
+      columnHelper.accessor('amount', {
+        header: '총 금액',
         cell: (info) => {
           return (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -156,28 +227,27 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
         },
         size: 110,
       }),
-      columnHelper.display({
-        header: '등록 상태',
+      columnHelper.accessor('indicatedAmount', {
+        header: '결제 금액',
         cell: (info) => {
-          if (info.row.original.registrationStatus === 'not_registered') {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="등록 안함" color="secondary" size="small" />
-              </Box>
-            );
-          } else if (info.row.original.registrationStatus === 'pre') {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="사전 등록" color="primary" size="small" />
-              </Box>
-            );
-          } else {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="현장 등록" color="secondary" size="small" />
-              </Box>
-            );
-          }
+          return (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              {info.getValue()}
+            </Box>
+          );
+        },
+        size: 110,
+      }),
+
+      // TODO : 응급의학회의 경우 해당 값 존재 안함
+      columnHelper.accessor('basicPlanRegiT', {
+        header: '등록 날짜',
+        cell: (info) => {
+          return (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              {info.getValue()}
+            </Box>
+          );
         },
         size: 110,
       }),
@@ -185,22 +255,14 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
     [columnHelper, moveUserDetail]
   );
   // endregion ****************************** 열 구성 설정 ******************************
-  const filterInitialData = {
-    conferenceIdx,
-    currentPage: 0,
-    rowsPerPage: 10,
-
-    sortType: 'tbl_conference_attendee.attendee_idx',
-    sortDir: 'desc',
-  };
-  logger.debug('[searchParams', searchParams);
-  const mergedSearchParams = mergeSearchParams(searchParams, filterInitialData);
   const { isLoading, error, data } = useQuery({
-    queryKey: ['getJoinAttendeeDt', mergedSearchParams],
-    queryFn: () => getJoinAttendeeDt(mergedSearchParams),
+    queryKey: ['getRegisterAttendeeDt', cSearchParams],
+    queryFn: () =>
+      getRegisterAttendeeDt<RegisterAttendeeListSearchParamsType>(
+        cSearchParams
+      ),
     enabled: !!conferenceIdx,
   });
-
   // **********************************************************
   if (isLoading) return <div>Loading...</div>;
   if (
@@ -242,8 +304,12 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
         </Stack>
 
         <Card>
-          {/*<JoinAttendeeListFilters filters={searchParams} />*/}
-          <TableBody<JoinAttendeeDtVo>
+          <RegisterAttendeeListFilters
+            cSearchParams={cSearchParams}
+            setCSearchParamsFunc={setCSearchParamsFunc}
+            deleteCSearchParams={deleteCSearchParams}
+          />
+          <TableBody<RegisterAttendeeDtVo>
             data={data.content}
             columns={columns}
             selectable={false}
@@ -252,11 +318,15 @@ const JoinAttendeeList = ({ searchParams }: Filter) => {
             isHover={true}
             size="medium"
           />
-          <TablePagination count={data.totalCount as number} />
+          <TablePagination<RegisterAttendeeListSearchParamsType>
+            cSearchParams={cSearchParams}
+            setCSearchParamsFunc={setCSearchParamsFunc}
+            totalCount={data.totalCount as number}
+          />
         </Card>
       </Stack>
     </Box>
   );
 };
 
-export default JoinAttendeeList;
+export default RegisterAttendeeList;
