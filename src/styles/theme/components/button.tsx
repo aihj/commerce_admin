@@ -5,7 +5,7 @@ import type { Theme } from '../types';
 
 function getContainedVars(color: string): Record<string, string> {
   return {
-    '--Button-containedBg': `var(--mui-palette-${color}-dark)`,
+    '--Button-containedBg': `var(--color-${color}-main)`,
     // '--Button-containedBgGradient': `linear-gradient(180deg, var(--mui-palette-${color}-main) 0%, var(--mui-palette-${color}-dark) 100%)`,
     // '--Button-containedStroke': `inset 0px 0px 0px 1px var(--mui-palette-${color}-dark), inset 0px 2px 0px 0px rgba(255, 255, 255, 0.16)`,
   };
@@ -123,8 +123,9 @@ export const MuiButton = {
     },
     sizeLarge: {
       '--Button-minHeight': '48x',
-      fontSize: '0.9375rem',
-      lineHeight: '32px',
+      fontSize: '15px',
+      lineHeight: '26px',
+      fontWeight: 600,
     },
   },
 } satisfies Components<Theme>['MuiButton'];

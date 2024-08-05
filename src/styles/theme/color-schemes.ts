@@ -35,10 +35,10 @@ const primarySchemes: Record<
     light: {
       ...neonBlue,
       lightest: '#F5F7FF',
-      light: '#F3F4F6',
-      main: '#384250',
-      dark: '#1C2536',
-      darkest: '#111927',
+      light: '#EBEEFE',
+      main: '#6366F1',
+      dark: '#4338CA',
+      darkest: '#312E81',
       contrastText: 'var(--mui-palette-common-white)',
       activated:
         'rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-activatedOpacity))',

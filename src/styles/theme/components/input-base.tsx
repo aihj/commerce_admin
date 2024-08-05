@@ -6,7 +6,7 @@ export const MuiInputBase = {
   styleOverrides: {
     root: {
       '--Input-borderRadius': '8px',
-      '--Input-paddingBlock': 0,
+      '--Input-paddingBlock': '12px',
       '--Input-paddingInline': '12px',
       '--Input-minHeight': '40px',
       borderRadius: 'var(--Input-borderRadius)',

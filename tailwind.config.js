@@ -30,6 +30,7 @@ const config = {
       width: px0_200,
       minWidth: px0_200,
       lineHeight: px0_100,
+      borderRadius: px0_100,
     },
   },
   plugins: [],

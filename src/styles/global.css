@@ -141,8 +141,10 @@
   --maxWidth-xl: 1440px;
 
   /* color */
-  --color-secondary-darkest: #111927;
+  --color-primary-main: #6366f1;
   --color-secondary-light: #f3f4f6;
+  --color-secondary-main: #384250;
+  --color-secondary-darkest: #111927;
 }
 
 *:focus-visible {
