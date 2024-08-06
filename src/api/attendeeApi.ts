@@ -17,7 +17,7 @@ export const getJoinAttendeeDt = (
 ): Promise<ResponseMessageVo<JoinAttendeeDtVo[]>> => {
   logger.debug('<getJoinAttendeeDt> params ', params);
   return adminAxiosInstance
-    .post(`/api/pco/admin/all/join-attendee-dt`, params)
+    .post(`/api/pco/admin/total/join-attendee-dt`, params)
     .then((response) => {
       logger.debug('<getJoinAttendeeDt> response.data : ', response.data);
       return response.data;
@@ -33,7 +33,7 @@ export const getRegisterAttendeeDt = (
 ): Promise<ResponseMessageVo<RegisterAttendeeDtVo>> => {
   logger.debug('<getRegisterAttendeeDt> params ', params);
   return adminAxiosInstance
-    .post(`/api/pco/admin/all/register-attendee-dt`, params)
+    .post(`/api/pco/admin/total/register-attendee-dt`, params)
     .then((response) => {
       logger.debug('<getJoinAttendeeDt> response.data : ', response.data);
       return response.data;
