@@ -35,7 +35,6 @@ const useCustomSearchParams = <T>(initialParams: T) => {
     logger.debug('setCSearchParams 초기화');
     setCSearchParamsFunc(initialParams);
   }, []);
-  console.log('cc', cSearchParams);
   return {
     cSearchParams,
     setCSearchParamsFunc,

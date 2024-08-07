@@ -13,10 +13,10 @@ import {
 } from '@mui/material';
 import { Label } from '@/components/core/Label';
 import { GENDERS, WUSER_STATUS } from '@/constants/selectOptions';
-// import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
+import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
 import { DatePicker } from '@mui/x-date-pickers';
-import dayjs from 'dayjs';
-// import { dayjs } from '@/lib/dayjs';
+import { dayjs } from '@/lib/dayjs';
+import { DevTool } from '@hookform/devtools';
 
 interface BasicInfoForm {
   name: string;
@@ -26,22 +26,19 @@ interface BasicInfoForm {
   signUpDate: string;
   phone: string;
   email: string;
+  memo?: string;
 }
 
-// interface BasicInfoProp {
-//   basicInfo: JoinAttendeeDtVo | undefined;
-// }
+interface BasicInfoProp {
+  basicInfo: JoinAttendeeDtVo | undefined;
+}
 
-// const BasicInfo = forwardRef(({ basicInfo }: BasicInfoProp, ref) => {
-const BasicInfo = forwardRef((props, ref) => {
-  console.log(props);
+const BasicInfo = forwardRef(({ basicInfo }: BasicInfoProp, ref) => {
+  // const BasicInfo = forwardRef((props, ref) => {
   const {
     control,
     // handleSubmit,
-    formState: {
-      errors,
-      // isDirty
-    },
+    formState: { errors },
   } = useForm<BasicInfoForm>({});
   return (
     <Card
@@ -63,6 +60,7 @@ const BasicInfo = forwardRef((props, ref) => {
       />
       <form>
         <CardContent className="flex flex-col gap-24" sx={{ p: 3 }}>
+          <DevTool control={control} /> {/* set up the dev tool */}
           <div className="flex">
             <Label label="기본 정보" />
             <Stack spacing={2} direction="row" sx={{ width: '100%' }}>
@@ -74,7 +72,7 @@ const BasicInfo = forwardRef((props, ref) => {
                     label="이름"
                     sx={{ p: 0 }}
                     fullWidth
-                    // defaultValue={basicInfo?.name}
+                    defaultValue={basicInfo?.name}
                     {...field}
                   />
                 )}
@@ -99,8 +97,8 @@ const BasicInfo = forwardRef((props, ref) => {
                         // defaultValue={basicInfo?.birthDate}
                       },
                     }}
-                    // value={dayjs(date?.birthDate)}
-                    value={dayjs(field.value)}
+                    value={dayjs(basicInfo?.birthDate)}
+                    // value={dayjs(field.value)}
                   />
                 )}
               />
@@ -113,7 +111,7 @@ const BasicInfo = forwardRef((props, ref) => {
                     select
                     fullWidth
                     sx={{ p: 0 }}
-                    // defaultValue={basicInfo?.gender}
+                    defaultValue={basicInfo?.gender}
                     {...field}
                   >
                     {GENDERS.map((option) => (
@@ -127,7 +125,7 @@ const BasicInfo = forwardRef((props, ref) => {
             </Stack>
           </div>
           <div className="flex">
-            <Label label="회원/등록 정보" />
+            <Label label="회원 가입 정보" />
             <Stack spacing={2} direction="row" sx={{ width: '100%' }}>
               <Controller
                 control={control}
@@ -138,7 +136,7 @@ const BasicInfo = forwardRef((props, ref) => {
                     select
                     fullWidth
                     sx={{ p: 0 }}
-                    // defaultValue={basicInfo?.wuserStatus}
+                    defaultValue={basicInfo?.wuserStatus}
                     {...field}
                   >
                     {WUSER_STATUS.map((option) => (
@@ -158,7 +156,7 @@ const BasicInfo = forwardRef((props, ref) => {
                     disabled
                     sx={{ p: 0 }}
                     fullWidth
-                    // defaultValue={basicInfo?.wuserCreateT}
+                    defaultValue={basicInfo?.wuserCreateT}
                     {...field}
                   />
                 )}
@@ -174,7 +172,7 @@ const BasicInfo = forwardRef((props, ref) => {
                 render={({ field }) => (
                   <TextField
                     sx={{ p: 0, width: 340 }}
-                    // defaultValue={basicInfo?.phone}
+                    defaultValue={basicInfo?.phone}
                     {...field}
                   />
                 )}
@@ -201,7 +199,7 @@ const BasicInfo = forwardRef((props, ref) => {
                 render={({ field }) => (
                   <TextField
                     sx={{ p: 0, width: 340 }}
-                    // defaultValue={basicInfo?.email}
+                    defaultValue={basicInfo?.email}
                     {...field}
                   />
                 )}
@@ -223,7 +221,7 @@ const BasicInfo = forwardRef((props, ref) => {
             <Label label="메모 (선택)" />
             <Controller
               control={control}
-              name="email"
+              name="memo"
               render={({ field }) => (
                 <div className="w-full text-right">
                   <TextField
@@ -232,12 +230,18 @@ const BasicInfo = forwardRef((props, ref) => {
                     multiline
                     minRows={6}
                     inputProps={{ maxlength: 1000 }}
-                    // defaultValue={basicInfo?.memo}
+                    defaultValue={basicInfo?.memo}
                     {...field}
                     // value="minj@medistaff.co.kr"
                   />
                   <span className="text-12 leading-14 text-stone-600">
-                    {field?.value ? field.value.length : 0} / 1000
+                    {
+                      // isDirty ?
+                      field.value?.length
+                        ? field.value?.length
+                        : basicInfo?.memo.length
+                    }
+                    / 1000
                   </span>
                 </div>
               )}

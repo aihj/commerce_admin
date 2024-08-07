@@ -10,5 +10,14 @@ enum RegisterOptions {
   major_subject = 'major_subject',
 }
 
+interface RegisterDetailOptionsState {
+  idx: number;
+  key: string;
+  type: string;
+  label: string;
+  isEssential: boolean;
+  value: string;
+}
+
 export { RegisterOptions };
-export type { RegisterOptionsType };
+export type { RegisterDetailOptionsState, RegisterOptionsType };

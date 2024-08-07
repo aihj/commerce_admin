@@ -24,3 +24,20 @@ export interface SettingVo {
   isAvailable?: number;
   createdT?: number;
 }
+
+export interface OptionVo {
+  optionIdx: number;
+  conferenceIdx: number;
+  optionType: string; // sa=주관식
+  optionKey: string;
+  optionLabel: string;
+  isEssential: number; // 1=true
+  guide: null;
+  exposureOrder: null;
+  significant: null;
+  mcOptionValue: null;
+  mcIsMultipleSelection: null;
+  saMaxLength: null;
+  saElementType: null;
+  saRegex: null;
+}

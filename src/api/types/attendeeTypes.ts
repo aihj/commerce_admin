@@ -1,7 +1,10 @@
+import { HashMap } from './commonTypes';
+
 /**
  * 가입 회원 DT
  */
 export interface JoinAttendeeDtVo {
+  wuserIdx: number;
   attendeeIdx?: number;
   birthDate?: string;
   email?: string;
@@ -42,4 +45,50 @@ export interface RegisterAttendeeDtVo {
   paymentMethod?: string; // 결제 수단
   amount?: number;
   indicatedAmount?: number;
+}
+
+/** 회원 상세 (약관 동의) */
+export interface AttendeeTermsAgreeInfoResponse {
+  isSelect: string;
+  title: string;
+  termsIdx: number;
+}
+
+/** 회원 상세 (회원의 학회 등록 세부 정보) */
+export interface AttendeeRegisterInfoResponse {
+  attendeeOptionIdx: number;
+  attendeeIdx: number;
+  optionIdx: number;
+  optionValue: string;
+}
+
+/** 회원 상세 (회원의 학회 등록 정보) */
+export interface AttendeeDetailTypeRegiInfoResponse {
+  registrationStatus: 'unregistered' | 'preRegi' | 'onSiteRegi' | 'cancelled';
+  discountCode?: string;
+  indicatedAmount?: number;
+  paymentAmount?: number;
+  regiFeeAmount?: number;
+  regiFeeName?: string;
+  paymentStatus?:
+    | 'freeRegi'
+    | 'freeRegiCancelled'
+    | 'paymentCompleted'
+    | 'refundCompleted'
+    | 'pendingPayment';
+  registrationAt: string;
+}
+
+export interface AttendeeRegisterPaymentsInfoResponse {
+  type: string;
+  regiFeeName: string;
+  amount: number;
+  paymentStatus:
+    | 'freeRegi'
+    | 'freeRegiCancelled'
+    | 'paymentCompleted'
+    | 'refundCompleted'
+    | 'pendingPayment';
+  paymentCreateT: string;
+  paymentMethod: string;
 }

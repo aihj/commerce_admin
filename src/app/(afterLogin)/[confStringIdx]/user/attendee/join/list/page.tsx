@@ -53,11 +53,11 @@ const JoinAttendeeList = () => {
 
   // 유저 상세 페이지로 이동하기
   const moveUserDetail = useCallback(
-    (attendeeIdx: number) => {
+    (wuserIdx: number) => {
       router.push(
         PATH.EACH.USER.ATTENDEE.DETAIL(
           confStringIdx as string,
-          attendeeIdx as number
+          wuserIdx as number
         )
       );
     },
@@ -76,7 +76,7 @@ const JoinAttendeeList = () => {
               variant="outlined"
               color="success"
               onClick={() =>
-                moveUserDetail(info.row.original.attendeeIdx as number)
+                moveUserDetail(info.row.original.wuserIdx as number)
               }
               title={`${info.row.original.name}`}
             >

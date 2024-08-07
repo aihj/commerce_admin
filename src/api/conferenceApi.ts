@@ -18,7 +18,7 @@ import { EnterpriseListResVo } from '@/api/types/enterpriseListResVo';
 import { adminAxiosInstance } from '@/api/authApi';
 import { ResponseMessageVo } from '@/api/types/responseMessageVo';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
-import { SettingVo } from '@/api/types/setting';
+import { OptionVo, SettingVo } from '@/api/types/setting';
 
 // region *********************** Enterprise Conference 목록 가져오기 ***********************
 /**
@@ -219,4 +219,15 @@ export const getSettings = (conferenceIdx: number): Promise<SettingVo[]> => {
 /*** 학회 다중 세팅 업데이트*/
 export const processConferenceSettings = (data: any): Promise<SettingVo[]> => {
   return adminAxiosInstance.post(`/api/conference/settings`, data);
+};
+
+/**
+ * 학회 별 학회 등록 시 필요한 세부정보 입력
+ */
+export const getConferenceRegisterOptions = (
+  conferenceIdx: number
+): Promise<OptionVo[]> => {
+  return adminAxiosInstance
+    .get(`/api/pco/admin/total/${conferenceIdx}/option`)
+    .then((result) => result.data.content);
 };

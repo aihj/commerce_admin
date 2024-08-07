@@ -1,17 +1,24 @@
-import { Label } from '@/components/core/Label';
-import { Button, Card, CardContent, CardHeader, Stack } from '@mui/material';
 import React, { forwardRef } from 'react';
+import { Card, CardContent, CardHeader, Stack } from '@mui/material';
+import { numberWithComma } from '@/lib/numberWithComma';
+import { Label } from '@/components/core/Label';
+import { PAYMENT_STATUS, REGISTER_STATUS } from '@/constants/registerStatus';
+import { AttendeeDetailTypeRegiInfoResponse } from '@/api/types/attendeeTypes';
 
-// interface RegisterInfoProp {}
+interface RegisterInfoProp {
+  registerInfo: AttendeeDetailTypeRegiInfoResponse | null | undefined;
+}
 
-const ProgramPrice = ({ title, price }: { title: string; price: string }) => (
-  <div className="text-13 leading-18 text-stone-700 py-7 px-10 rounded-12 border border-secondary-light bg-secondary-lightest">
-    {title} {price}
-  </div>
-);
+// const ProgramPrice = ({ title, price }: { title: string; price: string }) => (
+//   <div className="text-13 leading-18 text-stone-700 py-7 px-10 rounded-12 border border-secondary-light bg-secondary-lightest">
+//     {title} {numberWithComma(Number(price))}
+//   </div>
+// );
 
-const RegisterInfo = forwardRef((props, ref) => {
-  console.log(props);
+const RegisterInfo = forwardRef(({ registerInfo }: RegisterInfoProp, ref) => {
+  if (registerInfo === null) {
+    return;
+  }
   return (
     <Card
       sx={{
@@ -34,39 +41,67 @@ const RegisterInfo = forwardRef((props, ref) => {
         <Stack spacing={2} direction={'column'}>
           <div className="flex">
             <Label label="등록 상태" minWidth={140} />
-            <span className="text-14 text-stone-700 leading-16">사전 등록</span>
+            <span className="text-14 text-stone-700 leading-16">
+              {registerInfo?.registrationStatus &&
+                REGISTER_STATUS[registerInfo?.registrationStatus]}
+            </span>
           </div>
           <div className="flex">
             <Label label="등록 구분" minWidth={140} />
-            <span className="text-14 text-stone-700 leading-16">직접 참관</span>
-          </div>
-          <div className="flex">
-            <Label label="결제 상태" minWidth={140} />
-            <span className="text-14 text-stone-700 leading-16">결제 완료</span>
+            <span className="text-14 text-stone-700 leading-16">
+              {registerInfo?.regiFeeName}
+            </span>
           </div>
           <div className="flex">
             <Label label="등록 구분 금액" minWidth={140} />
-            <span className="text-14 text-stone-700 leading-16">150,000</span>
+            <span className="text-14 text-stone-700 leading-16">
+              {registerInfo?.regiFeeAmount &&
+                numberWithComma(registerInfo?.regiFeeAmount)}
+            </span>
           </div>
           <div className="flex">
+            <Label label="등록 일시" minWidth={140} />
+            <span className="text-14 text-stone-700 leading-16">
+              {registerInfo?.registrationAt}
+            </span>
+          </div>
+          <div className="flex">
+            <Label label="결제 상태" minWidth={140} />
+            <span className="text-14 text-stone-700 leading-16">
+              {registerInfo?.paymentStatus &&
+                PAYMENT_STATUS[registerInfo?.paymentStatus]}
+            </span>
+          </div>
+          {/* <div className="flex">
             <Label label="강좌 금액" minWidth={140} />
             <span className="text-14 text-stone-700 leading-16">
               <ProgramPrice title="병원임직원 Session A" price="150000" />
             </span>
-          </div>
+          </div> */}
           <div className="flex">
             <Label label="초청코드" minWidth={140} />
-            <span className="text-14 text-stone-700 leading-16">없음</span>
+            <span className="text-14 text-stone-700 leading-16">
+              {registerInfo?.discountCode === null
+                ? '없음'
+                : registerInfo?.discountCode}
+            </span>
           </div>
           <div className="flex">
             <Label label="할인 금액" minWidth={140} />
-            <span className="text-14 text-stone-700 leading-16">0</span>
+            <span className="text-14 text-stone-700 leading-16">
+              {registerInfo?.regiFeeAmount &&
+                numberWithComma(registerInfo?.regiFeeAmount)}
+            </span>
           </div>
           <div className="flex">
-            <Label label="결제 금액" minWidth={140} />
-            <span className="text-14 text-stone-700 leading-16">350,000</span>
+            <Label label="최종 결제 금액" minWidth={140} />
+            <span className="text-14 text-stone-700 leading-16">
+              {registerInfo?.regiFeeAmount &&
+                numberWithComma(registerInfo?.regiFeeAmount)}
+            </span>
           </div>
-          <div className="flex">
+
+          {/* <div className="flex">
             <Label label="결제 영수증" minWidth={140} />
             <Button
               sx={{
@@ -84,7 +119,7 @@ const RegisterInfo = forwardRef((props, ref) => {
               결제 영수증 확인하기
             </Button>
             <span className="text-14 text-stone-700 leading-16"></span>
-          </div>
+          </div> */}
         </Stack>
       </CardContent>
     </Card>
