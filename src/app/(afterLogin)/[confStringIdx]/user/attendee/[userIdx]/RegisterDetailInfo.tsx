@@ -87,7 +87,7 @@ const RegisterDetailInfo = forwardRef(
         />
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="flex flex-col gap-24" sx={{ p: 3 }}>
-            <Stack spacing={3} sx={{ p: 3 }}>
+            <Stack spacing={3}>
               {options?.map((option) => (
                 <Controller
                   key={option.idx}

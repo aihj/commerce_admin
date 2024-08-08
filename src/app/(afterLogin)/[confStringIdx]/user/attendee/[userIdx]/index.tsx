@@ -19,7 +19,6 @@ import {
   getAttendeeTermsInfo,
   updateAttendeeBasicInfo,
   updateAttendeeRegisterDetailInfo,
-  updateAttendeeTermsInfo,
 } from '@/api/attendeeApi';
 import { useQuery } from '@tanstack/react-query';
 import { useAppSelector } from '@/redux/hooks';
@@ -27,10 +26,7 @@ import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { getConferenceRegisterOptions } from '@/api/conferenceApi';
 import { RegisterDetailOptionsState } from '@/constants/registerOptions';
 import { logger } from '@/lib/logger/defaultLogger';
-import {
-  AttendeeRegisterDetailInfoRequest,
-  AttendeeTermsInfoRequest,
-} from '@/api/types/attendeeTypes';
+import { AttendeeRegisterDetailInfoRequest } from '@/api/types/attendeeTypes';
 
 interface UserDetailProps {
   userIdx: number;
@@ -187,25 +183,6 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
       });
   };
 
-  const handleTermsInfo = (termsInfo: AttendeeTermsInfoRequest) => {
-    updateAttendeeTermsInfo(termsInfo)
-      .then((result) => {
-        if (result.status === 200) {
-          Swal.fire({
-            title: '저장 완료',
-            text: '약관 동의 정보가 수정되었습니다.',
-          });
-        }
-      })
-      .catch((error) => {
-        logger.error('<updateAttendeeTermsInfo> error', error);
-        Swal.fire({
-          title: '저장 실패',
-          text: '다시 시도하거나 관리자에게 문의해 주세요.',
-        });
-      });
-  };
-
   const handleRegisterDetailInfo = (
     detailInfo: AttendeeRegisterDetailInfoRequest
   ) => {
@@ -270,11 +247,7 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
         />
         <TermsAgreeInfo
           ref={termAgreeRef}
-          userIdx={userIdx}
           terms={getAttendeeTermsInfoData?.content}
-          handleTermsInfo={(data: AttendeeTermsInfoRequest) =>
-            handleTermsInfo(data)
-          }
         />
         <RegisterDetailInfo
           ref={registerDetailRef}
