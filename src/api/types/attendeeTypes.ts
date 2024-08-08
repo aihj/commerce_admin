@@ -92,3 +92,14 @@ export interface AttendeeRegisterPaymentsInfoResponse {
   paymentCreateT: string;
   paymentMethod: string;
 }
+
+export interface AttendeeTermsInfoRequest {
+  wuserIdx: number;
+  termsJson: string;
+}
+
+export interface AttendeeRegisterDetailInfoRequest {
+  conferenceIdx: number;
+  wuserIdx: number;
+  optionsJson: string;
+}

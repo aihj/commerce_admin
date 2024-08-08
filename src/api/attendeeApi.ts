@@ -1,15 +1,18 @@
 import { adminAxiosInstance } from '@/api/authApi';
 import {
   AttendeeDetailTypeRegiInfoResponse,
+  AttendeeRegisterDetailInfoRequest,
   AttendeeRegisterInfoResponse,
   AttendeeRegisterPaymentsInfoResponse,
   AttendeeTermsAgreeInfoResponse,
+  AttendeeTermsInfoRequest,
   JoinAttendeeDtVo,
   RegisterAttendeeDtVo,
 } from '@/api/types/attendeeTypes';
 import { ResponseMessageVo } from '@/types/type';
 import { logger } from '@/lib/logger/defaultLogger';
 import { JoinAttendeeListSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/page';
+import { BasicInfoForm } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/[userIdx]/BasicInfo';
 
 /**
  * 가입 회원 리스트 가져오기
@@ -133,6 +136,52 @@ export const getAttendeeRegisterPaymentsInfo = (
     .then((response) => {
       logger.debug(
         `<getAttendeeRegisterPaymentsInfo> response.data ${wuserIdx} : `,
+        response.data
+      );
+      return response.data;
+    });
+};
+
+/**
+ * 회원 상세 정보 수정(일반 정보)
+ * @param BasicInfoForm
+ * @returns null
+ */
+export const updateAttendeeBasicInfo = (
+  params: BasicInfoForm
+): Promise<ResponseMessageVo<null>> => {
+  return adminAxiosInstance
+    .post(`/api/pco/admin/total/top/attendee/join-info`, params)
+    .then((response) => {
+      logger.debug('<updateAttendeeBasicInfo> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+export const updateAttendeeTermsInfo = (
+  params: AttendeeTermsInfoRequest
+): Promise<ResponseMessageVo<null>> => {
+  return adminAxiosInstance
+    .post(`/api/pco/admin/total/top/attendee/select-terms`, params)
+    .then((response) => {
+      logger.debug('<updateAttendeeTermsInfo> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 회원 상세 정보 수정(학회 등록 세부 정보)
+ * @param params AttendeeRegisterDetailInfoRequest
+ * @returns null
+ */
+export const updateAttendeeRegisterDetailInfo = (
+  params: AttendeeRegisterDetailInfoRequest
+): Promise<ResponseMessageVo<null>> => {
+  return adminAxiosInstance
+    .post(`/api/pco/admin/total/top/attendee/option-v2`, params)
+    .then((response) => {
+      logger.debug(
+        '<updateAttendeeRegisterDetailInfo> response.data : ',
         response.data
       );
       return response.data;

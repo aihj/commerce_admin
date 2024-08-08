@@ -1,6 +1,9 @@
 'use client';
 
-import { AttendeeTermsAgreeInfoResponse } from '@/api/types/attendeeTypes';
+import {
+  AttendeeTermsAgreeInfoResponse,
+  AttendeeTermsInfoRequest,
+} from '@/api/types/attendeeTypes';
 import { Label } from '@/components/core/Label';
 import {
   Button,
@@ -28,20 +31,14 @@ const typeOptions = [
   value: string;
 }[];
 
-const termsEx = [
-  {
-    isSelect: 'n',
-    title: '제 3자 정보 제공 동의',
-    termsIdx: 1,
-  },
-];
-
 interface TermsAgreeInfoProp {
   terms: AttendeeTermsAgreeInfoResponse[] | undefined;
+  userIdx: number;
+  handleTermsInfo: (data: AttendeeTermsInfoRequest) => void;
 }
 
 const TermsAgreeInfo = forwardRef(
-  ({ terms = termsEx }: TermsAgreeInfoProp, ref) => {
+  ({ terms, userIdx, handleTermsInfo }: TermsAgreeInfoProp, ref) => {
     const [termsState, setTermsState] =
       useState<AttendeeTermsAgreeInfoResponse[]>();
 
@@ -56,9 +53,16 @@ const TermsAgreeInfo = forwardRef(
       setTermsState(newState);
     };
 
-    if (terms.length === 0) {
+    if (terms?.length === 0) {
       return null;
     }
+
+    const handleClick = () => {
+      handleTermsInfo({
+        wuserIdx: userIdx,
+        termsJson: JSON.stringify(termsState),
+      });
+    };
 
     return (
       <Card
@@ -80,7 +84,7 @@ const TermsAgreeInfo = forwardRef(
         />
         <form>
           <CardContent className="flex flex-col gap-24" sx={{ p: 3 }}>
-            {terms.map((term) => (
+            {terms?.map((term) => (
               <div className="flex" key={term.termsIdx}>
                 <Label label={term.title} minWidth={200} />
                 <RadioGroup
@@ -121,12 +125,10 @@ const TermsAgreeInfo = forwardRef(
             <div className="text-right">
               <Button
                 sx={{ minWidth: 180 }}
-                onClick={() => {
-                  alert('데이터를 저장');
-                }}
                 variant="contained"
                 color="primary"
                 size="large"
+                onClick={() => handleClick()}
               >
                 저장
               </Button>

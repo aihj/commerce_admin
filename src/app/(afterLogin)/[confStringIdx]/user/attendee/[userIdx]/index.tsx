@@ -4,7 +4,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { PageTitle } from '@/components/core/PageTitle';
 import { Stack } from '@mui/material';
 import Box from '@mui/material/Box';
-import { BasicInfo } from './BasicInfo';
+import Swal from 'sweetalert2';
+import { BasicInfo, BasicInfoForm } from './BasicInfo';
 import { TermsAgreeInfo } from './TermsAgreeInfo';
 import { RegisterDetailInfo } from './RegisterDetailInfo';
 import { RegisterInfo } from './RegisterInfo';
@@ -16,6 +17,9 @@ import {
   getAttendeeRegisterInfo,
   getAttendeeRegisterPaymentsInfo,
   getAttendeeTermsInfo,
+  updateAttendeeBasicInfo,
+  updateAttendeeRegisterDetailInfo,
+  updateAttendeeTermsInfo,
 } from '@/api/attendeeApi';
 import { useQuery } from '@tanstack/react-query';
 import { useAppSelector } from '@/redux/hooks';
@@ -23,6 +27,10 @@ import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { getConferenceRegisterOptions } from '@/api/conferenceApi';
 import { RegisterDetailOptionsState } from '@/constants/registerOptions';
 import { logger } from '@/lib/logger/defaultLogger';
+import {
+  AttendeeRegisterDetailInfoRequest,
+  AttendeeTermsInfoRequest,
+} from '@/api/types/attendeeTypes';
 
 interface UserDetailProps {
   userIdx: number;
@@ -160,6 +168,65 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
     enabled: !!conferenceIdx,
   });
 
+  const handleBasicInfo = (basicInfo: BasicInfoForm) => {
+    updateAttendeeBasicInfo(basicInfo)
+      .then((result) => {
+        if (result.status === 200) {
+          Swal.fire({
+            title: '저장 완료',
+            text: '회원정보가 수정되었습니다.',
+          });
+        }
+      })
+      .catch((error) => {
+        logger.error('<updateAttendeeBasicInfo> error', error);
+        Swal.fire({
+          title: '저장 실패',
+          text: '다시 시도하거나 관리자에게 문의해 주세요.',
+        });
+      });
+  };
+
+  const handleTermsInfo = (termsInfo: AttendeeTermsInfoRequest) => {
+    updateAttendeeTermsInfo(termsInfo)
+      .then((result) => {
+        if (result.status === 200) {
+          Swal.fire({
+            title: '저장 완료',
+            text: '약관 동의 정보가 수정되었습니다.',
+          });
+        }
+      })
+      .catch((error) => {
+        logger.error('<updateAttendeeTermsInfo> error', error);
+        Swal.fire({
+          title: '저장 실패',
+          text: '다시 시도하거나 관리자에게 문의해 주세요.',
+        });
+      });
+  };
+
+  const handleRegisterDetailInfo = (
+    detailInfo: AttendeeRegisterDetailInfoRequest
+  ) => {
+    updateAttendeeRegisterDetailInfo(detailInfo)
+      .then((result) => {
+        if (result.status === 200) {
+          Swal.fire({
+            title: '저장 완료',
+            text: '학회 등록 세부 정보가 수정되었습니다.',
+          });
+        }
+      })
+      .catch((error) => {
+        logger.error('<updateAttendeeRegisterDetailInfo> error', error);
+        Swal.fire({
+          title: '저장 실패',
+          text: '다시 시도하거나 관리자에게 문의해 주세요.',
+        });
+      });
+  };
+
   // 전체 api 공통으로 사용 TODO <PageLoading />
   if (
     getAttendeeBasicInfoIsLoading ||
@@ -197,15 +264,26 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
         <ScrollMenu menus={menus} handleMenuClick={handleMenuClick} />
         <BasicInfo
           ref={basicRef}
+          userIdx={userIdx}
           basicInfo={getAttendeeBasicInfoData?.content}
+          handleBasicInfo={(data: BasicInfoForm) => handleBasicInfo(data)}
         />
         <TermsAgreeInfo
           ref={termAgreeRef}
+          userIdx={userIdx}
           terms={getAttendeeTermsInfoData?.content}
+          handleTermsInfo={(data: AttendeeTermsInfoRequest) =>
+            handleTermsInfo(data)
+          }
         />
         <RegisterDetailInfo
           ref={registerDetailRef}
+          conferenceIdx={conferenceIdx as number}
+          userIdx={userIdx}
           options={registerDetailOptions}
+          handleRegisterDetailInfo={(data: AttendeeRegisterDetailInfoRequest) =>
+            handleRegisterDetailInfo(data)
+          }
         />
         <RegisterInfo
           ref={registerRef}

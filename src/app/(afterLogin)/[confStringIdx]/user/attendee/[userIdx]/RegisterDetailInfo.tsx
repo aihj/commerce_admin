@@ -15,14 +15,25 @@ import {
   RegisterOptions,
   RegisterOptionsType,
 } from '@/constants/registerOptions';
+import { AttendeeRegisterDetailInfoRequest } from '@/api/types/attendeeTypes';
 
 interface RegisterDetailInfoProp {
   options: RegisterDetailOptionsState[] | null | undefined;
+  conferenceIdx: number;
+  userIdx: number;
+  handleRegisterDetailInfo: (data: AttendeeRegisterDetailInfoRequest) => void;
 }
 
 const RegisterDetailInfo = forwardRef(
-  ({ options }: RegisterDetailInfoProp, ref) => {
-    console.log('options', options);
+  (
+    {
+      options,
+      conferenceIdx,
+      userIdx,
+      handleRegisterDetailInfo,
+    }: RegisterDetailInfoProp,
+    ref
+  ) => {
     const {
       control,
       handleSubmit,
@@ -30,7 +41,28 @@ const RegisterDetailInfo = forwardRef(
     } = useForm<RegisterOptionsType>({});
 
     const onSubmit = (data: RegisterOptionsType) => {
-      console.log(data);
+      type RegisterOptionsFormType = {
+        [key: string]: any; // 모든 키가 string이고 값이 any인 객체
+      };
+      const newData: RegisterOptionsFormType = data;
+
+      const transform = (
+        newData: RegisterOptionsFormType
+      ): { [key: string]: any }[] => {
+        const options = Object.keys(newData).map((key) => ({
+          [key]: newData[key],
+        }));
+
+        return options;
+      };
+
+      const optionsString = JSON.stringify(transform(newData));
+      const formData: AttendeeRegisterDetailInfoRequest = {
+        conferenceIdx,
+        wuserIdx: userIdx,
+        optionsJson: optionsString,
+      };
+      handleRegisterDetailInfo(formData);
     };
     if (options === null) {
       return;
@@ -76,9 +108,6 @@ const RegisterDetailInfo = forwardRef(
             <div className="text-right">
               <Button
                 sx={{ minWidth: 180 }}
-                onClick={() => {
-                  alert('데이터를 저장');
-                }}
                 variant="contained"
                 color="primary"
                 size="large"
