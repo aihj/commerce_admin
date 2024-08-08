@@ -45,7 +45,6 @@ const BasicInfo = forwardRef(
     } = useForm<BasicInfoForm>({ defaultValues: { wuserIdx: userIdx } });
 
     const onsubmit = (data: BasicInfoForm) => {
-      console.log('data', data);
       handleBasicInfo(data);
     };
     return (
@@ -245,9 +244,7 @@ const BasicInfo = forwardRef(
                     <span className="text-12 leading-14 text-stone-600">
                       {
                         // isDirty ?
-                        field.value?.length
-                          ? field.value?.length
-                          : basicInfo?.memo.length
+                        field.value?.length ? field.value?.length : 0
                       }
                       / 1000
                     </span>

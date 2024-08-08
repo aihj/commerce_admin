@@ -44,7 +44,7 @@ const TermsAgreeInfo = forwardRef(
 
     useEffect(() => {
       setTermsState(terms);
-    }, []);
+    }, [terms]);
 
     const handleTermAgreeChange = (termIdx: number, value: string) => {
       const newState = termsState?.map((term) =>
@@ -52,15 +52,16 @@ const TermsAgreeInfo = forwardRef(
       );
       setTermsState(newState);
     };
-
     if (terms?.length === 0) {
       return null;
     }
 
     const handleClick = () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const filteredArray = termsState?.map(({ title, ...rest }) => rest);
       handleTermsInfo({
         wuserIdx: userIdx,
-        termsJson: JSON.stringify(termsState),
+        termsJson: JSON.stringify(filteredArray),
       });
     };
 
