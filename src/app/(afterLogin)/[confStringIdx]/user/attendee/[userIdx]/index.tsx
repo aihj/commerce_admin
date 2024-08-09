@@ -5,11 +5,6 @@ import { PageTitle } from '@/components/core/PageTitle';
 import { Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import Swal from 'sweetalert2';
-import { BasicInfo, BasicInfoForm } from './BasicInfo';
-import { TermsAgreeInfo } from './TermsAgreeInfo';
-import { RegisterDetailInfo } from './RegisterDetailInfo';
-import { RegisterInfo } from './RegisterInfo';
-import { PaymentListInfo } from './PaymentListInfo';
 import { ScrollMenu } from '@/components/ScrollMenu';
 import {
   getAttendeeBasicInfo,
@@ -27,6 +22,13 @@ import { getConferenceRegisterOptions } from '@/api/conferenceApi';
 import { RegisterDetailOptionsState } from '@/constants/registerOptions';
 import { logger } from '@/lib/logger/defaultLogger';
 import { AttendeeRegisterDetailInfoRequest } from '@/api/types/attendeeTypes';
+import { UserDuplicatedInfoRequest } from '@/api/types/publicTypes';
+import { checkDuplicatedEmail, checkDuplicatedPhone } from '@/api/publicApi';
+import { BasicInfo, BasicInfoForm } from './BasicInfo';
+import { TermsAgreeInfo } from './TermsAgreeInfo';
+import { RegisterDetailInfo } from './RegisterDetailInfo';
+import { RegisterInfo } from './RegisterInfo';
+import { PaymentListInfo } from './PaymentListInfo';
 
 interface UserDetailProps {
   userIdx: number;
@@ -124,6 +126,9 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
   }, [conferenceIdx, userIdx]);
   // 학회 세부 옵션 정보 (끝)
 
+  const [checkedEmail, setCheckedEmail] = useState<boolean>(false);
+  const [checkedPhone, setCheckedPhone] = useState<boolean>(false);
+
   const {
     isLoading: getAttendeeBasicInfoIsLoading,
     error: getAttendeeBasicInfoError,
@@ -204,6 +209,66 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
       });
   };
 
+  const handleDuplicatedEmail = (data: UserDuplicatedInfoRequest) => {
+    setCheckedEmail(false);
+    checkDuplicatedEmail(data)
+      .then((result) => {
+        if (result.status === 200) {
+          setCheckedEmail(true);
+          Swal.fire({
+            title: '중복확인 완료',
+            text: '사용 가능한 이메일입니다.',
+          });
+        }
+      })
+      .catch((error) => {
+        logger.error('<handleDuplicatedEmail> error', error);
+        if (
+          error.response.data.code.split('.')[3] === 'duplicate_email_attendee'
+        ) {
+          Swal.fire({
+            title: '중복확인 실패',
+            text: '이미 사용중인 이메일 입니다.',
+          });
+        } else {
+          Swal.fire({
+            title: '중복확인 실패',
+            text: '다시 시도하거나 관리자에게 문의해 주세요.',
+          });
+        }
+      });
+  };
+
+  const handleDuplicatedPhone = (data: UserDuplicatedInfoRequest) => {
+    setCheckedPhone(false);
+    checkDuplicatedPhone(data)
+      .then((result) => {
+        if (result.status === 200) {
+          setCheckedPhone(true);
+          Swal.fire({
+            title: '중복확인 완료',
+            text: '사용 가능한 휴대폰 번호입니다.',
+          });
+        }
+      })
+      .catch((error) => {
+        logger.error('<handleDuplicatedPhone> error', error);
+        if (
+          error.response.data.code.split('.')[3] === 'duplicate_phone_attendee'
+        ) {
+          Swal.fire({
+            title: '중복확인 실패',
+            text: '이미 사용중인 휴대폰 번호 입니다.',
+          });
+        } else {
+          Swal.fire({
+            title: '중복확인 실패',
+            text: '다시 시도하거나 관리자에게 문의해 주세요.',
+          });
+        }
+      });
+  };
+
   // 전체 api 공통으로 사용 TODO <PageLoading />
   if (
     getAttendeeBasicInfoIsLoading ||
@@ -242,8 +307,17 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
         <BasicInfo
           ref={basicRef}
           userIdx={userIdx}
+          conferenceIdx={conferenceIdx as number}
           basicInfo={getAttendeeBasicInfoData?.content}
           handleBasicInfo={(data: BasicInfoForm) => handleBasicInfo(data)}
+          checkedEmail={checkedEmail}
+          checkedPhone={checkedPhone}
+          handleDuplicatedEmail={(data: UserDuplicatedInfoRequest) =>
+            handleDuplicatedEmail(data)
+          }
+          handleDuplicatedPhone={(data: UserDuplicatedInfoRequest) =>
+            handleDuplicatedPhone(data)
+          }
         />
         <TermsAgreeInfo
           ref={termAgreeRef}

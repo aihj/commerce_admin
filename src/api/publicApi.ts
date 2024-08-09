@@ -1,5 +1,8 @@
 import axios from 'axios';
 import { PcoBaseInfoVo } from '@/types/type';
+import { UserDuplicatedInfoRequest } from './types/publicTypes';
+import { ResponseMessageVo } from '@/types/type';
+import { logger } from '@/lib/logger/defaultLogger';
 
 // 학회 기본 데이터 가져오기
 export const getPcoInfoForFirst = (
@@ -34,5 +37,43 @@ export const checkRefundAmount = (
     .then((response) => {
       // logger.debug('<getJoinAttendeeDt> response.data : ', response.data);
       return response.data.content;
+    });
+};
+
+/**
+ * 이메일 중복 체크
+ * @param UserDuplicatedInfoRequest
+ * @returns
+ */
+export const checkDuplicatedEmail = (
+  params: UserDuplicatedInfoRequest
+): Promise<ResponseMessageVo<null>> => {
+  return axios
+    .post(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/public/pco/user/email-duplicate`,
+      params
+    )
+    .then((response) => {
+      logger.debug('<checkDuplicatedEmail> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 휴대폰 번호 중복 체크
+ * @param UserDuplicatedInfoRequest
+ * @returns
+ */
+export const checkDuplicatedPhone = (
+  params: UserDuplicatedInfoRequest
+): Promise<ResponseMessageVo<null>> => {
+  return axios
+    .post(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/public/pco/user/phone-duplicate`,
+      params
+    )
+    .then((response) => {
+      logger.debug('<checkDuplicatedPhone> response.data : ', response.data);
+      return response.data;
     });
 };

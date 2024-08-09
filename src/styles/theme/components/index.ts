@@ -49,6 +49,7 @@ import { MuiTimelineConnector } from './timeline-connector';
 import { MuiToggleButton } from './toggle-button';
 import { MuiToggleButtonGroup } from './toggle-button-group';
 import { MuiTooltip } from './tooltip';
+import { MuiFormHelperText } from './form-helper-text';
 
 export const components = {
   MuiAlert,
@@ -68,6 +69,7 @@ export const components = {
   MuiFormControlLabel,
   MuiFormGroup,
   MuiFormLabel,
+  MuiFormHelperText,
   MuiIconButton,
   MuiInput,
   MuiInputBase,
