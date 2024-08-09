@@ -29,11 +29,13 @@ const useCustomSearchParams = <T>(initialParams: T) => {
 
   const deleteCSearchParams = useCallback(() => {
     setCSearchParamsFunc(initialParams);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     logger.debug('setCSearchParams 초기화');
     setCSearchParamsFunc(initialParams);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return {
     cSearchParams,

@@ -7,15 +7,15 @@ import { FilterButton } from '@/components/core/FilterButton';
 import TableOneSelectFilterPopover from '@/components/core/table/filter/TableOneSelectFilterPopover';
 import { TableDateFilterPopover } from '@/components/core/table/filter/TableDateFilterPopover';
 import TableTextFilter from '@/components/core/table/filter/TableTextFilter';
-import { RegisterAttendeeListSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/page';
+import { RegisterAttendeeListTypeTossSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeToss';
 
 interface RegisterAttendeeListFiltersProps {
-  cSearchParams: RegisterAttendeeListSearchParamsType;
+  cSearchParams: RegisterAttendeeListTypeTossSearchParamsType;
   setCSearchParamsFunc: (parma: any) => any;
   deleteCSearchParams: () => any;
 }
 
-const RegisterAttendeeListFilters = ({
+const RegisterAttendeeListTypeTossFilters = ({
   cSearchParams,
   setCSearchParamsFunc,
   deleteCSearchParams,
@@ -162,7 +162,7 @@ const RegisterAttendeeListFilters = ({
                 data={genderFilterData}
               />
             }
-            value={cSearchParams?.gender || undefined}
+            value={cSearchParams?.gender}
           />
 
           <FilterButton
@@ -254,4 +254,4 @@ const RegisterAttendeeListFilters = ({
     </div>
   );
 };
-export { RegisterAttendeeListFilters };
+export { RegisterAttendeeListTypeTossFilters };

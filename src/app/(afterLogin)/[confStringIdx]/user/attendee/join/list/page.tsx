@@ -48,7 +48,7 @@ const JoinAttendeeList = () => {
   }, [conferenceIdx]);
   const { cSearchParams, setCSearchParamsFunc, deleteCSearchParams } =
     useCustomSearchParams<JoinAttendeeListSearchParamsType>(initSearchParam);
-  window.cSearchParams = cSearchParams;
+  // window.cSearchParams = cSearchParams;
   // endregion ***************** params 동기화 *****************
 
   // 유저 상세 페이지로 이동하기

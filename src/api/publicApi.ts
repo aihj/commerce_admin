@@ -13,3 +13,26 @@ export const getPcoInfoForFirst = (
     )
     .then((result) => result.data.content);
 };
+
+/**
+ * 해당 attendee의 환불 받을 수 있는 금액 체크하기(결제 방식이 수동계좌이체인경우)
+ * @param params
+ */
+export const checkRefundAmount = (
+  conferenceIdx: number,
+  attendeePaymentIdx: number
+): Promise<number> => {
+  // logger.debug('<checkRefundAmount> params ', params);
+  return axios
+    .post(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/public/pco/attendee/check-refund-amount`,
+      {
+        conferenceIdx,
+        attendeePaymentIdx,
+      }
+    )
+    .then((response) => {
+      // logger.debug('<getJoinAttendeeDt> response.data : ', response.data);
+      return response.data.content;
+    });
+};

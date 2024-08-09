@@ -13,6 +13,8 @@ import { ResponseMessageVo } from '@/types/type';
 import { logger } from '@/lib/logger/defaultLogger';
 import { JoinAttendeeListSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/page';
 import { BasicInfoForm } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/[userIdx]/BasicInfo';
+import { RegisterAttendeeListTypeManualSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeManual';
+import { RegisterAttendeeListTypeTossSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeToss';
 
 /**
  * 가입 회원 리스트 가져오기
@@ -32,15 +34,34 @@ export const getJoinAttendeeDt = (
 };
 
 /**
- * 등록 회원 리스트 가져오기
+ * 등록 회원 리스트 가져오기(결제 방식이 토스인경우)
  * @param params
  */
-export const getRegisterAttendeeDt = (
-  params: JoinAttendeeListSearchParamsType
-): Promise<ResponseMessageVo<RegisterAttendeeDtVo>> => {
-  logger.debug('<getRegisterAttendeeDt> params ', params);
+export const getRegisterAttendeeDtTypeToss = (
+  params: RegisterAttendeeListTypeTossSearchParamsType
+): Promise<ResponseMessageVo<RegisterAttendeeDtVo[]>> => {
+  logger.debug('<getRegisterAttendeeDtTypeToss> params ', params);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/register-attendee-dt`, params)
+    .post(`/api/pco/admin/total/register-attendee-dt-toss`, params)
+    .then((response) => {
+      logger.debug(
+        '<getRegisterAttendeeDtTypeToss> response.data : ',
+        response.data
+      );
+      return response.data;
+    });
+};
+
+/**
+ * 등록 회원 리스트 가져오기(결제 방식이 수동계좌이체인경우)
+ * @param params
+ */
+export const getRegisterAttendeeDtTypeManual = (
+  params: RegisterAttendeeListTypeManualSearchParamsType
+): Promise<ResponseMessageVo<RegisterAttendeeDtVo[]>> => {
+  logger.debug('<getRegisterAttendeeDtTypeManual> params ', params);
+  return adminAxiosInstance
+    .post(`/api/pco/admin/total/register-attendee-dt-manual`, params)
     .then((response) => {
       logger.debug('<getJoinAttendeeDt> response.data : ', response.data);
       return response.data;
@@ -184,6 +205,26 @@ export const updateAttendeeRegisterDetailInfo = (
         '<updateAttendeeRegisterDetailInfo> response.data : ',
         response.data
       );
+      return response.data;
+    });
+};
+
+/**
+ * 수동 계좌이체의 manualStatus 변경
+ * @param params
+ */
+export const attendeePaymentManualStatusChange = (
+  attendeePaymentIdx: number,
+  desiredStatus: string
+): Promise<ResponseMessageVo<any>> => {
+  // logger.debug('<getRegisterAttendeeDtTypeManual> params ', params);
+  return adminAxiosInstance
+    .post(
+      `/api/pco/admin/total/top/attendee/attendee-payment-manual-status-change`,
+      { attendeePaymentIdx, desiredStatus }
+    )
+    .then((response) => {
+      // logger.debug('<getJoinAttendeeDt> response.data : ', response.data);
       return response.data;
     });
 };

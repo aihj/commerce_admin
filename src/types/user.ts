@@ -13,3 +13,15 @@ export interface User {
   // 학회의 경우
   conferenceIdx?: string;
 }
+
+export interface AttendeePaymentManualVo {
+  attendeePaymentIdx?: number;
+  indicatedAmount?: number;
+  amount: number;
+  paymentCreateT?: string;
+  manualStatus:
+    | 'payment-pending'
+    | 'payment-confirmed'
+    | 'cancel-request'
+    | 'cancel-completed';
+}

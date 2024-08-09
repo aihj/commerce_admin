@@ -3,6 +3,8 @@ import { HashMap } from './commonTypes';
 /**
  * 가입 회원 DT
  */
+import { HashMap } from '@/api/types/commonTypes';
+
 export interface JoinAttendeeDtVo {
   wuserIdx: number;
   attendeeIdx?: number;
@@ -38,6 +40,7 @@ export interface RegisterAttendeeDtVo {
     preRegi : 사전 등록|onSiteRegi : 현장 등록|cancelled:등록 취소
   */
   registrationStatus: string;
+  registrationAt?: number;
   hasMemo: boolean; //  메모 존재 여부
 
   // 추가 결제

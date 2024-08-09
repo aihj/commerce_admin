@@ -21,6 +21,7 @@ export interface PcoBaseInfoVo {
   logoName?: string;
   logoPath?: string;
   sendPaymentReceiptEmail?: string;
+  paymentMethod: string;
 }
 
 export interface Committee {

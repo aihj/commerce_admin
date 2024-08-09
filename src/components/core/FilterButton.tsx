@@ -8,7 +8,6 @@ import { MinusCircle as MinusCircleIcon } from '@phosphor-icons/react/dist/ssr/M
 import { PlusCircle as PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
 
 import { usePopover } from '@/hooks/usePopover';
-import { logger } from '@/lib/logger/defaultLogger';
 
 interface FilterContextValue<T = unknown> {
   anchorEl: HTMLElement | null;
@@ -37,7 +36,7 @@ export function useFilterContext(): FilterContextValue {
 }
 
 interface FilterButtonProps {
-  displayValue?: string | undefined;
+  displayValue?: string | boolean | undefined;
   label: string;
   onFilterApply?: (value: unknown) => void;
   onFilterDelete?: () => void;
@@ -54,7 +53,7 @@ const FilterButton = ({
   popover,
   value,
 }: FilterButtonProps): React.JSX.Element => {
-  logger.debug('<FilterButton> : value', value);
+  // logger.debug('<FilterButton> : value', value);
   const { anchorRef, handleOpen, handleClose, open } =
     usePopover<HTMLButtonElement>();
 

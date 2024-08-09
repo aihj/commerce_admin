@@ -12,6 +12,7 @@ export interface Pco {
   logoHost: string;
   logoPath: string;
   logoName: string;
+  paymentMethod: string;
 }
 
 const initialState: Pco = {
@@ -25,6 +26,7 @@ const initialState: Pco = {
   logoHost: '',
   logoPath: '',
   logoName: '',
+  paymentMethod: '',
 };
 
 // Create a Redux slice for managing card data
