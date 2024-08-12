@@ -14,7 +14,7 @@ import {
   TextField,
 } from '@mui/material';
 import { Label } from '@/components/core/Label';
-import { GENDERS, WUSER_STATUS } from '@/constants/selectOptions';
+import { WUSER_STATUS } from '@/constants/selectOptions';
 import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
 import { dateFormat } from '@/lib/dayjs';
 import { UserDuplicatedInfoRequest } from '@/api/types/publicTypes';
@@ -215,21 +215,21 @@ const BasicInfo = forwardRef(
                 <Controller
                   control={control}
                   name="gender"
-                  defaultValue={basicInfo?.gender}
+                  defaultValue={basicInfo?.gender === 'F' ? '여성' : '남성'}
                   render={({ field }) => (
                     <TextField
                       label="성별"
-                      select
+                      // select
                       fullWidth
                       disabled
                       sx={{ p: 0 }}
                       {...field}
                     >
-                      {GENDERS.map((option) => (
+                      {/* {GENDERS.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
                           {option.label}
                         </MenuItem>
-                      ))}
+                      ))} */}
                     </TextField>
                   )}
                 />
@@ -241,11 +241,18 @@ const BasicInfo = forwardRef(
                 <Controller
                   control={control}
                   name="wuserStatus"
-                  defaultValue={basicInfo?.wuserStatus}
+                  defaultValue={
+                    basicInfo?.wuserStatus === 'active'
+                      ? '회원'
+                      : basicInfo?.wuserStatus === 'delete'
+                        ? '탈퇴'
+                        : '기회원'
+                  }
+                  disabled
                   render={({ field }) => (
                     <TextField
                       label="회원 상태"
-                      select
+                      // select
                       fullWidth
                       sx={{ p: 0 }}
                       {...field}

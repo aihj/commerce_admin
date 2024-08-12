@@ -30,7 +30,7 @@ const PaymentListInfo = forwardRef(
           className="bg-secondary-light"
           title="전체 결제 내역"
         />
-        <CardContent className="flex flex-col gap-24" sx={{ p: 3 }}>
+        <CardContent className="flex flex-col gap-12" sx={{ p: 3 }}>
           {paymentList?.map((paymentInfo) => (
             <PaymentInfo
               key={paymentInfo.paymentCreateT}
