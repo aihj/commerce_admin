@@ -3,11 +3,18 @@ import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import React, { useCallback, useMemo } from 'react';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 import { PATH } from '@/paths';
-import { createColumnHelper } from '@tanstack/react-table';
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import TableBody from '@/components/core/table/TableBody';
-import { RegisterAttendeeDtVo } from '@/api/types/attendeeTypes';
+import {
+  PAYMENT_METHOD,
+  REGISTRATION_STATUS,
+  RegisterAttendeeDtVo,
+  genderLabels,
+  paymentMethodLabels,
+  paymentStatusLabels,
+  registrationStatusLabels,
+} from '@/api/types/attendeeTypes';
 import { TablePagination } from '@/components/core/table/TablePagination';
-import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import { useParams, useRouter } from 'next/navigation';
 import { Box, Button, Card, Stack, Typography } from '@mui/material';
@@ -15,6 +22,9 @@ import { useQuery } from '@tanstack/react-query';
 import { getRegisterAttendeeDtTypeToss } from '@/api/attendeeApi';
 import { RegisterAttendeeListTypeTossFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeTossFilters';
 import { FilterPlusActionButtons } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/FilterPlusActionButtons';
+import { DownloadIcon } from '@/components/icons/DownloadIcon';
+import { numberWithComma } from '@/lib/numberWithComma';
+import { MemoIcon } from '@/components/icons/MemoIcon';
 
 type RegisterAttendeeListTypeTossTypes = NonNullable<unknown>;
 
@@ -27,9 +37,14 @@ export interface RegisterAttendeeListTypeTossSearchParamsType
   paymentStatus?: string;
   paymentMethod?: string;
   wuserStatus?: 'prospective' | 'active' | 'delete'; // 회원 상태
-  hasMemo?: boolean;
+  hasMemo?: 'y' | 'n';
 }
-
+const registrationStatusColor = (status: REGISTRATION_STATUS) => {
+  if (status === REGISTRATION_STATUS.onSiteRegi) {
+    return 'text-info-dark font-medium';
+  }
+  return 'text-secondary-darkest';
+};
 const RegisterAttendeeListTypeToss =
   // eslint-disable-next-line no-empty-pattern
   ({}: RegisterAttendeeListTypeTossTypes) => {
@@ -40,7 +55,7 @@ const RegisterAttendeeListTypeToss =
     // region ***************** params 동기화 *****************
     const initSearchParam = useMemo((): TableSearchParams => {
       return {
-        conferenceIdx,
+        conferenceIdx: conferenceIdx as number,
         currentPage: 0,
         rowsPerPage: 10,
 
@@ -55,13 +70,18 @@ const RegisterAttendeeListTypeToss =
 
     // 유저 상세 페이지로 이동하기
     const moveUserDetail = useCallback(
-      (attendeeIdx) => {
-        router.push(PATH.EACH.USER.ATTENDEE.DETAIL(confStringIdx, attendeeIdx));
+      (wuserIdx: number) => {
+        router.push(
+          PATH.EACH.USER.ATTENDEE.DETAIL(
+            confStringIdx as string,
+            wuserIdx as number
+          )
+        );
       },
       [confStringIdx, router]
     );
 
-    const columnHelper = createColumnHelper();
+    const columnHelper = createColumnHelper<RegisterAttendeeDtVo>();
     const columns = useMemo(
       () => [
         columnHelper.accessor('name', {
@@ -69,142 +89,89 @@ const RegisterAttendeeListTypeToss =
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <Button
-                size="small"
-                variant="outlined"
-                color="success"
-                onClick={() => moveUserDetail(info.row.original.attendeeIdx)}
+                sx={{
+                  border: 0,
+                  textDecoration: 'underline',
+                  textUnderlinePosition: 'under',
+                }}
+                onClick={() =>
+                  moveUserDetail(info.row.original.wuserIdx as number)
+                }
                 title={`${info.row.original.wuserIdx}`}
               >
                 {`${info.getValue()}`}
-                {info.row.original.memo && <AssignmentOutlinedIcon />}
               </Button>
             </Box>
           ),
+        }),
+        columnHelper.accessor('memo', {
+          header: '',
+          cell: (info) => (
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              {info.row.original.memo ? <MemoIcon size={16} /> : ''}
+            </Box>
+          ),
+          size: 10,
         }),
         columnHelper.accessor('birthDate', {
           header: '생년',
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              {info.getValue()}
+              {info.row.getValue('birthDate')}
             </Box>
           ),
           size: 10,
         }),
         columnHelper.display({
           header: '성별',
-          cell: (info) => {
-            if (info.row.original.gender === 'F') {
-              return (
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  여성
-                </Box>
-              );
-            } else {
-              return (
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  남성
-                </Box>
-              );
-            }
-          },
-          size: 110,
+          cell: (info) => (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              {genderLabels[info.row.original.gender]}
+            </Box>
+          ),
+          size: 10,
         }),
 
         // (기본 프로그램 등록 기준, 추후 추가 프로그램 현장등록했다고 해도 사전등록으로 인정)
-        columnHelper.accessor('registrationStatus', {
-          header: '등록구분',
-          cell: (info) => {
-            switch (info.row.original.registrationStatus) {
-              case 'preRegi':
-                return (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    사전 등록
-                  </Box>
-                );
-              case 'onSiteRegi':
-                return (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    현장 등록
-                  </Box>
-                );
-              case 'cancelled':
-                return (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    등록 취소
-                  </Box>
-                );
-            }
-          },
+        columnHelper.display({
+          header: '등록 상태',
+          cell: (info) => (
+            <Box
+              sx={{ display: 'flex', justifyContent: 'center' }}
+              className={registrationStatusColor(
+                info.row.original.registrationStatus
+              )}
+            >
+              {registrationStatusLabels[info.row.original.registrationStatus]}
+            </Box>
+          ),
           size: 110,
         }),
         columnHelper.display({
           header: '결제 상태',
-          cell: (info) => {
-            switch (info.row.original.paymentStatus) {
-              case 'freeRegi':
-                return (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    무료 등록
-                  </Box>
-                );
-              case 'freeRegiCancelled':
-                return (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    무료 등록 취소
-                  </Box>
-                );
-              case 'paymentCompleted':
-                return (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    결제 완료
-                  </Box>
-                );
-              case 'refundCompleted':
-                return (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    환불 완료
-                  </Box>
-                );
-              case 'pendingPayment':
-                return (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    결제 대기
-                  </Box>
-                );
-            }
-          },
+          cell: (info) => (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              {paymentStatusLabels[info.row.original.paymentStatus]}
+            </Box>
+          ),
           size: 110,
         }),
-        columnHelper.accessor('paymentMethod', {
+        columnHelper.display({
           header: '결제수단',
-          cell: (info) => {
-            switch (info.row.original.paymentMethod) {
-              case 'card':
-                return (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    카드
-                  </Box>
-                );
-              case 'eWallet':
-                return (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    간편 결제
-                  </Box>
-                );
-              case 'free':
-                return (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    무료 결제
-                  </Box>
-                );
-              case 'manual':
-                return (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    수동 계좌이체
-                  </Box>
-                );
-            }
-          },
+          cell: (info) => (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              {info.row.original.paymentMethod === null
+                ? '-'
+                : paymentMethodLabels[
+                    info.row.original.paymentMethod as PAYMENT_METHOD
+                  ]}
+            </Box>
+          ),
           size: 110,
         }),
 
@@ -223,7 +190,7 @@ const RegisterAttendeeListTypeToss =
           cell: (info) => {
             return (
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                {info.getValue()}
+                {info.getValue() === null ? '-' : info.getValue()}
               </Box>
             );
           },
@@ -234,7 +201,7 @@ const RegisterAttendeeListTypeToss =
           cell: (info) => {
             return (
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                {info.getValue()}
+                {info.getValue() === null ? '-' : info.getValue()}
               </Box>
             );
           },
@@ -247,7 +214,7 @@ const RegisterAttendeeListTypeToss =
           cell: (info) => {
             return (
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                {info.getValue()}
+                {info.getValue() === null ? '-' : info.getValue()}
               </Box>
             );
           },
@@ -314,23 +281,48 @@ const RegisterAttendeeListTypeToss =
               setCSearchParamsFunc={setCSearchParamsFunc}
               deleteCSearchParams={deleteCSearchParams}
             />
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: 'space-between',
+                alignItems: 'end',
+                px: 2,
+                pb: 2,
+              }}
+            >
+              <span className="text-14 font-bold">
+                전체 {numberWithComma(data.totalCount)}
+              </span>
+              <Button
+                sx={{
+                  py: 0,
+                  px: 2,
+                  borderRadius: '20px',
+                  border: '1px solid #6366F180',
+                }}
+                variant="outlined"
+                startIcon={<DownloadIcon size={20} fill="#6366F1" />}
+              >
+                엑셀 다운로드
+              </Button>
+            </Stack>
             <TableBody<RegisterAttendeeDtVo>
               data={data.content}
-              columns={columns}
+              columns={columns as ColumnDef<RegisterAttendeeDtVo>[]}
               selectable={false}
               hideHead={false}
               uniqueRowId={(row: RegisterAttendeeDtVo) =>
                 row.attendeeIdx as number
               }
               isHover={true}
-              size="medium"
+              // size="medium"
             />
             <TablePagination<RegisterAttendeeListTypeTossSearchParamsType>
               cSearchParams={
                 cSearchParams as RegisterAttendeeListTypeTossSearchParamsType
               }
               setCSearchParamsFunc={setCSearchParamsFunc}
-              totalCount={data.totalCount as number}
+              totalCount={data.totalCount as unknown as number}
             />
           </Card>
         </Stack>

@@ -46,12 +46,20 @@ export default function TableOneSelectFilterPopover({
     >
       <FormControl>
         <Select
+          MenuProps={{
+            PaperProps: {
+              style: {
+                maxHeight: 400,
+                width: 250,
+              },
+            },
+          }}
           onChange={(event) => {
             setValue(event.target.value);
           }}
           value={value}
         >
-          <Option value="">Select a category</Option>
+          <Option value="">선택 안함</Option>
           {data.map((item) => (
             <Option key={item.value} value={item.value}>
               {item.label}
@@ -65,7 +73,7 @@ export default function TableOneSelectFilterPopover({
         }}
         variant="contained"
       >
-        Apply
+        적용
       </Button>
     </FilterPopover>
   );

@@ -92,9 +92,8 @@ export interface ResponseMessageVo<T> {
   error?: ResponseMessageVoError;
   message?: string;
   status?: number;
-  totalCount: ResponseMessageVoTotalCount;
+  totalCount: number;
 }
-export type ResponseMessageVoTotalCount = { [key: string]: any };
 
 export type ResponseMessageVoError = {
   cause?: ResponseMessageVoErrorCause;

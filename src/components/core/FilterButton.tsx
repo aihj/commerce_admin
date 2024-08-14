@@ -79,6 +79,7 @@ const FilterButton = ({
         color="secondary"
         onClick={handleOpen}
         ref={anchorRef}
+        sx={{ px: 2, py: 1 }}
         startIcon={
           value ? (
             <Box

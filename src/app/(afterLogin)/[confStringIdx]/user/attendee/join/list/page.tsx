@@ -16,7 +16,10 @@ import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { useSelector } from 'react-redux';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import TableBody from '@/components/core/table/TableBody';
-import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
+import {
+  JoinAttendeeDtVo,
+  REGISTRATION_STATUS,
+} from '@/api/types/attendeeTypes';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { JoinAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/JoinAttendeeListFilters';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
@@ -172,22 +175,28 @@ const JoinAttendeeList = () => {
       columnHelper.display({
         header: '등록 상태',
         cell: (info) => {
-          if (info.row.original.registrationStatus === 'not_registered') {
+          if (
+            info.row.original.registrationStatus ===
+            REGISTRATION_STATUS.preRegistered
+          ) {
             return (
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="등록 안함" color="secondary" size="small" />
+                <Chip label="사전등록" color="primary" size="small" />
               </Box>
             );
-          } else if (info.row.original.registrationStatus === 'pre') {
+          } else if (
+            info.row.original.registrationStatus ===
+            REGISTRATION_STATUS.onSitePreregistered
+          ) {
             return (
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="사전 등록" color="primary" size="small" />
+                <Chip label="현장등록" color="info" size="small" />
               </Box>
             );
           } else {
             return (
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="현장 등록" color="secondary" size="small" />
+                <Chip label="미등록" size="small" />
               </Box>
             );
           }

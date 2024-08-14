@@ -5,15 +5,19 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { FilterButton } from '@/components/core/FilterButton';
 import TableOneSelectFilterPopover from '@/components/core/table/filter/TableOneSelectFilterPopover';
-import { TableDateFilterPopover } from '@/components/core/table/filter/TableDateFilterPopover';
-import TableTextFilter from '@/components/core/table/filter/TableTextFilter';
 import { RegisterAttendeeListTypeTossSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeToss';
+import { ResetIcon } from '@/components/icons/ResetIcon';
+import TableTextFilterPopover from '@/components/core/table/filter/TableTextFilterPopover';
 
 interface RegisterAttendeeListFiltersProps {
   cSearchParams: RegisterAttendeeListTypeTossSearchParamsType;
   setCSearchParamsFunc: (parma: any) => any;
   deleteCSearchParams: () => any;
 }
+
+const birthYearRange = Array.from(Array(125)).map((_, i) => {
+  return { value: (2005 - i).toString(), label: (2005 - i).toString() };
+});
 
 const RegisterAttendeeListTypeTossFilters = ({
   cSearchParams,
@@ -47,8 +51,8 @@ const RegisterAttendeeListTypeTossFilters = ({
 
   const genderFilterData = useMemo(
     () => [
-      { value: 'F', label: '여성' },
-      { value: 'M', label: '남성' },
+      { value: 'F', label: '여' },
+      { value: 'M', label: '남' },
     ],
     []
   );
@@ -79,7 +83,7 @@ const RegisterAttendeeListTypeTossFilters = ({
   const paymentMethodFD = useMemo(
     () => [
       { value: 'card', label: '카드' },
-      { value: 'eWallet', label: '간편 결제' },
+      { value: 'eWallet', label: '간편결제' },
       { value: 'free', label: '무료 결제' },
       { value: 'manual', label: '수동 계좌이체' },
     ],
@@ -119,9 +123,9 @@ const RegisterAttendeeListTypeTossFilters = ({
               onChangeSelect({ name: 'birthDateStartT', value: null });
             }}
             popover={
-              <TableDateFilterPopover
-                format="YYYY-MM-DD"
-                title="생년 시작 년도로 검색"
+              <TableOneSelectFilterPopover
+                title="생년 시작 년도 검색"
+                data={birthYearRange}
               />
             }
             value={cSearchParams?.birthDateStartT}
@@ -139,16 +143,21 @@ const RegisterAttendeeListTypeTossFilters = ({
               onChangeSelect({ name: 'birthDateEndT', value: null });
             }}
             popover={
-              <TableDateFilterPopover
-                format="YYYY-MM-DD"
-                title="학회 종료 날짜로 검색"
+              <TableOneSelectFilterPopover
+                title="생년 종료 년도 검색"
+                data={birthYearRange}
               />
             }
             value={cSearchParams?.birthDateEndT}
           />
 
           <FilterButton
-            displayValue={cSearchParams?.gender}
+            displayValue={
+              cSearchParams?.gender &&
+              genderFilterData.filter(
+                (item) => item.value === cSearchParams.gender
+              )[0].label
+            }
             label="성별"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'gender', value });
@@ -166,7 +175,11 @@ const RegisterAttendeeListTypeTossFilters = ({
           />
 
           <FilterButton
-            displayValue={cSearchParams?.hasMemo}
+            displayValue={
+              cSearchParams?.hasMemo &&
+              memoFD.filter((item) => item.value === cSearchParams.hasMemo)[0]
+                .label
+            }
             label="메모 여부"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'hasMemo', value });
@@ -175,35 +188,19 @@ const RegisterAttendeeListTypeTossFilters = ({
               onChangeSelect({ name: 'hasMemo', value: null });
             }}
             popover={
-              <TableOneSelectFilterPopover
-                title="Filter by category"
-                data={memoFD}
-              />
+              <TableOneSelectFilterPopover title="메모 여부" data={memoFD} />
             }
-            value={cSearchParams?.hasMemo || undefined}
+            value={cSearchParams?.hasMemo}
           />
 
           <FilterButton
-            displayValue={cSearchParams?.wuserStatus}
-            label="결제 상태"
-            onFilterApply={(value) => {
-              onChangeSelect({ name: 'wuserStatus', value });
-            }}
-            onFilterDelete={() => {
-              onChangeSelect({ name: 'wuserStatus', value: null });
-            }}
-            popover={
-              <TableOneSelectFilterPopover
-                title="Filter by category"
-                data={paymentStatusFD}
-              />
+            displayValue={
+              cSearchParams?.registrationStatus &&
+              registrationStatusFD.filter(
+                (item) => item.value === cSearchParams.registrationStatus
+              )[0].label
             }
-            value={cSearchParams?.wuserStatus || undefined}
-          />
-
-          <FilterButton
-            displayValue={cSearchParams?.registrationStatus}
-            label="등록 구분"
+            label="등록구분"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'registrationStatus', value });
             }}
@@ -212,15 +209,44 @@ const RegisterAttendeeListTypeTossFilters = ({
             }}
             popover={
               <TableOneSelectFilterPopover
-                title="Filter by category"
+                title="등록구분 선택"
                 data={registrationStatusFD}
               />
             }
-            value={cSearchParams?.registrationStatus || undefined}
+            value={cSearchParams?.registrationStatus}
           />
+
           <FilterButton
-            displayValue={cSearchParams?.paymentMethod}
-            label="결제 수단"
+            displayValue={
+              cSearchParams?.paymentStatus &&
+              paymentStatusFD.filter(
+                (item) => item.value === cSearchParams.paymentStatus
+              )[0].label
+            }
+            label="결제 상태"
+            onFilterApply={(value) => {
+              onChangeSelect({ name: 'paymentStatus', value });
+            }}
+            onFilterDelete={() => {
+              onChangeSelect({ name: 'paymentStatus', value: null });
+            }}
+            popover={
+              <TableOneSelectFilterPopover
+                title="결제 상태 선택"
+                data={paymentStatusFD}
+              />
+            }
+            value={cSearchParams?.paymentStatus}
+          />
+
+          <FilterButton
+            displayValue={
+              cSearchParams?.paymentMethod &&
+              paymentMethodFD.filter(
+                (item) => item.value === cSearchParams.paymentMethod
+              )[0].label
+            }
+            label="결제수단"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'paymentMethod', value });
             }}
@@ -229,25 +255,36 @@ const RegisterAttendeeListTypeTossFilters = ({
             }}
             popover={
               <TableOneSelectFilterPopover
-                title="Filter by category"
+                title="결제수단 선택"
                 data={paymentMethodFD}
               />
             }
-            value={cSearchParams?.paymentMethod || undefined}
+            value={cSearchParams?.paymentMethod}
           />
 
-          <TableTextFilter
-            displayValue={cSearchParams?.searchText || undefined}
+          <FilterButton
+            displayValue={cSearchParams?.searchText}
+            label="검색어"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'searchText', value });
             }}
             onFilterDelete={() => {
               onChangeSelect({ name: 'searchText', value: null });
             }}
+            popover={<TableTextFilterPopover title="이름,전화번호,메모 검색" />}
+            value={cSearchParams?.paymentMethod}
           />
 
           {hasFilters(cSearchParams) ? (
-            <Button onClick={() => handleClearFilters()}>조건 초기화</Button>
+            <Button
+              sx={{ px: 2, py: 1 }}
+              startIcon={<ResetIcon />}
+              onClick={() => handleClearFilters()}
+              variant="contained"
+              color="secondary"
+            >
+              초기화
+            </Button>
           ) : null}
         </Stack>
       </Stack>

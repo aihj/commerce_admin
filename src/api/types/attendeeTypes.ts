@@ -1,9 +1,65 @@
-import { HashMap } from './commonTypes';
-
 /**
  * 가입 회원 DT
  */
 import { HashMap } from '@/api/types/commonTypes';
+
+// 성별
+export enum GENDER {
+  F = 'F',
+  M = 'M',
+}
+
+export const genderLabels = {
+  [GENDER.F]: '여',
+  [GENDER.M]: '남',
+};
+
+// 등록구분
+export enum REGISTRATION_STATUS {
+  preregistered = 'preregistered',
+  onSitePreregistered = 'onSitePreregistered',
+  cancelled = 'cancelled',
+  notRegunregisteredistered = 'unregistered',
+}
+
+export const registrationStatusLabels = {
+  [REGISTRATION_STATUS.preregistered]: '사전 등록',
+  [REGISTRATION_STATUS.onSitePreregistered]: '현장 등록',
+  [REGISTRATION_STATUS.cancelled]: '등록 취소',
+  [REGISTRATION_STATUS.unregistered]: '미등록',
+};
+
+// 결제 상태
+export enum PAYMENT_STATUS {
+  freeRegi = 'freeRegi',
+  freeRegiCancelled = 'freeRegiCancelled',
+  paymentCompleted = 'paymentCompleted',
+  refundCompleted = 'refundCompleted',
+  pendingPayment = 'pendingPayment',
+}
+
+export const paymentStatusLabels = {
+  [PAYMENT_STATUS.freeRegi]: '무료 등록',
+  [PAYMENT_STATUS.freeRegiCancelled]: '무료 등록 취소',
+  [PAYMENT_STATUS.paymentCompleted]: '결제 완료',
+  [PAYMENT_STATUS.refundCompleted]: '환불 완료',
+  [PAYMENT_STATUS.pendingPayment]: '결제 대기',
+};
+
+// 결제수단
+export enum PAYMENT_METHOD {
+  card = 'card',
+  eWallet = 'eWallet',
+  free = 'free',
+  manual = 'manual',
+}
+
+export const paymentMethodLabels = {
+  [PAYMENT_METHOD.card]: '카드',
+  [PAYMENT_METHOD.eWallet]: '간편결제',
+  [PAYMENT_METHOD.free]: '무료결제',
+  [PAYMENT_METHOD.manual]: '수동 계좌이체',
+};
 
 export interface JoinAttendeeDtVo {
   wuserIdx: number;
@@ -23,31 +79,24 @@ export interface JoinAttendeeDtVo {
 export interface RegisterAttendeeDtVo {
   wuserIdx: number;
   attendeeIdx?: number;
-
   name: string;
-  birthYear: string;
-  gender: string;
-
-  // email?: string;
-  // phone?: string;
+  birthDate: string;
+  gender: GENDER;
 
   /* 결제 상태
     freeRegi:무료 등록|freeRegiCancelled:무료 등록 취소|paymentCompleted:결제 완료|refundCompleted:환불 완료|pendingPayment:결제 대기
   */
-  paymentStatus: string;
-
-  /* 등록 구분
-    preRegi : 사전 등록|onSiteRegi : 현장 등록|cancelled:등록 취소
-  */
-  registrationStatus: string;
+  paymentStatus: PAYMENT_STATUS;
+  registrationStatus: REGISTRATION_STATUS;
   registrationAt?: number;
   hasMemo: boolean; //  메모 존재 여부
 
   // 추가 결제
   additionalPaidPrograms?: HashMap[];
-  paymentMethod?: string; // 결제 수단
+  paymentMethod?: PAYMENT_METHOD; // 결제 수단
   amount?: number;
   indicatedAmount?: number;
+  memo: string;
 }
 
 /** 회원 상세 (약관 동의) */

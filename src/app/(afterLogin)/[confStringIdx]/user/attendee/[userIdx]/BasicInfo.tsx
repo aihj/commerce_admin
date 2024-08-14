@@ -248,9 +248,9 @@ const BasicInfo = forwardRef(
                         ? '탈퇴'
                         : '기회원'
                   }
-                  disabled
                   render={({ field }) => (
                     <TextField
+                      disabled
                       label="회원 상태"
                       // select
                       fullWidth

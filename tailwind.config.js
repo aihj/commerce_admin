@@ -24,6 +24,9 @@ const config = {
           darkest: '#111927',
           light: '#F3F4F6',
         },
+        info: {
+          dark: '#0E7090',
+        },
       },
       spacing: px0_100,
       fontSize: px0_100,

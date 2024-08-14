@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, OutlinedInput } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
+import { SearchIcon } from '@/components/icons/SearchIcon';
 
 type TableTextFilterTypes = {
   displayValue?: string | undefined;
@@ -35,12 +36,14 @@ const TableTextFilter = ({
           value={value}
         />
         <Button
+          sx={{ px: 2, py: 1 }}
+          startIcon={<SearchIcon />}
           onClick={() => {
             onFilterApply?.(value);
           }}
-          variant="outlined"
+          variant="contained"
         >
-          Apply
+          검색
         </Button>
       </Grid>
     </>

@@ -46,23 +46,23 @@ const JoinAttendeeListFilters = ({
 
   const genderFilterData = useMemo(
     () => [
-      { value: 'F', label: '여성' },
       { value: 'M', label: '남성' },
+      { value: 'F', label: '여성' },
     ],
     []
   );
   const registrationStatusData = useMemo(
     () => [
-      { value: 'not_registered', label: '미등록' },
       { value: 'pre', label: '사전등록' },
       { value: 'onsite', label: '현장등록' },
+      { value: 'not_registered', label: '미등록' },
     ],
     []
   );
   const wuserStatusData = useMemo(
     () => [
-      { value: 'prospective', label: '기회원' },
       { value: 'active', label: '회원' },
+      { value: 'prospective', label: '기회원' },
       { value: 'delete', label: '탈퇴' },
     ],
     []
