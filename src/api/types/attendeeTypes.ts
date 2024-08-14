@@ -16,10 +16,10 @@ export const genderLabels = {
 
 // 등록구분
 export enum REGISTRATION_STATUS {
-  preregistered = 'preregistered',
+  preregistered = 'preRegistered',
   onSitePreregistered = 'onSitePreregistered',
   cancelled = 'cancelled',
-  notRegunregisteredistered = 'unregistered',
+  unregistered = 'unregistered',
 }
 
 export const registrationStatusLabels = {
