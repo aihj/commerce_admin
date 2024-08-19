@@ -48,6 +48,7 @@ export const MuiButton = {
       '&:focus-visible': {
         outline: '2px solid var(--mui-palette-primary-main)',
       },
+      fontWeight: 700,
     },
     text: {
       '&:hover': { backgroundColor: 'var(--Button-textHoverBg)' },

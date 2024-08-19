@@ -115,7 +115,7 @@ export const layoutConfig = () => {
   };
 };
 
-export const eachPcoLayoutConfig = (confStringIdx) => {
+export const eachPcoLayoutConfig = (confStringIdx: string) => {
   return {
     navItems: [
       // TODO : 이모티콘 뭘로 할지 정하는건 필요함
@@ -193,51 +193,51 @@ export const eachPcoLayoutConfig = (confStringIdx) => {
             ],
           },
           {
-            key: 'EACH/ME',
+            key: 'EACH/MESSAGE',
             title: '문자 & 이메일',
             icon: 'tent',
             items: [
               {
-                key: 'EACH/ME/MESSAGE',
+                key: 'EACH/MESSAGE/SMS',
                 title: '문자 관리',
                 icon: 'tent',
                 items: [
                   {
-                    key: 'EACH/ME/MESSAGE/TEMPLATE',
+                    key: 'EACH/MESSAGE/SMS/TEMPLATE',
                     title: '문자 양식 확인',
-                    href: PATH.EACH.ME.MESSAGE.TEMPLATE(confStringIdx),
+                    href: PATH.EACH.MESSAGE.SMS.TEMPLATE(confStringIdx),
                   },
                   {
-                    key: 'EACH/ME/MESSAGE/SEND',
+                    key: 'EACH/MESSAGE/SMS/SEND',
                     title: '문자 보내기',
-                    href: PATH.EACH.ME.MESSAGE.SEND(confStringIdx),
+                    href: PATH.EACH.MESSAGE.SMS.SEND(confStringIdx),
                   },
                   {
-                    key: 'EACH/ME/MESSAGE/LIST',
+                    key: 'EACH/MESSAGE/SMS/LIST',
                     title: '문자 리스트',
-                    href: PATH.EACH.ME.MESSAGE.LIST(confStringIdx),
+                    href: PATH.EACH.MESSAGE.SMS.LIST(confStringIdx),
                   },
                 ],
               },
               {
-                key: 'EACH/ME/B',
+                key: 'EACH/MESSAGE/EMAIL',
                 title: '이메일 관리',
                 icon: 'tent',
                 items: [
                   {
-                    key: 'EACH/ME/EMAIL/TEMPLATE',
+                    key: 'EACH/MESSAGE/EMAIL/TEMPLATE',
                     title: '이메일 양식 확인',
-                    href: PATH.EACH.ME.EMAIL.TEMPLATE(confStringIdx),
+                    href: PATH.EACH.MESSAGE.EMAIL.TEMPLATE(confStringIdx),
                   },
                   {
-                    key: 'EACH/ME/EMAIL/SEND',
+                    key: 'EACH/MESSAGE/EMAIL/SEND',
                     title: '이메일 보내기',
-                    href: PATH.EACH.ME.EMAIL.SEND(confStringIdx),
+                    href: PATH.EACH.MESSAGE.EMAIL.SEND(confStringIdx),
                   },
                   {
-                    key: 'EACH/ME/EMAIL/LIST',
+                    key: 'EACH/MESSAGE/EMAIL/LIST',
                     title: '이메일 리스트',
-                    href: PATH.EACH.ME.EMAIL.LIST(confStringIdx),
+                    href: PATH.EACH.MESSAGE.EMAIL.LIST(confStringIdx),
                   },
                 ],
               },

@@ -33,14 +33,14 @@ export interface RegisterAttendeeListTypeTossSearchParamsType
   birthDateStartT?: string | undefined;
   birthDateEndT?: string;
   gender?: 'F' | 'N';
-  registrationStatus?: 'preRegi' | 'onSiteRegi' | 'cancelled'; // 등록 상태
+  registrationStatus?: REGISTRATION_STATUS; // 등록 상태
   paymentStatus?: string;
   paymentMethod?: string;
   wuserStatus?: 'prospective' | 'active' | 'delete'; // 회원 상태
   hasMemo?: 'y' | 'n';
 }
 const registrationStatusColor = (status: REGISTRATION_STATUS) => {
-  if (status === REGISTRATION_STATUS.onSiteRegi) {
+  if (status === REGISTRATION_STATUS.onSitePreregistered) {
     return 'text-info-dark font-medium';
   }
   return 'text-secondary-darkest';

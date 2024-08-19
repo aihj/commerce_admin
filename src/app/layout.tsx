@@ -23,7 +23,7 @@ export default async function Layout({
             <UserProvider>
               <ThemeProvider>
                 {children}
-                <Toaster position="bottom-right" />
+                <Toaster position="top-center" />
               </ThemeProvider>
             </UserProvider>{' '}
             {/* NextAuth 인증 관련 */}

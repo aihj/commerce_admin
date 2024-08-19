@@ -77,18 +77,18 @@ export const PATH = {
       LIST: (confStringIdx: string) => `/${confStringIdx}/payment/list`,
       SETTING: (confStringIdx: string) => `/${confStringIdx}/payment/setting`,
     },
-    ME: {
-      MESSAGE: {
+    MESSAGE: {
+      SMS: {
         TEMPLATE: (confStringIdx: string) =>
-          `/${confStringIdx}/me/message/template`,
-        SEND: (confStringIdx: string) => `/${confStringIdx}/me/message/send`,
-        LIST: (confStringIdx: string) => `/${confStringIdx}/me/message/list`,
+          `/${confStringIdx}/message/sms/template`,
+        SEND: (confStringIdx: string) => `/${confStringIdx}/message/sms/send`,
+        LIST: (confStringIdx: string) => `/${confStringIdx}/message/sms/list`,
       },
       EMAIL: {
         TEMPLATE: (confStringIdx: string) =>
-          `/${confStringIdx}/me/email/template`,
-        SEND: (confStringIdx: string) => `/${confStringIdx}/me/email/send`,
-        LIST: (confStringIdx: string) => `/${confStringIdx}/me/email/list`,
+          `/${confStringIdx}/message/email/template`,
+        SEND: (confStringIdx: string) => `/${confStringIdx}/message/email/send`,
+        LIST: (confStringIdx: string) => `/${confStringIdx}/message/email/list`,
       },
     },
     GALLERY: {

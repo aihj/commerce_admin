@@ -46,6 +46,7 @@ export default function TableOneSelectFilterPopover({
     >
       <FormControl>
         <Select
+          label="라벨"
           MenuProps={{
             PaperProps: {
               style: {

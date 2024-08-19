@@ -8,16 +8,17 @@ import TableOneSelectFilterPopover from '@/components/core/table/filter/TableOne
 import { RegisterAttendeeListTypeTossSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeToss';
 import { ResetIcon } from '@/components/icons/ResetIcon';
 import TableTextFilterPopover from '@/components/core/table/filter/TableTextFilterPopover';
+import {
+  BIRTH_YEAR_RANGE,
+  GENDERS,
+  REGISTRATION_STATUS,
+} from '@/constants/selectOptions';
 
 interface RegisterAttendeeListFiltersProps {
   cSearchParams: RegisterAttendeeListTypeTossSearchParamsType;
   setCSearchParamsFunc: (parma: any) => any;
   deleteCSearchParams: () => any;
 }
-
-const birthYearRange = Array.from(Array(125)).map((_, i) => {
-  return { value: (2005 - i).toString(), label: (2005 - i).toString() };
-});
 
 const RegisterAttendeeListTypeTossFilters = ({
   cSearchParams,
@@ -49,14 +50,6 @@ const RegisterAttendeeListTypeTossFilters = ({
     return false; // 모든 값이 undefined 또는 null일 경우 false 반환
   };
 
-  const genderFilterData = useMemo(
-    () => [
-      { value: 'F', label: '여' },
-      { value: 'M', label: '남' },
-    ],
-    []
-  );
-
   /*
   무료 등록
   */
@@ -67,15 +60,6 @@ const RegisterAttendeeListTypeTossFilters = ({
       { value: 'paymentCompleted', label: '결제 완료' },
       { value: 'refundCompleted', label: '환불 완료' },
       { value: 'pendingPayment', label: '결제 대기' },
-    ],
-    []
-  );
-
-  const registrationStatusFD = useMemo(
-    () => [
-      { value: 'preRegi', label: '사전 등록' },
-      { value: 'onSiteRegi', label: '현장 등록' },
-      { value: 'cancelled', label: '등록 취소' },
     ],
     []
   );
@@ -125,7 +109,7 @@ const RegisterAttendeeListTypeTossFilters = ({
             popover={
               <TableOneSelectFilterPopover
                 title="생년 시작 년도 검색"
-                data={birthYearRange}
+                data={BIRTH_YEAR_RANGE}
               />
             }
             value={cSearchParams?.birthDateStartT}
@@ -145,7 +129,7 @@ const RegisterAttendeeListTypeTossFilters = ({
             popover={
               <TableOneSelectFilterPopover
                 title="생년 종료 년도 검색"
-                data={birthYearRange}
+                data={BIRTH_YEAR_RANGE}
               />
             }
             value={cSearchParams?.birthDateEndT}
@@ -154,9 +138,8 @@ const RegisterAttendeeListTypeTossFilters = ({
           <FilterButton
             displayValue={
               cSearchParams?.gender &&
-              genderFilterData.filter(
-                (item) => item.value === cSearchParams.gender
-              )[0].label
+              GENDERS.filter((item) => item.value === cSearchParams.gender)[0]
+                .label
             }
             label="성별"
             onFilterApply={(value) => {
@@ -168,7 +151,7 @@ const RegisterAttendeeListTypeTossFilters = ({
             popover={
               <TableOneSelectFilterPopover
                 title="Filter by category"
-                data={genderFilterData}
+                data={GENDERS}
               />
             }
             value={cSearchParams?.gender}
@@ -196,7 +179,7 @@ const RegisterAttendeeListTypeTossFilters = ({
           <FilterButton
             displayValue={
               cSearchParams?.registrationStatus &&
-              registrationStatusFD.filter(
+              REGISTRATION_STATUS.filter(
                 (item) => item.value === cSearchParams.registrationStatus
               )[0].label
             }
@@ -210,7 +193,7 @@ const RegisterAttendeeListTypeTossFilters = ({
             popover={
               <TableOneSelectFilterPopover
                 title="등록구분 선택"
-                data={registrationStatusFD}
+                data={REGISTRATION_STATUS}
               />
             }
             value={cSearchParams?.registrationStatus}

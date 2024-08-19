@@ -1,12 +1,13 @@
 import { cva } from 'class-variance-authority';
 interface LabelProps {
   label: string;
-  minWidth?: 140 | 180 | 200;
+  minWidth?: 100 | 140 | 180 | 200;
 }
 
 const labelVariants = cva(`font-medium text-14 leading-16`, {
   variants: {
     minWidth: {
+      100: `min-w-100`,
       140: `min-w-140`,
       180: `min-w-180`,
       200: `min-w-200`,

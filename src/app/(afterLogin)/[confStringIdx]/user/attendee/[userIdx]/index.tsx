@@ -301,7 +301,7 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
       <Stack direction="column" spacing={4}>
         <div>
           {/* TODO breadcrumbs */}
-          <PageTitle title="유저 상세" />
+          <PageTitle title="회원 상세" />
         </div>
         <ScrollMenu menus={menus} handleMenuClick={handleMenuClick} />
         <BasicInfo
