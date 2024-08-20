@@ -1,42 +1,27 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
-import { logger } from '@/lib/logger/defaultLogger';
-import { produce } from 'immer';
+import { useEffect, useState } from 'react';
 
 const useCustomSearchParams = <T>(initialParams: T) => {
   const router = useRouter();
   const pathname = usePathname();
-  const [cSearchParams, setCSearchParams] = useState<T>();
+  const [cSearchParams, setCSearchParams] = useState<T>(initialParams);
 
-  // router 파라미터에 값 삽입
-  const setCSearchParamsFunc = useCallback(
-    (_params: T) => {
-      logger.debug('<setCSearchParamsFunc> _params : ', _params);
-      console.log('cSearchParams--', cSearchParams);
-      const newData = produce(cSearchParams, (draft: T) => {
-        return { ...draft, ..._params };
-      });
-      setCSearchParams(newData);
-      console.log();
-      if (newData) {
-        router.push(`${pathname}?${new URLSearchParams(newData).toString()}`);
-      }
-    },
-    [cSearchParams, pathname, router]
-  );
+  const setCSearchParamsFunc = (param: T) => {
+    setCSearchParams((prev) => ({ ...prev, ...param }));
+  };
 
-  const deleteCSearchParams = useCallback(() => {
-    setCSearchParamsFunc(initialParams);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const deleteCSearchParams = () => {
+    setCSearchParams(initialParams);
+  };
 
   useEffect(() => {
-    logger.debug('setCSearchParams 초기화');
-    setCSearchParamsFunc(initialParams);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    router.push(
+      `${pathname}?${new URLSearchParams(cSearchParams as string).toString()}`
+    );
+  }, [cSearchParams, router, pathname]);
+
   return {
     cSearchParams,
     setCSearchParamsFunc,

@@ -7,7 +7,6 @@ import {
   useFilterContext,
 } from '@/components/core/FilterButton';
 import { useEffect, useState } from 'react';
-import { logger } from '@/lib/logger/defaultLogger';
 
 interface TableOneSelectFilterPopoverProps {
   title?: string;
@@ -18,8 +17,6 @@ export default function TableOneSelectFilterPopover({
   title,
   data,
 }: TableOneSelectFilterPopoverProps) {
-  // console.log('TableOneSelectFilterPopover data : ', data);
-  // TODO : 이건 어떻게 사용하는거지?
   const {
     anchorEl,
     onApply,
@@ -30,10 +27,6 @@ export default function TableOneSelectFilterPopover({
 
   const [value, setValue] = useState<string>('');
   useEffect(() => {
-    logger.debug(
-      'TableOneSelectFilterPopoverProps initialValue : ',
-      initialValue
-    );
     setValue((initialValue as string | undefined) ?? '');
   }, [initialValue]);
 
