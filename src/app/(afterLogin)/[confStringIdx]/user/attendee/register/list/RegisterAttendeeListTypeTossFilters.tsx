@@ -11,8 +11,10 @@ import TableTextFilterPopover from '@/components/core/table/filter/TableTextFilt
 import {
   BIRTH_YEAR_RANGE,
   GENDERS,
+  PAYMENT_STATUS,
   REGISTRATION_STATUS,
 } from '@/constants/selectOptions';
+import { hasFilters } from '@/lib/hasFilters';
 
 interface RegisterAttendeeListFiltersProps {
   cSearchParams: RegisterAttendeeListTypeTossSearchParamsType;
@@ -36,33 +38,6 @@ const RegisterAttendeeListTypeTossFilters = ({
   const handleClearFilters = useCallback(() => {
     deleteCSearchParams();
   }, [deleteCSearchParams]);
-
-  const hasFilters = (filters: any): boolean => {
-    for (const key in filters) {
-      if (Object.prototype.hasOwnProperty.call(filters, key)) {
-        // if (filters.hasOwnProperty(key)) {
-        // 필수는 아님
-        if (filters[key] !== undefined && filters[key] !== null) {
-          return true; // 하나의 값이라도 undefined나 null이 아니면 true 반환
-        }
-      }
-    }
-    return false; // 모든 값이 undefined 또는 null일 경우 false 반환
-  };
-
-  /*
-  무료 등록
-  */
-  const paymentStatusFD = useMemo(
-    () => [
-      { value: 'freeRegi', label: '무료 등록' },
-      { value: 'freeRegiCancelled', label: '무료 등록 취소' },
-      { value: 'paymentCompleted', label: '결제 완료' },
-      { value: 'refundCompleted', label: '환불 완료' },
-      { value: 'pendingPayment', label: '결제 대기' },
-    ],
-    []
-  );
 
   const paymentMethodFD = useMemo(
     () => [
@@ -149,10 +124,7 @@ const RegisterAttendeeListTypeTossFilters = ({
               onChangeSelect({ name: 'gender', value: null });
             }}
             popover={
-              <TableOneSelectFilterPopover
-                title="Filter by category"
-                data={GENDERS}
-              />
+              <TableOneSelectFilterPopover title="성별 선택" data={GENDERS} />
             }
             value={cSearchParams?.gender}
           />
@@ -171,7 +143,10 @@ const RegisterAttendeeListTypeTossFilters = ({
               onChangeSelect({ name: 'hasMemo', value: null });
             }}
             popover={
-              <TableOneSelectFilterPopover title="메모 여부" data={memoFD} />
+              <TableOneSelectFilterPopover
+                title="메모 여부 선택"
+                data={memoFD}
+              />
             }
             value={cSearchParams?.hasMemo}
           />
@@ -183,7 +158,7 @@ const RegisterAttendeeListTypeTossFilters = ({
                 (item) => item.value === cSearchParams.registrationStatus
               )[0].label
             }
-            label="등록구분"
+            label="등록 상태"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'registrationStatus', value });
             }}
@@ -192,7 +167,7 @@ const RegisterAttendeeListTypeTossFilters = ({
             }}
             popover={
               <TableOneSelectFilterPopover
-                title="등록구분 선택"
+                title="등록 상태 선택"
                 data={REGISTRATION_STATUS}
               />
             }
@@ -202,7 +177,7 @@ const RegisterAttendeeListTypeTossFilters = ({
           <FilterButton
             displayValue={
               cSearchParams?.paymentStatus &&
-              paymentStatusFD.filter(
+              PAYMENT_STATUS.filter(
                 (item) => item.value === cSearchParams.paymentStatus
               )[0].label
             }
@@ -216,7 +191,7 @@ const RegisterAttendeeListTypeTossFilters = ({
             popover={
               <TableOneSelectFilterPopover
                 title="결제 상태 선택"
-                data={paymentStatusFD}
+                data={PAYMENT_STATUS}
               />
             }
             value={cSearchParams?.paymentStatus}
@@ -255,7 +230,7 @@ const RegisterAttendeeListTypeTossFilters = ({
               onChangeSelect({ name: 'searchText', value: null });
             }}
             popover={<TableTextFilterPopover title="이름,전화번호,메모 검색" />}
-            value={cSearchParams?.paymentMethod}
+            value={cSearchParams?.searchText}
           />
 
           {hasFilters(cSearchParams) ? (

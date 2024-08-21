@@ -36,6 +36,7 @@ export default function TableTextFilterPopover({
     >
       <FormControl>
         <OutlinedInput
+          placeholder="검색어 입력"
           onChange={(event) => {
             setValue(event.target.value);
           }}
@@ -53,7 +54,7 @@ export default function TableTextFilterPopover({
         }}
         variant="contained"
       >
-        Apply
+        적용
       </Button>
     </FilterPopover>
   );

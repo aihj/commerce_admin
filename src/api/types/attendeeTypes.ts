@@ -63,13 +63,13 @@ export const paymentMethodLabels = {
 
 export interface JoinAttendeeDtVo {
   wuserIdx: number;
-  attendeeIdx?: number;
-  birthDate?: string;
-  email?: string;
-  gender?: string;
-  name?: string;
-  phone?: string;
-  registrationStatus?: string;
+  attendeeIdx: number;
+  birthDate: string;
+  email: string;
+  gender: GENDER;
+  name: string;
+  phone: string;
+  registrationStatus: REGISTRATION_STATUS;
   wuserCreateT?: string;
   wuserStatus?: string;
   memo: string;

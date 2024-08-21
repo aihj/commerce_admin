@@ -29,6 +29,9 @@ const config = {
         info: {
           dark: '#0E7090',
         },
+        error: {
+          dark: '#B42318',
+        },
       },
       spacing: px0_100,
       fontSize: px0_100,

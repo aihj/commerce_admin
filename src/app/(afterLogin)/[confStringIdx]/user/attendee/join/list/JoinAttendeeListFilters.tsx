@@ -1,16 +1,23 @@
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { FilterButton } from '@/components/core/FilterButton';
 import TableOneSelectFilterPopover from '@/components/core/table/filter/TableOneSelectFilterPopover';
-import { TableDateFilterPopover } from '@/components/core/table/filter/TableDateFilterPopover';
-import TableTextFilter from '@/components/core/table/filter/TableTextFilter';
 import { JoinAttendeeListSearchParamsType } from './page';
+import {
+  BIRTH_YEAR_RANGE,
+  GENDERS,
+  REGISTRATION_STATUS,
+  WUSER_STATUS,
+} from '@/constants/selectOptions';
+import TableTextFilterPopover from '@/components/core/table/filter/TableTextFilterPopover';
+import { ResetIcon } from '@/components/icons/ResetIcon';
+import { hasFilters } from '@/lib/hasFilters';
 
 interface JoinAttendeeListFiltersProps {
-  cSearchParams: JoinAttendeeListSearchParamsType | { [x: number]: any };
+  cSearchParams: JoinAttendeeListSearchParamsType;
   setCSearchParamsFunc: (param: any) => any;
   deleteCSearchParams: () => any;
 }
@@ -31,42 +38,6 @@ const JoinAttendeeListFilters = ({
     deleteCSearchParams();
   }, [deleteCSearchParams]);
 
-  const hasFilters = (filters: any): boolean => {
-    for (const key in filters) {
-      if (Object.prototype.hasOwnProperty.call(filters, key)) {
-        // if (filters.hasOwnProperty(key)) {
-        // 필수는 아님
-        if (filters[key] !== undefined && filters[key] !== null) {
-          return true; // 하나의 값이라도 undefined나 null이 아니면 true 반환
-        }
-      }
-    }
-    return false; // 모든 값이 undefined 또는 null일 경우 false 반환
-  };
-
-  const genderFilterData = useMemo(
-    () => [
-      { value: 'M', label: '남성' },
-      { value: 'F', label: '여성' },
-    ],
-    []
-  );
-  const registrationStatusData = useMemo(
-    () => [
-      { value: 'pre', label: '사전등록' },
-      { value: 'onsite', label: '현장등록' },
-      { value: 'not_registered', label: '미등록' },
-    ],
-    []
-  );
-  const wuserStatusData = useMemo(
-    () => [
-      { value: 'active', label: '회원' },
-      { value: 'prospective', label: '기회원' },
-      { value: 'delete', label: '탈퇴' },
-    ],
-    []
-  );
   return (
     <div>
       <Stack
@@ -96,16 +67,12 @@ const JoinAttendeeListFilters = ({
               onChangeSelect({ name: 'birthDateStartT', value: null });
             }}
             popover={
-              <TableDateFilterPopover
-                format="YYYY-MM-DD"
-                title="생년 시작 년도로 검색"
+              <TableOneSelectFilterPopover
+                title="생년 시작 년도 검색"
+                data={BIRTH_YEAR_RANGE}
               />
             }
-            value={
-              'birthDateStartT' in cSearchParams
-                ? (cSearchParams?.birthDateStartT as string)
-                : ''
-            }
+            value={cSearchParams?.birthDateStartT}
           />
           <FilterButton
             displayValue={
@@ -124,23 +91,19 @@ const JoinAttendeeListFilters = ({
               onChangeSelect({ name: 'birthDateEndT', value: null });
             }}
             popover={
-              <TableDateFilterPopover
-                format="YYYY-MM-DD"
-                title="학회 종료 날짜로 검색"
+              <TableOneSelectFilterPopover
+                title="생년 종료 년도 검색"
+                data={BIRTH_YEAR_RANGE}
               />
             }
-            value={
-              'birthDateEndT' in cSearchParams
-                ? (cSearchParams?.birthDateEndT as string)
-                : ''
-            }
+            value={cSearchParams?.birthDateEndT}
           />
 
           <FilterButton
             displayValue={
-              'gender' in cSearchParams
-                ? (cSearchParams?.gender as string)
-                : undefined
+              cSearchParams?.gender &&
+              GENDERS.filter((item) => item.value === cSearchParams.gender)[0]
+                .label
             }
             label="성별"
             onFilterApply={(value) => {
@@ -150,23 +113,17 @@ const JoinAttendeeListFilters = ({
               onChangeSelect({ name: 'gender', value: null });
             }}
             popover={
-              <TableOneSelectFilterPopover
-                title="Filter by category"
-                data={genderFilterData}
-              />
+              <TableOneSelectFilterPopover title="성별 선택" data={GENDERS} />
             }
-            value={
-              'gender' in cSearchParams
-                ? (cSearchParams?.gender as string)
-                : undefined
-            }
+            value={cSearchParams?.gender}
           />
 
           <FilterButton
             displayValue={
-              'wuserStatus' in cSearchParams
-                ? (cSearchParams?.wuserStatus as string)
-                : undefined
+              cSearchParams?.wuserStatus &&
+              WUSER_STATUS.filter(
+                (item) => item.value === cSearchParams.wuserStatus
+              )[0].label
             }
             label="회원 상태"
             onFilterApply={(value) => {
@@ -177,21 +134,18 @@ const JoinAttendeeListFilters = ({
             }}
             popover={
               <TableOneSelectFilterPopover
-                title="Filter by category"
-                data={wuserStatusData}
+                title="회원 상태 선택"
+                data={WUSER_STATUS}
               />
             }
-            value={
-              'wuserStatus' in cSearchParams
-                ? (cSearchParams?.wuserStatus as string)
-                : undefined
-            }
+            value={cSearchParams?.wuserStatus}
           />
           <FilterButton
             displayValue={
-              'registrationStatus' in cSearchParams
-                ? (cSearchParams?.registrationStatus as string)
-                : undefined
+              cSearchParams?.registrationStatus &&
+              REGISTRATION_STATUS.filter(
+                (item) => item.value === cSearchParams.registrationStatus
+              )[0].label
             }
             label="등록 상태"
             onFilterApply={(value) => {
@@ -202,33 +156,36 @@ const JoinAttendeeListFilters = ({
             }}
             popover={
               <TableOneSelectFilterPopover
-                title="Filter by category"
-                data={registrationStatusData}
+                title="등록 상태 선택"
+                data={REGISTRATION_STATUS}
               />
             }
-            value={
-              'registrationStatus' in cSearchParams
-                ? (cSearchParams?.registrationStatus as string)
-                : undefined
-            }
+            value={cSearchParams?.registrationStatus}
           />
 
-          <TableTextFilter
-            displayValue={
-              'searchText' in cSearchParams
-                ? (cSearchParams?.searchText as string)
-                : undefined
-            }
+          <FilterButton
+            displayValue={cSearchParams?.searchText}
+            label="검색어"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'searchText', value });
             }}
             onFilterDelete={() => {
               onChangeSelect({ name: 'searchText', value: null });
             }}
+            popover={<TableTextFilterPopover title="이름,전화번호,메모 검색" />}
+            value={cSearchParams?.searchText}
           />
 
           {hasFilters(cSearchParams) ? (
-            <Button onClick={() => handleClearFilters()}>조건 초기화</Button>
+            <Button
+              sx={{ px: 2, py: 1 }}
+              startIcon={<ResetIcon />}
+              onClick={() => handleClearFilters()}
+              variant="contained"
+              color="secondary"
+            >
+              초기화
+            </Button>
           ) : null}
         </Stack>
       </Stack>

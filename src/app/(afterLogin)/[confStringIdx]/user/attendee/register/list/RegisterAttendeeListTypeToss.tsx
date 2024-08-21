@@ -21,10 +21,10 @@ import { Box, Button, Card, Stack, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { getRegisterAttendeeDtTypeToss } from '@/api/attendeeApi';
 import { RegisterAttendeeListTypeTossFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeTossFilters';
-import { FilterPlusActionButtons } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/FilterPlusActionButtons';
 import { DownloadIcon } from '@/components/icons/DownloadIcon';
 import { numberWithComma } from '@/lib/numberWithComma';
 import { MemoIcon } from '@/components/icons/MemoIcon';
+import { registrationStatusColor } from '../../libs';
 
 type RegisterAttendeeListTypeTossTypes = NonNullable<unknown>;
 
@@ -39,12 +39,7 @@ export interface RegisterAttendeeListTypeTossSearchParamsType
   wuserStatus?: 'prospective' | 'active' | 'delete'; // 회원 상태
   hasMemo?: 'y' | 'n';
 }
-const registrationStatusColor = (status: REGISTRATION_STATUS) => {
-  if (status === REGISTRATION_STATUS.onSitePreregistered) {
-    return 'text-info-dark font-medium';
-  }
-  return 'text-secondary-darkest';
-};
+
 const RegisterAttendeeListTypeToss =
   // eslint-disable-next-line no-empty-pattern
   ({}: RegisterAttendeeListTypeTossTypes) => {
@@ -134,7 +129,7 @@ const RegisterAttendeeListTypeToss =
               {genderLabels[info.row.original.gender]}
             </Box>
           ),
-          size: 10,
+          size: 60,
         }),
 
         // (기본 프로그램 등록 기준, 추후 추가 프로그램 현장등록했다고 해도 사전등록으로 인정)
@@ -260,20 +255,9 @@ const RegisterAttendeeListTypeToss =
             <Box sx={{ flex: '1 1 auto' }}>
               <Typography variant="h4">등록 회원 목록</Typography>
             </Box>
-            {/*          <div>
-            <Button
-              component={RouterLink}
-              href={PATH.MEDI.CONFERENCE.ENTERPRISE.CREATE}
-              startIcon={<PlusIcon />}
-              variant="contained"
-            >
-              Enterprise 학회 등록
-            </Button>
-          </div>*/}
           </Stack>
 
           <Card>
-            <FilterPlusActionButtons />
             <RegisterAttendeeListTypeTossFilters
               cSearchParams={
                 cSearchParams as RegisterAttendeeListTypeTossSearchParamsType

@@ -3,7 +3,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
@@ -14,19 +13,23 @@ import { useQuery } from '@tanstack/react-query';
 import { getJoinAttendeeDt } from '@/api/attendeeApi';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { useSelector } from 'react-redux';
-import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import TableBody from '@/components/core/table/TableBody';
 import {
   JoinAttendeeDtVo,
-  REGISTRATION_STATUS,
+  genderLabels,
+  registrationStatusLabels,
 } from '@/api/types/attendeeTypes';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { JoinAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/JoinAttendeeListFilters';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
+import { MemoIcon } from '@/components/icons/MemoIcon';
+import { registrationStatusColor } from '../../libs';
+import { numberWithComma } from '@/lib/numberWithComma';
+import { DownloadIcon } from '@/components/icons/DownloadIcon';
 
 export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
-  birthDateStartT?: string | undefined;
+  birthDateStartT?: string;
   birthDateEndT?: string;
   gender?: string;
   registrationStatus?: 'not_registered' | 'pre' | 'onsite'; // 등록 상태
@@ -75,24 +78,41 @@ const JoinAttendeeList = () => {
         cell: (info) => (
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Button
-              size="small"
-              variant="outlined"
-              color="success"
+              sx={{
+                border: 0,
+                textDecoration: 'underline',
+                textUnderlinePosition: 'under',
+              }}
               onClick={() =>
                 moveUserDetail(info.row.original.wuserIdx as number)
               }
-              title={`${info.row.original.name}`}
+              title={`${info.row.original.wuserIdx}`}
             >
               {`${info.getValue()}`}
-              {info.row.original.memo && <AssignmentOutlinedIcon />}
             </Button>
           </Box>
         ),
       }),
+      columnHelper.accessor('memo', {
+        header: '',
+        cell: (info) => (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
+            {info.row.original.memo ? <MemoIcon size={16} /> : ''}
+          </Box>
+        ),
+        size: 10,
+      }),
       columnHelper.accessor('birthDate', {
         header: '생년',
         cell: (info) => (
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Box
+            sx={{ display: 'flex', justifyContent: 'center', fontWeight: 500 }}
+          >
             {info.getValue()}
           </Box>
         ),
@@ -100,25 +120,27 @@ const JoinAttendeeList = () => {
       }),
       columnHelper.display({
         header: '성별',
-        cell: (info) => {
-          if (info.row.original.gender === 'F') {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>여성</Box>
-            );
-          } else {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>남성</Box>
-            );
-          }
-        },
-        size: 110,
+        cell: (info) => (
+          <Box
+            sx={{ display: 'flex', justifyContent: 'center', fontWeight: 500 }}
+          >
+            {genderLabels[info.row.original.gender]}
+          </Box>
+        ),
+        size: 60,
       }),
 
       columnHelper.accessor('phone', {
         header: '휴대폰 번호',
         cell: (info) => {
           return (
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                fontWeight: 500,
+              }}
+            >
               {info.getValue()}
             </Box>
           );
@@ -129,7 +151,13 @@ const JoinAttendeeList = () => {
         header: '이메일',
         cell: (info) => {
           return (
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                fontWeight: 500,
+              }}
+            >
               {info.getValue()}
             </Box>
           );
@@ -137,24 +165,30 @@ const JoinAttendeeList = () => {
         size: 110,
       }),
       columnHelper.display({
-        header: '회원상태',
+        header: '회원 상태',
         cell: (info) => {
           if (info.row.original.wuserStatus === 'active') {
             return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="회원" color="primary" size="small" />
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  fontWeight: 500,
+                }}
+              >
+                회원
               </Box>
             );
           } else if (info.row.original.wuserStatus === 'prospective') {
             return (
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="기회원" color="default" size="small" />
+                <span className="text-primary-darkest">기회원</span>
               </Box>
             );
           } else {
             return (
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="탈퇴" color="error" size="small" />
+                <span className="text-error-dark">탈퇴</span>
               </Box>
             );
           }
@@ -174,33 +208,16 @@ const JoinAttendeeList = () => {
       }),
       columnHelper.display({
         header: '등록 상태',
-        cell: (info) => {
-          if (
-            info.row.original.registrationStatus ===
-            REGISTRATION_STATUS.preRegistered
-          ) {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="사전등록" color="primary" size="small" />
-              </Box>
-            );
-          } else if (
-            info.row.original.registrationStatus ===
-            REGISTRATION_STATUS.onSitePreregistered
-          ) {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="현장등록" color="info" size="small" />
-              </Box>
-            );
-          } else {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Chip label="미등록" size="small" />
-              </Box>
-            );
-          }
-        },
+        cell: (info) => (
+          <Box
+            sx={{ display: 'flex', justifyContent: 'center' }}
+            className={registrationStatusColor(
+              info.row.original.registrationStatus
+            )}
+          >
+            {registrationStatusLabels[info.row.original.registrationStatus]}
+          </Box>
+        ),
         size: 110,
       }),
     ],
@@ -241,16 +258,6 @@ const JoinAttendeeList = () => {
           <Box sx={{ flex: '1 1 auto' }}>
             <Typography variant="h4">가입 회원 목록</Typography>
           </Box>
-          {/*          <div>
-            <Button
-              component={RouterLink}
-              href={PATH.MEDI.CONFERENCE.ENTERPRISE.CREATE}
-              startIcon={<PlusIcon />}
-              variant="contained"
-            >
-              Enterprise 학회 등록
-            </Button>
-          </div>*/}
         </Stack>
 
         <Card>
@@ -259,6 +266,31 @@ const JoinAttendeeList = () => {
             setCSearchParamsFunc={setCSearchParamsFunc}
             deleteCSearchParams={deleteCSearchParams}
           />
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'end',
+              px: 2,
+              pb: 2,
+            }}
+          >
+            <span className="text-14 font-bold">
+              전체 {numberWithComma(data.totalCount)}
+            </span>
+            <Button
+              sx={{
+                py: 0,
+                px: 2,
+                borderRadius: '20px',
+                border: '1px solid #6366F180',
+              }}
+              variant="outlined"
+              startIcon={<DownloadIcon size={20} fill="#6366F1" />}
+            >
+              엑셀 다운로드
+            </Button>
+          </Stack>
           <TableBody<JoinAttendeeDtVo>
             data={data.content}
             columns={columns as ColumnDef<JoinAttendeeDtVo>[]}
