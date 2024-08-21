@@ -83,6 +83,8 @@ export const PATH = {
           `/${confStringIdx}/message/sms/template`,
         SEND: (confStringIdx: string) => `/${confStringIdx}/message/sms/send`,
         LIST: (confStringIdx: string) => `/${confStringIdx}/message/sms/list`,
+        DETAIL: (confStringIdx: string, letterIdx: number) =>
+          `/${confStringIdx}/message/sms/list/${letterIdx}`,
       },
       EMAIL: {
         TEMPLATE: (confStringIdx: string) =>

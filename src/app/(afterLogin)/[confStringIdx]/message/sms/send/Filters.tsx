@@ -16,7 +16,7 @@ import {
   PAYMENT_STATUS,
   REGISTRATION_STATUS,
   WUSER_STATUS,
-} from '@/constants/selectOptions';
+} from '@/constants/filterSelectOptions';
 import { ResetIcon } from '@/components/icons/ResetIcon';
 import { Option } from '@/components/core/Option';
 import { getTotalUserAmount } from '@/api/messageApi';
@@ -101,10 +101,13 @@ const Filters = ({ conferenceIdx, handleSearchParam }: FilterProps) => {
     }
   };
 
-  const handleDelete = useCallback((key: string) => {
-    const newChips = filteredChips?.filter((item) => item.key !== key);
-    setFilteredChips(newChips);
-  }, []);
+  const handleDelete = useCallback(
+    (key: string) => {
+      const newChips = filteredChips?.filter((item) => item.key !== key);
+      setFilteredChips(newChips);
+    },
+    [filteredChips]
+  );
 
   const handleChips = useCallback(
     (total: number) => {

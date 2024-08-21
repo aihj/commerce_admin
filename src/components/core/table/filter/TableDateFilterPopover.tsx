@@ -6,8 +6,9 @@ import {
   FilterPopover,
   useFilterContext,
 } from '@/components/core/FilterButton';
-import dayjs from 'dayjs';
+
 import { useEffect, useState } from 'react';
+import { dateFormat, dayjs } from '@/lib/dayjs';
 
 interface TableTextFilterPopoverProps {
   title?: string;
@@ -25,10 +26,9 @@ function TableDateFilterPopover({
     open,
     value: initialValue,
   } = useFilterContext();
-  // logger.debug('initialValue : ', initialValue);
   const [value, setValue] = useState<string | null>(null);
   useEffect(() => {
-    setValue(initialValue ? dayjs(initialValue) : null);
+    setValue(initialValue ? dateFormat(initialValue) : null);
   }, [initialValue]);
 
   return (
@@ -55,7 +55,7 @@ function TableDateFilterPopover({
         }}
         variant="contained"
       >
-        Apply
+        적용
       </Button>
     </FilterPopover>
   );

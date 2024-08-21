@@ -56,7 +56,7 @@ export function SideNav({ items = [] }: SideNavProps): React.JSX.Element {
             href={PATH.HOME}
             sx={{ display: 'inline-flex' }}
           >
-            <Logo height={46} width={120} />
+            <Logo color="light" height={46} width={120} />
           </Box>
         </div>
         <WorkspacesSwitch />

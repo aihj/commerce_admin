@@ -13,7 +13,7 @@ import {
   GENDERS,
   PAYMENT_STATUS,
   REGISTRATION_STATUS,
-} from '@/constants/selectOptions';
+} from '@/constants/filterSelectOptions';
 import { hasFilters } from '@/lib/hasFilters';
 
 interface RegisterAttendeeListFiltersProps {
@@ -39,7 +39,7 @@ const RegisterAttendeeListTypeTossFilters = ({
     deleteCSearchParams();
   }, [deleteCSearchParams]);
 
-  const paymentMethodFD = useMemo(
+  const paymentSourceFD = useMemo(
     () => [
       { value: 'card', label: '카드' },
       { value: 'eWallet', label: '간편결제' },
@@ -199,25 +199,25 @@ const RegisterAttendeeListTypeTossFilters = ({
 
           <FilterButton
             displayValue={
-              cSearchParams?.paymentMethod &&
-              paymentMethodFD.filter(
-                (item) => item.value === cSearchParams.paymentMethod
+              cSearchParams?.paymentSource &&
+              paymentSourceFD.filter(
+                (item) => item.value === cSearchParams.paymentSource
               )[0].label
             }
             label="결제수단"
             onFilterApply={(value) => {
-              onChangeSelect({ name: 'paymentMethod', value });
+              onChangeSelect({ name: 'paymentSource', value });
             }}
             onFilterDelete={() => {
-              onChangeSelect({ name: 'paymentMethod', value: null });
+              onChangeSelect({ name: 'paymentSource', value: null });
             }}
             popover={
               <TableOneSelectFilterPopover
                 title="결제수단 선택"
-                data={paymentMethodFD}
+                data={paymentSourceFD}
               />
             }
-            value={cSearchParams?.paymentMethod}
+            value={cSearchParams?.paymentSource}
           />
 
           <FilterButton

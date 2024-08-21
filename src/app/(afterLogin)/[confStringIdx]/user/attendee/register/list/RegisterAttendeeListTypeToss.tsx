@@ -6,11 +6,11 @@ import { PATH } from '@/paths';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import TableBody from '@/components/core/table/TableBody';
 import {
-  PAYMENT_METHOD,
+  PAYMENT_SOURCE,
   REGISTRATION_STATUS,
   RegisterAttendeeDtVo,
   genderLabels,
-  paymentMethodLabels,
+  paymentSourceLabels,
   paymentStatusLabels,
   registrationStatusLabels,
 } from '@/api/types/attendeeTypes';
@@ -35,7 +35,7 @@ export interface RegisterAttendeeListTypeTossSearchParamsType
   gender?: 'F' | 'N';
   registrationStatus?: REGISTRATION_STATUS; // 등록 상태
   paymentStatus?: string;
-  paymentMethod?: string;
+  paymentSource?: string;
   wuserStatus?: 'prospective' | 'active' | 'delete'; // 회원 상태
   hasMemo?: 'y' | 'n';
 }
@@ -160,10 +160,10 @@ const RegisterAttendeeListTypeToss =
           header: '결제수단',
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              {info.row.original.paymentMethod === null
+              {info.row.original.paymentSource === null
                 ? '-'
-                : paymentMethodLabels[
-                    info.row.original.paymentMethod as PAYMENT_METHOD
+                : paymentSourceLabels[
+                    info.row.original.paymentSource as PAYMENT_SOURCE
                   ]}
             </Box>
           ),

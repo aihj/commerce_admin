@@ -34,31 +34,40 @@ export enum PAYMENT_STATUS {
   freeRegi = 'freeRegi',
   freeRegiCancelled = 'freeRegiCancelled',
   paymentCompleted = 'paymentCompleted',
-  refundCompleted = 'refundCompleted',
   pendingPayment = 'pendingPayment',
+  cancelRequest = 'cancelRequest',
+  cancelCompleted = 'cancelCompleted',
 }
 
 export const paymentStatusLabels = {
   [PAYMENT_STATUS.freeRegi]: '무료 등록',
   [PAYMENT_STATUS.freeRegiCancelled]: '무료 등록 취소',
   [PAYMENT_STATUS.paymentCompleted]: '결제 완료',
-  [PAYMENT_STATUS.refundCompleted]: '환불 완료',
   [PAYMENT_STATUS.pendingPayment]: '결제 대기',
+  [PAYMENT_STATUS.cancelRequest]: '취소 요쳥',
+  [PAYMENT_STATUS.cancelCompleted]: '취소 완료',
 };
 
-// 결제수단
+// 결제 방식
 export enum PAYMENT_METHOD {
+  toss = 'toss',
+  free = 'free',
+  manual = 'manual',
+}
+
+// 결제 수단
+export enum PAYMENT_SOURCE {
   card = 'card',
   eWallet = 'eWallet',
   free = 'free',
   manual = 'manual',
 }
 
-export const paymentMethodLabels = {
-  [PAYMENT_METHOD.card]: '카드',
-  [PAYMENT_METHOD.eWallet]: '간편결제',
-  [PAYMENT_METHOD.free]: '무료결제',
-  [PAYMENT_METHOD.manual]: '수동 계좌이체',
+export const paymentSourceLabels = {
+  [PAYMENT_SOURCE.card]: '카드',
+  [PAYMENT_SOURCE.eWallet]: '간편결제',
+  [PAYMENT_SOURCE.free]: '무료결제',
+  [PAYMENT_SOURCE.manual]: '수동 계좌이체',
 };
 
 export interface JoinAttendeeDtVo {
@@ -93,7 +102,8 @@ export interface RegisterAttendeeDtVo {
 
   // 추가 결제
   additionalPaidPrograms?: HashMap[];
-  paymentMethod?: PAYMENT_METHOD; // 결제 수단
+  paymentMethod?: PAYMENT_METHOD; // 결제 방식(토스,수동계좌이체)
+  paymentSource: PAYMENT_SOURCE; // 결제 수단
   amount?: number;
   indicatedAmount?: number;
   memo: string;

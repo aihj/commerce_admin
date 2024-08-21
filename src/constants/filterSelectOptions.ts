@@ -27,3 +27,19 @@ export const PAYMENT_STATUS = [
   { value: 'refundCompleted', label: '환불 완료' },
   { value: 'pendingPayment', label: '결제 대기' },
 ];
+
+export const HAS_MEMO = [
+  { value: 'y', label: '메모 있음' },
+  { value: 'n', label: '메모 없음' },
+];
+
+export const SEND_STATUS = [
+  { value: 'inProgress', label: '발송중' },
+  { value: 'complete', label: '발송완료' },
+  { value: 'failure', label: '발송실패' },
+];
+
+export const HAS_FAIL = [
+  { value: 'true', label: '실패 건 있음' },
+  { value: 'false', label: '실패 건 없음' },
+];

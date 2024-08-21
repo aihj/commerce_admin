@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 
 interface TableOneSelectFilterPopoverProps {
   title?: string;
-  data: { label: string; value: string }[];
+  data: { label: string; value: string | number }[];
 }
 
 export default function TableOneSelectFilterPopover({
@@ -54,8 +54,8 @@ export default function TableOneSelectFilterPopover({
           value={value}
         >
           <Option value="">선택 안함</Option>
-          {data.map((item) => (
-            <Option key={item.value} value={item.value}>
+          {data.map((item, index) => (
+            <Option key={`${item.value}-${index}`} value={item.value}>
               {item.label}
             </Option>
           ))}

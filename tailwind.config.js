@@ -30,6 +30,7 @@ const config = {
           dark: '#0E7090',
         },
         error: {
+          main: '#F04438',
           dark: '#B42318',
         },
       },

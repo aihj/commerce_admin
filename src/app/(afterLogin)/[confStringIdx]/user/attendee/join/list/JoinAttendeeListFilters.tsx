@@ -11,7 +11,7 @@ import {
   GENDERS,
   REGISTRATION_STATUS,
   WUSER_STATUS,
-} from '@/constants/selectOptions';
+} from '@/constants/filterSelectOptions';
 import TableTextFilterPopover from '@/components/core/table/filter/TableTextFilterPopover';
 import { ResetIcon } from '@/components/icons/ResetIcon';
 import { hasFilters } from '@/lib/hasFilters';

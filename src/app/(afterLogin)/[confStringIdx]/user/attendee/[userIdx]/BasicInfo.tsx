@@ -14,7 +14,7 @@ import {
   TextField,
 } from '@mui/material';
 import { Label } from '@/components/core/Label';
-import { WUSER_STATUS } from '@/constants/selectOptions';
+import { WUSER_STATUS } from '@/constants/filterSelectOptions';
 import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
 import { dateFormat } from '@/lib/dayjs';
 import { UserDuplicatedInfoRequest } from '@/api/types/publicTypes';

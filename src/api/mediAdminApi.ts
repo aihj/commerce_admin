@@ -21,3 +21,20 @@ export const getAdminOpenStatusActivePcoList = (): Promise<
       return response.data.content;
     });
 };
+
+export const getAdministrators = (): Promise<
+  {
+    name: string;
+    wuserIdx: number;
+  }[]
+> => {
+  return adminAxiosInstance
+    .get(`/api/pco/admin/total/managers`)
+    .then((response) => {
+      /*logger.debug(
+        '<getAdminOpenStatusActivePcoList> data : ',
+        response.data.content
+      );*/
+      return response.data.content;
+    });
+};
