@@ -17,7 +17,7 @@ import {
   LetterDtResponse,
   SEND_STATUS,
   sendStatusLabels,
-} from '@/api/types/messgaeTypes';
+} from '@/api/types/messageTypes';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';

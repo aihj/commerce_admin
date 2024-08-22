@@ -205,13 +205,13 @@ const Filters = ({ conferenceIdx, handleSearchParam }: FilterProps) => {
     handleSearchParam(searchParam);
   }, [searchParam, handleChips, handleSearchParam]);
   return (
-    <Stack spacing={2} sx={{ mt: 2 }}>
+    <Stack spacing={4} sx={{ mt: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Label label="그룹 선택*" minWidth={100} />
         <Box>
           <Stack
             direction="row"
-            spacing={1}
+            spacing={'12px'}
             sx={{ alignItems: 'flex-end', flexWrap: 'wrap' }}
           >
             <FormControl sx={{ p: 0, width: 80 }}>

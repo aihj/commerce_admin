@@ -47,3 +47,16 @@ export interface LetterDtResponse {
   sendStatus: SEND_STATUS;
   senderWuserIdx?: number;
 }
+
+export interface SMSDetailListDT {
+  letterItemIdx: number;
+  letterItemSendDate: string;
+  smsMsgId?: number | null;
+  mmsMsgId?: number | null;
+  receiverWuserIdx: number;
+  phone: string;
+  name: string;
+  // sendStatus: SEND_STATUS;
+  sendStatus: string;
+  failReason?: string | null;
+}

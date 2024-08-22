@@ -9,9 +9,9 @@ const SMSTemplateInfo = () => {
     <Box
       sx={{
         ml: 2,
-        p: 3,
+        px: 3,
+        py: 5,
         borderRadius: '12px',
-        boxShadow: '0px 9px 46px 0px #00000014',
       }}
     >
       <div className="mb-16 leading-20 text-stone-600">

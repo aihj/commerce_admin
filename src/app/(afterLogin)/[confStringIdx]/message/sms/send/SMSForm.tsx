@@ -114,7 +114,7 @@ const SMSForm = ({ searchParam, conferenceIdx }: SMSFormProps) => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', px: 3, mt: 2 }}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={2} sx={{ width: '100%' }}>
+        <Stack spacing={4} sx={{ width: '100%' }}>
           <Controller
             control={control}
             name="subject"
@@ -234,7 +234,7 @@ const SMSForm = ({ searchParam, conferenceIdx }: SMSFormProps) => {
                           }
                         }}
                       />
-                      <span className="text-12 leading-14 text-stone-600 text-end">
+                      <span className="text-12 leading-14 text-stone-600 text-end pt-6">
                         {field.value?.length
                           ? calculateByteLength(field.value)
                           : 0}

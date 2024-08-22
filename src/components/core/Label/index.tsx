@@ -4,7 +4,7 @@ interface LabelProps {
   minWidth?: 100 | 140 | 180 | 200;
 }
 
-const labelVariants = cva(`font-medium text-14 leading-16`, {
+const labelVariants = cva(`font-medium text-14 leading-16 pb-6`, {
   variants: {
     minWidth: {
       100: `min-w-100`,
