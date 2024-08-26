@@ -56,7 +56,7 @@ export interface SMSDetailListDT {
   receiverWuserIdx: number;
   phone: string;
   name: string;
-  // sendStatus: SEND_STATUS;
-  sendStatus: string;
+  sendStatus: SEND_STATUS;
+  // sendStatus: string;
   failReason?: string | null;
 }

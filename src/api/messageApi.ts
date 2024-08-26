@@ -5,7 +5,7 @@ import { Filter } from '@/app/(afterLogin)/[confStringIdx]/message/sms/send/Filt
 import {
   sendSMSFilteredUsersRequest,
   sendSMSTestRequest,
-} from './types/messgaeTypes';
+} from './types/messageTypes';
 
 /**
  * 문자 필터 선택 시 해당 총 회원수

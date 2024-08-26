@@ -80,6 +80,7 @@ export const TableBody = <TRowModel extends object>({
           >
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
+                {selectable}
                 {/* selectable true일 경우 나타나는 체크리스트들? */}
                 {selectable ? (
                   <TableCell
@@ -129,11 +130,36 @@ export const TableBody = <TRowModel extends object>({
           <MuiTableBody>
             {rows.length > 0 ? (
               rows.map((row: any) => {
-                const rowId = row.id ? row.id : uniqueRowId?.(row);
+                // row.id 는 화면상의 일련번호
+                // uniqueRowId.(row.original)는 데이터 idx값
+                const rowId = uniqueRowId?.(row.original)
+                  ? uniqueRowId?.(row.original)
+                  : row.id;
                 const rowSelected = rowId ? selected?.has(rowId) : false;
 
                 return (
                   <TableRow hover={isHover} key={row.id} selected={rowSelected}>
+                    {selectable ? (
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={rowId ? rowSelected : false}
+                          // onChange={(event: React.ChangeEvent) => {
+                          onChange={() => {
+                            if (rowSelected) {
+                              // onDeselectOne?.(event, row);
+                            } else {
+                              alert(rowId);
+                              // onSelectOne?.(event, row);
+                            }
+                          }}
+                          // onClick={(event: React.MouseEvent) => {
+                          // if (onClick) {
+                          //   event.stopPropagation();
+                          // }
+                          // }}
+                        />
+                      </TableCell>
+                    ) : null}
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} align="right">
                         {flexRender(
