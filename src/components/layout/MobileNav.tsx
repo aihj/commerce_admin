@@ -12,7 +12,7 @@ import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/Car
 
 import type { NavItemConfig } from '@/types/nav';
 import { isNavItemActive } from '@/lib/isNavItemActive';
-import { Logo } from '@/components/core/logo';
+import { Logo } from '@/components/core/Logo';
 
 import { icons } from './nav-icons';
 import { WorkspacesSwitch } from './WorkspacesSwitch';

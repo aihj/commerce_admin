@@ -16,7 +16,7 @@ import { icons } from '../NavIcons';
 import { navColorStyles } from './styles';
 import { WorkspacesSwitch } from '@/components/layout/WorkspacesSwitch';
 import { PATH } from '@/paths';
-import { Logo } from '@/components/core/logo';
+import { Logo } from '@/components/core/Logo';
 
 interface SideNavProps {
   items?: NavItemConfig[];

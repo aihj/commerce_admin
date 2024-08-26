@@ -20,7 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import { AttendeePaymentManualVo } from '@/types/user';
 import { checkRefundAmount } from '@/api/publicApi';
-import { Option } from '@/components/core/option';
+import { Option } from '@/components/core/Option';
 
 type RegisterAttendeeListTypeTossTypes = NonNullable<unknown>;
 
@@ -306,7 +306,7 @@ const RegisterAttendeeListTypeManual =
           size: 110,
         }),
       ],
-      [columnHelper, moveUserDetail]
+      [columnHelper, moveUserDetail, changeManualStatus]
     );
     // endregion ****************************** 열 구성 설정 ******************************
     const { isLoading, error, data, refetch } = useQuery({
