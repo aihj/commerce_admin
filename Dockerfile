@@ -11,10 +11,8 @@ RUN npm install --ignore-scripts
 
 COPY . .
 
-# RUN npm build
-RUN npm run build
-# RUN echo "APP_ENV=${APP_ENV}"
-# RUN if [[ "${APP_ENV}" = "production" ]] ; then npm run build ; else npm run build:dev ; fi
+RUN echo "APP_ENV=${APP_ENV}"
+RUN if [[ "${APP_ENV}" = "production" ]] ; then npm run build ; else npm run build:dev ; fi
 
 ENV PORT 80
 EXPOSE $PORT

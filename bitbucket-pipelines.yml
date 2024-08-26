@@ -11,33 +11,38 @@ pipelines:
   branches:
     develop:
       - step:
+          name: Development Deploy
+          script:
+            - echo "This is a Development deployment"
+
+      - step:
           name: Docker build and push to AWS ECR
           services:
             - docker
           image: atlassian/pipelines-awscli
           script:
             # variables
-            - export ECR_REPOSITORY="medistaff-admin-front-dev-ecr"
+            - export ECR_REPOSITORY="pco-dev-admin-front-ecr"
+            - export APP_ENV="development"
 
             - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ECR_REGISTRY
 
             - IMAGE=$AWS_ECR_REGISTRY/$ECR_REPOSITORY
             - TAG=$BITBUCKET_COMMIT
-            - docker build -t $IMAGE:$TAG .
 
-            - docker push $AWS_ECR_REGISTRY/$ECR_REPOSITORY:$TAG
+            - docker build --build-arg=APP_ENV=$APP_ENV -t $IMAGE:latest -t $IMAGE:$TAG .
+
+            - docker push $AWS_ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
       - step:
           name: Deploy to AWS ECS, Code Deploy
-          services:
-            - docker
           image: atlassian/pipelines-awscli
-          # deployment: Development
+
           script:
             # variables
-            - export CLUSTER_NAME="medistaff-admin-front-dev-cluster"
-            - export SERVICE_NAME="medistaff-admin-front-dev-service"
-            - export DEPLOYMENT_GROUP="DpgECS-medistaff-admin-front-dev-cluster-medistaff-admin-front-dev-service"
+            - export CLUSTER_NAME="pco-dev-admin-front-cluster"
+            - export SERVICE_NAME="pco-dev-admin-front-service"
+            - export DEPLOYMENT_GROUP="DgpECS-pco-dev-admin-front-cluster-pco-dev-admin-front-service"
 
             - aws ecs deploy
               --debug

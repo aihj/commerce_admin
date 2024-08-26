@@ -12,6 +12,7 @@
     "build-local-live": "env-cmd -f .env.local-test next build",
     "build-prod-test": "env-cmd -f .env.prod-test next build",
     "build-prod-live": "env-cmd -f .env.prod-live next build",
+    "build:dev": "env-cmd -f .env.development next build",
     "build": "next build",
     "prepare": "husky",
     "start": "next start",
