@@ -1,19 +1,12 @@
 'use client';
-import React, { useState } from 'react';
-import { logger } from '@/lib/logger/defaultLogger';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs from 'dayjs';
+import React from 'react';
 import { Card } from '@mui/material';
-import MuiTest from '@/app/test/MuiTest';
-import MuiFormTest from '@/app/test/MuiFormTest';
 import { QuillFormTest } from '@/app/test/QuillFormTest';
 
 type TestTypeProps = NonNullable<unknown>;
 
 // eslint-disable-next-line no-empty-pattern
 export default function Test({}: TestTypeProps) {
-  const [value, setValue] = useState<string>('');
-
   return (
     <article>
       <h2>간단한 테스트용 페이지</h2>
