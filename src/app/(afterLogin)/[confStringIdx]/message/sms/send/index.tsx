@@ -60,6 +60,8 @@ const SMSSend = () => {
     conferenceIdx: conferenceIdx as number,
   });
 
+  const [searchParamError, setSearchParamError] = useState<boolean>(false);
+
   return (
     <Box
       sx={{
@@ -96,18 +98,20 @@ const SMSSend = () => {
           <Filters
             conferenceIdx={conferenceIdx as number}
             handleSearchParam={(param: Filter) => setSearchParam(param)}
+            searchParamError={searchParamError}
           />
         </TabPanel>
         <TabPanel value={tabIndex} index={1}>
-          개인으로 보내기
+          개인으로 보내기 Coming Soon
         </TabPanel>
         <TabPanel value={tabIndex} index={2}>
-          직접 입력
+          직접 입력 Coming Soon
         </TabPanel>
       </Box>
       <SMSForm
         searchParam={searchParam}
         conferenceIdx={conferenceIdx as number}
+        setSearchParamError={(value: boolean) => setSearchParamError(value)}
       />
     </Box>
   );

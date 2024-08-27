@@ -1,6 +1,6 @@
 export const GENDERS = [
-  { value: 'M', label: '남' },
-  { value: 'F', label: '여' },
+  { value: 'M', label: '남성' },
+  { value: 'F', label: '여성' },
 ];
 
 export const WUSER_STATUS = [

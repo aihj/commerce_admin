@@ -24,6 +24,7 @@ const config = {
         },
         secondary: {
           darkest: '#111927',
+          main: '#384250',
           light: '#F3F4F6',
         },
         info: {
@@ -32,6 +33,9 @@ const config = {
         error: {
           main: '#F04438',
           dark: '#B42318',
+        },
+        blue: {
+          main: '#2970FF',
         },
       },
       spacing: px0_100,

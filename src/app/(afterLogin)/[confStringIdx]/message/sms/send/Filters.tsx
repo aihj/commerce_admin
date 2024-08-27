@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Checkbox,
-  Chip,
   FormControl,
   FormControlLabel,
   Select,
@@ -21,6 +20,7 @@ import { ResetIcon } from '@/components/icons/ResetIcon';
 import { Option } from '@/components/core/Option';
 import { getTotalUserAmount } from '@/api/messageApi';
 import Swal from 'sweetalert2';
+import { Chip as MyChip } from '@/components/core/Chip';
 
 export interface Filter {
   conferenceIdx?: number;
@@ -35,9 +35,14 @@ export interface Filter {
 interface FilterProps {
   conferenceIdx: number;
   handleSearchParam: (data: Filter) => void;
+  searchParamError: boolean;
 }
 
-const Filters = ({ conferenceIdx, handleSearchParam }: FilterProps) => {
+const Filters = ({
+  conferenceIdx,
+  handleSearchParam,
+  searchParamError,
+}: FilterProps) => {
   // 필터 항목
   const [searchParam, setSearchParam] = useState<Filter>({});
   const [birthDateStartT, setBirthDateStartT] = useState<string>('');
@@ -49,6 +54,7 @@ const Filters = ({ conferenceIdx, handleSearchParam }: FilterProps) => {
   const [allUser, setAllUser] = useState<boolean>(false);
 
   const [filteredChips, setFilteredChips] = useState<ReactElement[]>();
+  const [filteredCount, setFilteredCount] = useState<number>(-1);
 
   const handleClearFilters = () => {
     setSearchParam({});
@@ -59,6 +65,7 @@ const Filters = ({ conferenceIdx, handleSearchParam }: FilterProps) => {
     setRegistrationStatus('');
     setPaymentStatus('');
     setAllUser(false);
+    setFilteredChips([]);
   };
 
   const handleFilters = () => {
@@ -104,115 +111,159 @@ const Filters = ({ conferenceIdx, handleSearchParam }: FilterProps) => {
   const handleDelete = useCallback(
     (key: string) => {
       const newChips = filteredChips?.filter((item) => item.key !== key);
-      setFilteredChips(newChips);
+      if (newChips?.length === 1) {
+        // 총 {total}건만 남은 상황
+        setFilteredChips([]);
+      } else {
+        setFilteredChips(newChips);
+      }
     },
     [filteredChips]
   );
 
-  const handleChips = useCallback(
-    (total: number) => {
-      const chips = [];
-      if (allUser) {
-        chips.push(
-          <Chip label={`전체 ${total}명`} color="primary" size="small" />
-        );
-        setFilteredChips(chips);
-        return chips;
-      }
+  const handleChips = (total: number) => {
+    const chips = [];
+    if (allUser) {
+      chips.push(
+        <MyChip
+          key="birthFullYear"
+          label={`전체 ${total}명`}
+          type="soft"
+          color="secondary"
+        />
+      );
+      setFilteredChips(chips);
+      return chips;
+    } else {
       if (searchParam.birthDateStartT && searchParam.birthDateEndT) {
         chips.push(
-          <Chip
+          <MyChip
             key="birthFullYear"
             label={`${searchParam.birthDateStartT}년생 ~ ${searchParam.birthDateEndT}년생`}
-            color="primary"
-            size="small"
-            onDelete={() => () => handleDelete('birthFullYear')}
+            type="soft"
+            color="secondary"
+            onDelete={() => {
+              setBirthDateStartT('');
+              setBirthDateEndT('');
+              handleDelete('birthFullYear');
+            }}
           />
         );
       } else if (searchParam.birthDateStartT) {
         chips.push(
-          <Chip
+          <MyChip
             key="birthDateStartT"
             label={`${searchParam.birthDateStartT}년생~`}
-            color="primary"
-            size="small"
-            onDelete={() => handleDelete('birthDateStartT')}
+            type="soft"
+            color="secondary"
+            onDelete={() => {
+              setBirthDateStartT('');
+              handleDelete('birthDateStartT');
+            }}
           />
         );
       } else if (searchParam.birthDateEndT) {
         chips.push(
-          <Chip
+          <MyChip
             key="birthDateEndT"
-            label={`~${searchParam.birthDateStartT}년생`}
-            color="primary"
-            size="small"
-            onDelete={() => handleDelete('birthDateEndT')}
+            label={`~${searchParam.birthDateEndT}년생`}
+            type="soft"
+            color="secondary"
+            onDelete={() => {
+              setBirthDateEndT('');
+              handleDelete('birthDateEndT');
+            }}
           />
         );
       }
       if (searchParam.gender) {
         chips.push(
-          <Chip
+          <MyChip
             key="gender"
             label={`${GENDERS.filter((item) => item.value === searchParam.gender)[0].label}`}
-            size="small"
-            onDelete={() => handleDelete('gender')}
+            type="soft"
+            color="secondary"
+            onDelete={() => {
+              setGender('');
+              handleDelete('gender');
+            }}
           />
         );
       }
       if (searchParam.wserStatus) {
         chips.push(
-          <Chip
+          <MyChip
             key="wserStatus"
             label={`${WUSER_STATUS.filter((item) => item.value === searchParam.wserStatus)[0].label}`}
-            size="small"
-            onDelete={() => handleDelete('wserStatus')}
+            type="soft"
+            color="secondary"
+            onDelete={() => {
+              setWuserStatus('');
+              handleDelete('wserStatus');
+            }}
           />
         );
       }
       if (searchParam.registrationStatus) {
         chips.push(
-          <Chip
+          <MyChip
             key="registrationStatus"
             label={`${REGISTRATION_STATUS.filter((item) => item.value === searchParam.registrationStatus)[0].label}`}
-            size="small"
-            onDelete={() => handleDelete('registrationStatus')}
+            type="soft"
+            color="secondary"
+            onDelete={() => {
+              setRegistrationStatus('');
+              handleDelete('registrationStatus');
+            }}
           />
         );
       }
       if (searchParam.paymentStatus) {
         chips.push(
-          <Chip
+          <MyChip
             key="paymentStatus"
             label={`${PAYMENT_STATUS.filter((item) => item.value === searchParam.paymentStatus)[0].label}`}
-            size="small"
-            onDelete={() => handleDelete('paymentStatus')}
+            type="soft"
+            color="secondary"
+            onDelete={() => {
+              setPaymentStatus('');
+              handleDelete('paymentStatus');
+            }}
           />
         );
       }
       setFilteredChips(chips);
       return chips;
-    },
-    [searchParam, handleDelete, allUser]
-  );
+    }
+  };
 
   useEffect(() => {
     if (searchParam.conferenceIdx) {
       getTotalUserAmount(searchParam).then((result) => {
         handleChips(result.content);
+        setFilteredCount(result.content);
       });
     }
     handleSearchParam(searchParam);
-  }, [searchParam, handleChips, handleSearchParam]);
+  }, [searchParam]);
   return (
-    <Stack spacing={4} sx={{ mt: 4 }}>
+    <Stack spacing={3} sx={{ mt: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Label label="그룹 선택*" minWidth={100} />
-        <Box>
+        <Box
+          sx={{
+            overflowX: 'auto',
+            scrollbarWidth: 'thin',
+            pb: 1,
+          }}
+        >
           <Stack
             direction="row"
             spacing={'12px'}
-            sx={{ alignItems: 'flex-end', flexWrap: 'wrap' }}
+            sx={{
+              alignItems: 'flex-end',
+              minWidth: 980,
+            }}
           >
             <FormControl sx={{ p: 0, width: 80 }}>
               <Label label="시작 연도" />
@@ -406,10 +457,21 @@ const Filters = ({ conferenceIdx, handleSearchParam }: FilterProps) => {
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Label label="전송 대상*" minWidth={100} />
         <Box>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'flex-end' }}>
-            {filteredChips
-              ? filteredChips
-              : '그룹을 선택하여 전송대상을 추가해 주세요.'}
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+            {filteredChips && filteredChips.length > 0 && !allUser ? (
+              <div className="text-14 mb-4">총 {filteredCount}건</div>
+            ) : null}
+            {filteredChips && filteredChips.length !== 0 ? (
+              filteredChips
+            ) : (
+              <span
+                className={`text-14 leading-18 h-26 ${searchParamError && 'text-error-main'}`}
+              >
+                {searchParamError
+                  ? '문자를 받을 대상을 선택해 주세요.'
+                  : '그룹을 선택하여 전송대상을 추가해 주세요.'}
+              </span>
+            )}
           </Stack>
         </Box>
       </Box>

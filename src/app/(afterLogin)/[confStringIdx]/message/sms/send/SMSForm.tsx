@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { Box, Button, Chip, Stack, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  Chip,
+  Divider,
+  MenuItem,
+  Stack,
+  TextField,
+} from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { Label } from '@/components/core/Label';
 import { Filter } from './Filters';
@@ -7,6 +15,7 @@ import { SMSTemplateInfo } from './SMSTemplateInfo';
 import { toast } from '@/components/core/Toaster';
 import { sendSMSFilteredUsers, sendSMSTest } from '@/api/messageApi';
 import Swal from 'sweetalert2';
+import { logger } from '@/lib/logger/defaultLogger';
 
 const calculateByteLength = (text: string) => {
   // UTF-8로 인코딩된 문자열의 바이트 길이를 계산하는 함수
@@ -27,9 +36,19 @@ interface SMSFormData {
 interface SMSFormProps {
   searchParam: Filter;
   conferenceIdx: number;
+  setSearchParamError: (value: boolean) => void;
 }
 
-const SMSForm = ({ searchParam, conferenceIdx }: SMSFormProps) => {
+const dummySender = [
+  { label: '김민정', value: '01031237207' },
+  { label: '나문', value: '01062813889' },
+];
+
+const SMSForm = ({
+  searchParam,
+  conferenceIdx,
+  setSearchParamError,
+}: SMSFormProps) => {
   const {
     control,
     handleSubmit,
@@ -37,19 +56,23 @@ const SMSForm = ({ searchParam, conferenceIdx }: SMSFormProps) => {
     formState: { errors },
   } = useForm<SMSFormData>({
     defaultValues: { letterTemplateIdx: null, messageType: 'custom' },
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
   });
 
   const [isSMSMode, setIsSMSMode] = useState<boolean>(true);
   const [testCompleted, setTestCompleted] = useState<boolean>(false);
 
   const handleSMSMode = (value: string) => {
-    if (isSMSMode && calculateByteLength(value) > 80) {
-      setIsSMSMode(false);
-      toast.info('MMS로 전환됩니다.', { duration: 1000 });
-    }
-    if (!isSMSMode && calculateByteLength(value) <= 80) {
-      setIsSMSMode(true);
-      toast.info('SMS로 전환됩니다.', { duration: 1000 });
+    if (!watch('subject')) {
+      if (isSMSMode && calculateByteLength(value) > 80) {
+        setIsSMSMode(false);
+        toast.info('MMS로 전환됩니다.', { duration: 1000 });
+      }
+      if (!isSMSMode && calculateByteLength(value) <= 80) {
+        setIsSMSMode(true);
+        toast.info('SMS로 전환됩니다.', { duration: 1000 });
+      }
     }
   };
 
@@ -59,19 +82,29 @@ const SMSForm = ({ searchParam, conferenceIdx }: SMSFormProps) => {
         title: '필수 정보 확인',
         text: '문자 전송을 위한 필수 정보를 확인 후 다시 입력해 주세요.',
       });
+      setSearchParamError(true);
     } else {
+      setSearchParamError(false);
       const formData = {
         searchParam,
         ...data,
       };
-      sendSMSFilteredUsers(formData).then((result) => {
-        if (result.status === 200) {
+      sendSMSFilteredUsers(formData)
+        .then((result) => {
+          if (result.status === 200) {
+            Swal.fire({
+              title: '문자 전송 완료',
+              text: '문자 전송이 완료되었습니다.',
+            });
+          }
+        })
+        .catch((error) => {
+          logger.error('<sendSMSFilteredUsers> error', error);
           Swal.fire({
-            title: '문자 전송 완료',
-            text: '문자 전송이 완료되었습니다.',
+            title: '문자 전송 실패',
+            text: '문자 전송을 할 수 없습니다. 잠시 후 다시 시도해 주세요.',
           });
-        }
-      });
+        });
     }
   };
 
@@ -102,8 +135,8 @@ const SMSForm = ({ searchParam, conferenceIdx }: SMSFormProps) => {
       sendSMSTest(formData).then((result) => {
         if (result.status === 200) {
           Swal.fire({
-            title: '문자 전송 완료',
-            text: '문자 전송이 완료되었습니다.',
+            title: '테스트 전송 완료',
+            text: `요청하신 ${data.testPhoneNumber} 번호로 테스트 문자가 전송되었습니다.`,
           });
           setTestCompleted(true);
         }
@@ -112,29 +145,37 @@ const SMSForm = ({ searchParam, conferenceIdx }: SMSFormProps) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', px: 3, mt: 2 }}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={4} sx={{ width: '100%' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        px: 3,
+        mt: 4,
+        width: '100%',
+      }}
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+        <Stack spacing={2}>
           <Controller
             control={control}
-            name="subject"
+            name="memo"
             rules={{
-              required: '발송 제목을 입력해 주세요.',
+              required: '메모를 입력해 주세요.',
               pattern: {
-                value: /^[a-zA-Zㄱ-ㅎ가-힣0-9.!]{2,25}$/,
-                message: '발송 제목을 올바르게 입력해 주세요.',
+                value: /^[a-zA-Zㄱ-ㅎ가-힣0-9.!\s]{1,50}$/,
+                message: '50자 이내로 입력해 주세요.',
               },
             }}
             render={({ field }) => (
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Label label="제목*" minWidth={100} />
+              <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+                <Label label="메모*" minWidth={100} />
                 <TextField
-                  sx={{ p: 0, height: 44, width: 480 }}
-                  error={Boolean(errors.subject)}
-                  placeholder="25자 이내"
+                  sx={{ p: 0, width: 480, mb: '18px' }}
+                  error={Boolean(errors.memo)}
+                  placeholder="50자 이내"
                   helperText={
-                    errors.subject
-                      ? errors.subject?.message
+                    errors.memo
+                      ? errors.memo?.message
                       : '제목은 문자 발송 내역에 저장되는 내용이며, 문자 발송시 제목으로 표기되지 않습니다.'
                   }
                   fullWidth
@@ -143,30 +184,7 @@ const SMSForm = ({ searchParam, conferenceIdx }: SMSFormProps) => {
               </Box>
             )}
           />
-          <Controller
-            control={control}
-            name="memo"
-            rules={{
-              required: '메모를 입력해 주세요.',
-              pattern: {
-                value: /^[a-zA-Zㄱ-ㅎ가-힣0-9.!]{1,50}$/,
-                message: '50자 이내로 입력해 주세요.',
-              },
-            }}
-            render={({ field }) => (
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Label label="메모" minWidth={100} />
-                <TextField
-                  sx={{ p: 0, height: 44, width: 480 }}
-                  error={Boolean(errors.memo)}
-                  placeholder="50자 이내"
-                  helperText={errors.memo?.message}
-                  fullWidth
-                  {...field}
-                />
-              </Box>
-            )}
-          />
+          <Divider />
           {/* // 추후
           <Controller
             control={control}
@@ -189,64 +207,119 @@ const SMSForm = ({ searchParam, conferenceIdx }: SMSFormProps) => {
               </Box>
             )}
           /> */}
-          <Controller
-            control={control}
-            name="content"
-            rules={{
-              required: '메시지를 입력하세요.',
-            }}
-            render={({ field }) => {
-              const chips = isSMSMode ? (
-                <Chip label="SMS" sx={{ width: 72 }} />
+
+          <Box
+            sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
+          >
+            <Label label="메시지 입력*" minWidth={100} />
+            <Box>
+              {isSMSMode ? (
+                <Chip label="SMS" sx={{ width: 72, margin: '0 0 4px 0' }} />
               ) : (
-                <Chip label="MMS" color="success" sx={{ width: 72 }} />
-              );
-              return (
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Label label="메시지 입력*" minWidth={100} />
-                  <Box sx={{ display: 'flex' }}>
+                <Chip
+                  label="MMS"
+                  color="success"
+                  sx={{ width: 72, margin: '0 0 4px 0' }}
+                />
+              )}
+              <Controller
+                control={control}
+                name="subject"
+                rules={{
+                  required: '발송 제목을 입력해 주세요.',
+                  pattern: {
+                    value: /^[a-zA-Zㄱ-ㅎ가-힣0-9.!\s]{2,25}$/,
+                    message: '발송 제목을 올바르게 입력해 주세요.',
+                  },
+                }}
+                render={({ field }) => (
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                      {chips}
                       <TextField
-                        sx={{
-                          mt: 1,
-                          p: 0,
-                          width: 240,
-                          minHeight: 200,
-                          '& .MuiInputBase-root': {
-                            minHeight: 200,
-                          },
-                        }}
-                        error={Boolean(errors.content)}
-                        placeholder="메시지를 입력하세요"
-                        helperText={errors.content?.message}
+                        label="제목"
+                        sx={{ p: 0, width: 480 }}
+                        error={Boolean(errors.subject)}
+                        placeholder="(선택) 제목 입력 시 MMS로 자동 전환 됩니다."
+                        helperText={errors.subject?.message}
                         fullWidth
-                        multiline
                         {...field}
                         onChange={(e) => {
-                          if (calculateByteLength(e.target.value) >= 4000) {
-                            toast.error(
-                              '최대 입력 가능한 바이트를 초과했습니다.'
-                            );
-                          } else {
-                            field.onChange(e.target.value);
-                            handleSMSMode(field.value);
-                          }
+                          field.onChange(e.target.value);
+                          setIsSMSMode(e.target.value.length === 0);
                         }}
                       />
                       <span className="text-12 leading-14 text-stone-600 text-end pt-6">
                         {field.value?.length
                           ? calculateByteLength(field.value)
-                          : 0}
-                        / {isSMSMode ? '80byte' : '4000byte'}
+                          : 0}{' '}
+                        / 60byte
                       </span>
                     </Box>
-                    <SMSTemplateInfo />
                   </Box>
-                </Box>
-              );
-            }}
-          />
+                )}
+              />
+              <Box sx={{ display: 'flex', flexDirection: 'column', py: 1 }}>
+                <span className="text-blue-main text-14">
+                  *제목은 선택사항이며, 입력 시 자동으로 MMS으로 전환되어
+                  발송됩니다.
+                </span>
+                <span className="text-blue-main text-14">
+                  *MMS로 전환 시, 기본 금액이 추가됩니다.
+                </span>
+              </Box>
+              <Controller
+                control={control}
+                name="content"
+                rules={{
+                  required: '보낼 메시지를 입력해 주세요.',
+                }}
+                render={({ field }) => (
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex' }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <TextField
+                          label="내용*"
+                          sx={{
+                            mt: 1,
+                            p: 0,
+                            width: 240,
+                            minHeight: 200,
+                            '& .MuiInputBase-root': {
+                              minHeight: 200,
+                            },
+                          }}
+                          error={Boolean(errors.content)}
+                          placeholder="메시지를 입력하세요"
+                          helperText={errors.content?.message}
+                          fullWidth
+                          multiline
+                          {...field}
+                          onChange={(e) => {
+                            if (calculateByteLength(e.target.value) >= 4000) {
+                              toast.error(
+                                '최대 입력 가능한 바이트를 초과했습니다.'
+                              );
+                            } else {
+                              field.onChange(e.target.value);
+                              handleSMSMode(field.value);
+                            }
+                          }}
+                        />
+                        <span className="text-12 leading-14 text-stone-600 text-end pt-6">
+                          {field.value?.length
+                            ? calculateByteLength(field.value)
+                            : 0}{' '}
+                          / {isSMSMode ? '80byte' : '4000byte'}
+                        </span>
+                      </Box>
+                      <SMSTemplateInfo />
+                    </Box>
+                  </Box>
+                )}
+              />
+            </Box>
+          </Box>
+          <Divider />
           <Controller
             control={control}
             name="testPhoneNumber"
@@ -288,18 +361,25 @@ const SMSForm = ({ searchParam, conferenceIdx }: SMSFormProps) => {
                 message: '발신 번호를 올바르게 입력해 주세요.',
               },
             }}
-            defaultValue="01062813889"
+            defaultValue={dummySender[0].value}
             render={({ field }) => (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Label label="발신 번호*" minWidth={100} />
                 <TextField
-                  sx={{ p: 0, height: 44, width: 480 }}
+                  sx={{ p: 0, height: 44, width: 240 }}
+                  select
                   error={Boolean(errors.senderPhoneNumber)}
                   placeholder="숫자 10~11자리"
                   helperText={errors.senderPhoneNumber?.message}
                   fullWidth
                   {...field}
-                />
+                >
+                  {dummySender.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label} {option.value}
+                    </MenuItem>
+                  ))}
+                </TextField>
               </Box>
             )}
           />
