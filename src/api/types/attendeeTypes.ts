@@ -99,6 +99,7 @@ export interface RegisterAttendeeDtVo {
   registrationStatus: REGISTRATION_STATUS;
   registrationAt?: number;
   hasMemo: boolean; //  메모 존재 여부
+  regifeeName: string;
 
   // 추가 결제
   additionalPaidPrograms?: HashMap[];

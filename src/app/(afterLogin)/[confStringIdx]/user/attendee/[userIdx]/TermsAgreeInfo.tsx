@@ -32,6 +32,9 @@ interface TermsAgreeInfoProp {
 }
 
 const TermsAgreeInfo = forwardRef(({ terms }: TermsAgreeInfoProp, ref) => {
+  if (!terms) {
+    return;
+  }
   return (
     <Card
       sx={{
