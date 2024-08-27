@@ -115,7 +115,38 @@ export const layoutConfig = () => {
   };
 };
 
+// TODO title 응답값으로 가져와야함
 export const eachPcoLayoutConfig = (confStringIdx: string) => {
+  return {
+    navItems: [
+      {
+        key: 'EACH/PAYMENT',
+        title: '대한응급의학의사회',
+        items: [
+          {
+            key: 'EACH/USER/ATTENDEE',
+            title: '참가자',
+            icon: 'tent',
+            items: [
+              {
+                key: 'EACH/USER/ATTENDEE/JOIN/LIST',
+                title: '가입자 목록',
+                href: PATH.EACH.USER.ATTENDEE.JOIN_LIST(confStringIdx),
+              },
+              {
+                key: 'EACH/USER/ATTENDEE/REGISTER/LIST',
+                title: '등록자 목록',
+                href: PATH.EACH.USER.ATTENDEE.REGISTER_LIST(confStringIdx),
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+};
+
+export const eachPcoLayoutConfig_ori = (confStringIdx: string) => {
   return {
     navItems: [
       // TODO : 이모티콘 뭘로 할지 정하는건 필요함
@@ -360,4 +391,3 @@ export const eachPcoLayoutConfig = (confStringIdx: string) => {
     ],
   };
 };
-// }
