@@ -18,7 +18,7 @@ import { hasFilters } from '@/lib/hasFilters';
 
 interface RegisterAttendeeListFiltersProps {
   cSearchParams: RegisterAttendeeListTypeTossSearchParamsType;
-  setCSearchParamsFunc: (parma: any) => any;
+  setCSearchParamsFunc: (param: any) => any;
   deleteCSearchParams: () => any;
 }
 

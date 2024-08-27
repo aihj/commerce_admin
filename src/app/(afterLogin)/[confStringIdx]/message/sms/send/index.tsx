@@ -11,12 +11,12 @@ import { SMSForm } from './SMSForm';
 const tabs = [
   {
     idx: 1,
-    label: '필터로 보내기',
+    label: '그룹으로 보내기',
     value: 0,
   },
   {
     idx: 2,
-    label: '개인으로 보내기',
+    label: '회원에게 보내기',
     value: 1,
   },
   {

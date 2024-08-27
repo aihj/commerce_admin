@@ -53,7 +53,6 @@ const RegisterAttendeeListTypeToss =
         conferenceIdx: conferenceIdx as number,
         currentPage: 0,
         rowsPerPage: 10,
-
         sortType: 'tbl_conference_attendee.attendee_idx',
         sortDir: 'desc',
       };
@@ -80,6 +79,18 @@ const RegisterAttendeeListTypeToss =
     const columns = useMemo(
       () => [
         columnHelper.accessor('name', {
+          // header: () => (
+          //   <span
+          //     onClick={() => {
+          //       setCSearchParamsFunc({
+          //         ...cSearchParams,
+          //         sortDir: cSearchParams.sortDir === 'desc' ? 'asc' : 'desc',
+          //       });
+          //     }}
+          //   >
+          //     이름 {cSearchParams.sortDir === 'desc' ? 'desc' : 'asc'}
+          //   </span>
+          // ),
           header: '이름',
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -157,7 +168,7 @@ const RegisterAttendeeListTypeToss =
           size: 110,
         }),
         columnHelper.display({
-          header: '결제수단',
+          header: '결제 수단',
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               {info.row.original.paymentSource === null
@@ -169,17 +180,26 @@ const RegisterAttendeeListTypeToss =
           ),
           size: 110,
         }),
-
-        // TODO : 현재 해당값 없음
-        columnHelper.accessor('additionalPaidPrograms', {
-          header: '추가 결제',
-          cell: () => {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>-</Box>
-            );
-          },
+        columnHelper.display({
+          header: '등록 구분',
+          cell: (info) => (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              {info.row.original.regifeeName}
+            </Box>
+          ),
           size: 110,
         }),
+
+        // TODO : 현재 해당값 없음
+        // columnHelper.accessor('additionalPaidPrograms', {
+        //   header: '추가 결제',
+        //   cell: () => {
+        //     return (
+        //       <Box sx={{ display: 'flex', justifyContent: 'center' }}>-</Box>
+        //     );
+        //   },
+        //   size: 110,
+        // }),
         columnHelper.accessor('amount', {
           header: '총 금액',
           cell: (info) => {

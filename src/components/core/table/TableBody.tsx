@@ -30,6 +30,7 @@ interface ReactTableProps<TRowModel extends object> {
   onDeselectAll?: (event: React.ChangeEvent) => void; // ?????????????
   uniqueRowId?: (row: TRowModel) => RowId;
   isHover?: boolean;
+  noDataMessage?: string;
 }
 
 export const TableBody = <TRowModel extends object>({
@@ -42,6 +43,7 @@ export const TableBody = <TRowModel extends object>({
   onSelectAll,
   uniqueRowId,
   isHover,
+  noDataMessage,
   ...props
 }: ReactTableProps<TRowModel>) => {
   const [sorting, setSorting] = useState();
@@ -176,7 +178,9 @@ export const TableBody = <TRowModel extends object>({
                 <TableCell colSpan={table.getAllLeafColumns().length}>
                   <Box width={'100%'} py={3}>
                     <Typography variant="h6" textAlign={'center'}>
-                      존재하는 데이터가 없습니다.
+                      {noDataMessage
+                        ? noDataMessage
+                        : '데이터가 존재하지 않습니다.'}
                     </Typography>
                   </Box>
                 </TableCell>
