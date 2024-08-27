@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import {
   LetterDtResponse,
-  SEND_STATUS,
+  // SEND_STATUS,
   sendStatusLabels,
 } from '@/api/types/messageTypes';
 import TableBody from '@/components/core/table/TableBody';
@@ -34,52 +34,55 @@ import { useSelector } from 'react-redux';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { useQuery } from '@tanstack/react-query';
 import { getAdministrators } from '@/api/mediAdminApi';
+import { logger } from '@/lib/logger/defaultLogger';
+import { getSMSList } from '@/api/messageApi';
+import { Loading } from '@/components/core/Loading';
 
-const dummyData = [
-  {
-    letterIdx: 0,
-    receiverInfo: '테스트 정혜경외 2명',
-    sendDate: '2024-08-16 21:49:12',
-    completeDate: '2024-08-16 21:49:12',
-    hasMemo: true,
-    memo: '기회원 알림 단체 문자',
-    content: '안녕하세요 [|userName|]님',
-    sendStatus: SEND_STATUS.inProgress,
-    count: 2,
-    failureCount: 0,
-    senderName: '정혜경',
-    senderWuserIdx: 868,
-  },
-  {
-    letterIdx: 3,
-    receiverInfo: '김민정외 2명',
-    sendDate: '2024-08-16 22:06:55',
-    completeDate: '2024-08-16 22:06:55',
-    hasMemo: true,
-    memo: '테스트 미리보기용',
-    content: '안녕하세요 홍길동님',
-    sendStatus: SEND_STATUS.complete,
-    count: 1,
-    failureCount: 0,
-    senderName: '정혜경',
-    senderWuserIdx: 868,
-  },
-  {
-    letterIdx: 4,
-    receiverInfo: '정혜경외 4명',
-    sendDate: '2024-08-19 14:14:11',
-    completeDate: '2024-08-19 14:14:11',
-    hasMemo: false,
-    memo: '기회원 알림 단체 문자',
-    content:
-      '안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님',
-    sendStatus: SEND_STATUS.failure,
-    count: 4,
-    failureCount: 0,
-    senderName: '정혜경',
-    senderWuserIdx: 868,
-  },
-] satisfies LetterDtResponse[];
+// const dummyData = [
+//   {
+//     letterIdx: 0,
+//     receiverInfo: '테스트 정혜경외 2명',
+//     sendDate: '2024-08-16 21:49:12',
+//     completeDate: '2024-08-16 21:49:12',
+//     hasMemo: true,
+//     memo: '기회원 알림 단체 문자',
+//     content: '안녕하세요 [|userName|]님',
+//     sendStatus: SEND_STATUS.inProgress,
+//     count: 2,
+//     failureCount: 0,
+//     senderName: '정혜경',
+//     senderWuserIdx: 868,
+//   },
+//   {
+//     letterIdx: 3,
+//     receiverInfo: '김민정외 2명',
+//     sendDate: '2024-08-16 22:06:55',
+//     completeDate: '2024-08-16 22:06:55',
+//     hasMemo: true,
+//     memo: '테스트 미리보기용',
+//     content: '안녕하세요 홍길동님',
+//     sendStatus: SEND_STATUS.complete,
+//     count: 1,
+//     failureCount: 0,
+//     senderName: '정혜경',
+//     senderWuserIdx: 868,
+//   },
+//   {
+//     letterIdx: 4,
+//     receiverInfo: '정혜경외 4명',
+//     sendDate: '2024-08-19 14:14:11',
+//     completeDate: '2024-08-19 14:14:11',
+//     hasMemo: false,
+//     memo: '기회원 알림 단체 문자',
+//     content:
+//       '안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님',
+//     sendStatus: SEND_STATUS.failure,
+//     count: 4,
+//     failureCount: 0,
+//     senderName: '정혜경',
+//     senderWuserIdx: 868,
+//   },
+// ] satisfies LetterDtResponse[];
 
 const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -99,6 +102,8 @@ const SMSList = () => {
       label: string;
     }[]
   >([]);
+
+  const [totalCount, setTotalCount] = useState<number>(0);
 
   const router = useRouter();
   const { confStringIdx } = useParams();
@@ -202,6 +207,22 @@ const SMSList = () => {
           </DTCellBox>
         ),
       }),
+      columnHelper.accessor('messageType', {
+        header: '타입',
+        cell: (info) => (
+          <DTCellBox>
+            <Chip
+              color={
+                info.row.original.messageType === 'mms'
+                  ? 'success'
+                  : 'secondary'
+              }
+              label={[info.row.original.messageType]}
+            />
+          </DTCellBox>
+        ),
+        size: 80,
+      }),
       columnHelper.accessor('sendStatus', {
         header: '상태',
         cell: (info) => (
@@ -248,7 +269,7 @@ const SMSList = () => {
         size: 60,
       }),
     ],
-    [columnHelper]
+    [columnHelper, moveSMSSendDetail]
   );
 
   const conferenceIdx = useSelector(selectConferenceIdx);
@@ -266,17 +287,37 @@ const SMSList = () => {
   const { cSearchParams, setCSearchParamsFunc, deleteCSearchParams } =
     useCustomSearchParams<TableSearchParams>(initSearchParam);
 
-  useQuery({
+  const { data: getAdministratorsData } = useQuery({
     queryKey: ['getAdministrators'],
     queryFn: () =>
-      getAdministrators().then((result) => {
-        const newData = result.map((item) => ({
-          label: item.name,
-          value: item.wuserIdx,
-        }));
-        setAdministrators(newData);
-      }),
+      getAdministrators()
+        .then((result) => {
+          const newData = result.map((item) => ({
+            label: item.name,
+            value: item.wuserIdx,
+          }));
+          setAdministrators(newData);
+          logger.debug('getAdministratorsData', getAdministratorsData);
+          return result;
+        })
+        .catch((error) => {
+          logger.error('<getAdministrators error>', error);
+        }),
   });
+
+  const { data, isPending } = useQuery({
+    queryKey: ['getSMSList', cSearchParams],
+    queryFn: () =>
+      getSMSList(cSearchParams)
+        .then((result) => {
+          setTotalCount(result.totalCount as number);
+          return result.content;
+        })
+        .catch((error) => {
+          logger.error('<getSMSList error>', error);
+        }),
+  });
+
   return (
     <Box
       sx={{
@@ -286,6 +327,7 @@ const SMSList = () => {
         width: 'var(--Content-width)',
       }}
     >
+      {isPending && <Loading open={isPending} />}
       <Stack spacing={4}>
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
@@ -304,20 +346,18 @@ const SMSList = () => {
             administrators={administrators}
           />
           <TableBody<LetterDtResponse>
-            // data={data.content}
-            data={dummyData}
+            data={data as LetterDtResponse[]}
             columns={columns as ColumnDef<LetterDtResponse>[]}
             selectable={false}
             hideHead={false}
             uniqueRowId={(row: LetterDtResponse) => row.letterIdx as number}
             isHover={true}
-            // size="medium"
+            noDataMessage={'문자 발송 내역이 없습니다.'}
           />
           <TablePagination<SMSListFiltersType>
             cSearchParams={cSearchParams as SMSListFiltersType}
             setCSearchParamsFunc={setCSearchParamsFunc}
-            // totalCount={data.totalCount as unknown as number}
-            totalCount={dummyData.length}
+            totalCount={totalCount}
           />
         </Card>
       </Stack>

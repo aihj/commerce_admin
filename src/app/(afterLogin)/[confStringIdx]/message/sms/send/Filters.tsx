@@ -27,7 +27,7 @@ export interface Filter {
   birthDateStartT?: string | ReactElement;
   birthDateEndT?: string;
   gender?: string;
-  wserStatus?: string;
+  wuserStatus?: string;
   registrationStatus?: string;
   paymentStatus?: string;
 }
@@ -48,7 +48,7 @@ const Filters = ({
   const [birthDateStartT, setBirthDateStartT] = useState<string>('');
   const [birthDateEndT, setBirthDateEndT] = useState<string>('');
   const [gender, setGender] = useState<string>('');
-  const [wserStatus, setWuserStatus] = useState<string>('');
+  const [wuserStatus, setWuserStatus] = useState<string>('');
   const [registrationStatus, setRegistrationStatus] = useState<string>('');
   const [paymentStatus, setPaymentStatus] = useState<string>('');
   const [allUser, setAllUser] = useState<boolean>(false);
@@ -85,8 +85,8 @@ const Filters = ({
     if (gender !== '') {
       setSearchParam((prev) => ({ ...prev, gender }));
     }
-    if (wserStatus !== '') {
-      setSearchParam((prev) => ({ ...prev, wserStatus }));
+    if (wuserStatus !== '') {
+      setSearchParam((prev) => ({ ...prev, wuserStatus }));
     }
     if (registrationStatus !== '') {
       setSearchParam((prev) => ({ ...prev, registrationStatus }));
@@ -98,7 +98,7 @@ const Filters = ({
       birthDateStartT == '' &&
       birthDateEndT == '' &&
       gender == '' &&
-      wserStatus == '' &&
+      wuserStatus == '' &&
       registrationStatus == '' &&
       paymentStatus == ''
     ) {
@@ -190,16 +190,16 @@ const Filters = ({
           />
         );
       }
-      if (searchParam.wserStatus) {
+      if (searchParam.wuserStatus) {
         chips.push(
           <MyChip
-            key="wserStatus"
-            label={`${WUSER_STATUS.filter((item) => item.value === searchParam.wserStatus)[0].label}`}
+            key="wuserStatus"
+            label={`${WUSER_STATUS.filter((item) => item.value === searchParam.wuserStatus)[0].label}`}
             type="soft"
             color="secondary"
             onDelete={() => {
               setWuserStatus('');
-              handleDelete('wserStatus');
+              handleDelete('wuserStatus');
             }}
           />
         );
@@ -361,14 +361,16 @@ const Filters = ({
                 onChange={(event) => {
                   setWuserStatus(event.target.value);
                 }}
-                value={wserStatus}
+                value={wuserStatus}
               >
                 <Option value="">선택</Option>
-                {WUSER_STATUS.map((item) => (
-                  <Option key={item.value} value={item.value}>
-                    {item.label}
-                  </Option>
-                ))}
+                {WUSER_STATUS.filter((status) => status.value !== 'delete').map(
+                  (item) => (
+                    <Option key={item.value} value={item.value}>
+                      {item.label}
+                    </Option>
+                  )
+                )}
               </Select>
             </FormControl>
             <FormControl sx={{ p: 0, width: 116 }}>

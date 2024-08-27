@@ -29,7 +29,7 @@ interface SMSFormData {
   message: string;
   testPhoneNumber?: string;
   senderPhoneNumber: string;
-  messageType: string; // default value: 'custom'
+  type: string; // default value: 'custom'
   letterTemplateIdx: number | null; // 양식을 선택안했을때는 null로
 }
 
@@ -40,8 +40,8 @@ interface SMSFormProps {
 }
 
 const dummySender = [
-  { label: '김민정', value: '01031237207' },
-  { label: '나문', value: '01062813889' },
+  { label: '학회관리자 1', value: '01035793889' },
+  { label: '학회관리자 2', value: '01062813889' },
 ];
 
 const SMSForm = ({
@@ -55,7 +55,7 @@ const SMSForm = ({
     watch,
     formState: { errors },
   } = useForm<SMSFormData>({
-    defaultValues: { letterTemplateIdx: null, messageType: 'custom' },
+    defaultValues: { letterTemplateIdx: null, type: 'custom' },
     mode: 'onBlur',
     reValidateMode: 'onBlur',
   });

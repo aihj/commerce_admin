@@ -6,7 +6,7 @@ export interface sendSMSFilteredUsersRequest {
   subject: string;
   content: string;
   memo: string;
-  messageType: string; // default value: 'custom'
+  type: string; // default value: 'custom'
   senderPhoneNumber: string;
 }
 
@@ -17,7 +17,7 @@ export interface sendSMSTestRequest {
   subject: string;
   content: string;
   memo: string;
-  messageType: string; // default value: 'custom'
+  type: string; // default value: 'custom'
   senderPhoneNumber: string;
 }
 
@@ -46,6 +46,7 @@ export interface LetterDtResponse {
   senderName?: string;
   sendStatus: SEND_STATUS;
   senderWuserIdx?: number;
+  messageType: string;
 }
 
 export interface SMSDetailListDT {
