@@ -127,7 +127,11 @@ export interface AttendeeRegisterInfoResponse {
 
 /** 회원 상세 (회원의 학회 등록 정보) */
 export interface AttendeeDetailTypeRegiInfoResponse {
-  registrationStatus: 'unregistered' | 'preRegi' | 'onSiteRegi' | 'cancelled';
+  registrationStatus:
+    | 'unregistered'
+    | 'preRegistered'
+    | 'onSiteRegi'
+    | 'cancelled';
   discountCode?: string;
   indicatedAmount?: number;
   paymentAmount?: number;

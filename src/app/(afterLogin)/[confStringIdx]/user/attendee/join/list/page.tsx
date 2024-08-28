@@ -73,6 +73,28 @@ const JoinAttendeeList = () => {
   const columnHelper = createColumnHelper<JoinAttendeeDtVo>();
   const columns = useMemo(
     () => [
+      columnHelper.accessor('wuserIdx', {
+        header: '고유번호',
+        cell: (info) => (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Button
+              sx={{
+                border: 0,
+                textDecoration: 'underline',
+                textUnderlinePosition: 'under',
+              }}
+              color="secondary"
+              onClick={() =>
+                moveUserDetail(info.row.original.wuserIdx as number)
+              }
+              title={`${info.row.original.wuserIdx}`}
+            >
+              {`${info.getValue()}`}
+            </Button>
+          </Box>
+        ),
+        maxSize: 2,
+      }),
       columnHelper.accessor('name', {
         header: '이름',
         cell: (info) => (
@@ -92,6 +114,7 @@ const JoinAttendeeList = () => {
             </Button>
           </Box>
         ),
+        minSize: 10,
       }),
       columnHelper.accessor('memo', {
         header: '',
@@ -105,7 +128,7 @@ const JoinAttendeeList = () => {
             {info.row.original.memo ? <MemoIcon size={16} /> : ''}
           </Box>
         ),
-        size: 10,
+        maxSize: 5,
       }),
       columnHelper.accessor('birthDate', {
         header: '생년',
@@ -127,7 +150,7 @@ const JoinAttendeeList = () => {
             {genderLabels[info.row.original.gender]}
           </Box>
         ),
-        size: 60,
+        size: 20,
       }),
 
       columnHelper.accessor('phone', {
@@ -165,7 +188,7 @@ const JoinAttendeeList = () => {
         size: 110,
       }),
       columnHelper.display({
-        header: '회원 상태',
+        header: '회원상태',
         cell: (info) => {
           if (info.row.original.wuserStatus === 'active') {
             return (
@@ -193,7 +216,7 @@ const JoinAttendeeList = () => {
             );
           }
         },
-        size: 110,
+        size: 60,
       }),
       columnHelper.accessor('wuserCreateT', {
         header: '가입 날짜',
