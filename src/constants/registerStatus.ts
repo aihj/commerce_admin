@@ -1,6 +1,6 @@
 enum REGISTER_STATUS {
   unregistered = '미등록',
-  preRegi = '사전등록',
+  preRegistered = '사전등록',
   onSiteRegi = '현장등록',
   cancelled = '등록취소',
 }

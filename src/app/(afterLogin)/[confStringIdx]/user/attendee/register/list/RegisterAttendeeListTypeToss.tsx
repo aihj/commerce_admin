@@ -78,6 +78,28 @@ const RegisterAttendeeListTypeToss =
     const columnHelper = createColumnHelper<RegisterAttendeeDtVo>();
     const columns = useMemo(
       () => [
+        columnHelper.accessor('wuserIdx', {
+          header: '고유번호',
+          cell: (info) => (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Button
+                sx={{
+                  border: 0,
+                  textDecoration: 'underline',
+                  textUnderlinePosition: 'under',
+                }}
+                color="secondary"
+                onClick={() =>
+                  moveUserDetail(info.row.original.wuserIdx as number)
+                }
+                title={`${info.row.original.wuserIdx}`}
+              >
+                {`${info.getValue()}`}
+              </Button>
+            </Box>
+          ),
+          maxSize: 2,
+        }),
         columnHelper.accessor('name', {
           // header: () => (
           //   <span
