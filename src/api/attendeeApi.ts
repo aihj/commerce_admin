@@ -8,6 +8,7 @@ import {
   AttendeeTermsInfoRequest,
   JoinAttendeeDtVo,
   RegisterAttendeeDtVo,
+  RegistrationTypeResponse,
 } from '@/api/types/attendeeTypes';
 import { ResponseMessageVo } from '@/types/type';
 import { logger } from '@/lib/logger/defaultLogger';
@@ -225,6 +226,17 @@ export const attendeePaymentManualStatusChange = (
     )
     .then((response) => {
       // logger.debug('<getJoinAttendeeDt> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+export const getRegistrationType = (
+  conferenceIdx: number
+): Promise<ResponseMessageVo<RegistrationTypeResponse[]>> => {
+  return adminAxiosInstance
+    .post(`/api/pco/admin/total/basic-plan`, { conferenceIdx })
+    .then((response) => {
+      // logger.debug('<getRegistrationType> response.data : ', response.data);
       return response.data;
     });
 };

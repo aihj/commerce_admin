@@ -20,22 +20,52 @@ const config = {
         primary: {
           darkest: '#312E81',
           dark: '#4338CA',
+          main: '#6366F1',
           light: '#EBEEFE',
+          lightest: '#F5F7FF',
         },
         secondary: {
           darkest: '#111927',
           main: '#384250',
           light: '#F3F4F6',
         },
+        success: {
+          darkest: '#134E48',
+          dark: '#107569',
+          main: '#15B79E',
+          light: '#CCFBEF',
+          lightest: '#F0FDF9',
+        },
         info: {
+          darkest: '#164C63',
           dark: '#0E7090',
+          main: '#06AED4',
+          light: '#CFF9FE',
+          lightest: '#ECFDFF',
         },
         error: {
-          main: '#F04438',
+          darkest: '#7A271A',
           dark: '#B42318',
+          main: '#F04438',
+          light: '#FEE4E2',
+          lightest: '#FEF3F2',
+        },
+        warning: {
+          darkest: '#7A2E0E',
+          dark: '#B54708',
+          main: '#F79009',
+          light: '#FEF0C7',
+          lightest: '#FFFAEB',
+        },
+        neutral: {
+          main: '#B5BCC4',
+          lightest: '#F8F9FA',
         },
         blue: {
           main: '#2970FF',
+        },
+        pink: {
+          main: '#F8648C',
         },
       },
       spacing: px0_100,

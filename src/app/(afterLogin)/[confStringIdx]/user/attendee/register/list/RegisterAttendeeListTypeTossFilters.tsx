@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { FilterButton } from '@/components/core/FilterButton';
@@ -16,16 +16,33 @@ import {
 } from '@/constants/filterSelectOptions';
 import { hasFilters } from '@/lib/hasFilters';
 
+const paymentSourceFD = [
+  { value: 'card', label: '카드' },
+  { value: 'eWallet', label: '간편결제' },
+  { value: 'free', label: '무료 결제' },
+  // { value: 'manual', label: '수동 계좌이체' },
+];
+
+const memoFD = [
+  { value: 'y', label: '메모 있음' },
+  { value: 'n', label: '메모 없음' },
+];
+
 interface RegisterAttendeeListFiltersProps {
   cSearchParams: RegisterAttendeeListTypeTossSearchParamsType;
   setCSearchParamsFunc: (param: any) => any;
   deleteCSearchParams: () => any;
+  registrationType: {
+    value: number;
+    label: string;
+  }[];
 }
 
 const RegisterAttendeeListTypeTossFilters = ({
   cSearchParams,
   setCSearchParamsFunc,
   deleteCSearchParams,
+  registrationType,
 }: RegisterAttendeeListFiltersProps) => {
   // const [value, setValue] = useState<string>('');
   const onChangeSelect = useCallback((_selected: any) => {
@@ -38,24 +55,6 @@ const RegisterAttendeeListTypeTossFilters = ({
   const handleClearFilters = useCallback(() => {
     deleteCSearchParams();
   }, [deleteCSearchParams]);
-
-  const paymentSourceFD = useMemo(
-    () => [
-      { value: 'card', label: '카드' },
-      { value: 'eWallet', label: '간편결제' },
-      { value: 'free', label: '무료 결제' },
-      { value: 'manual', label: '수동 계좌이체' },
-    ],
-    []
-  );
-
-  const memoFD = useMemo(
-    () => [
-      { value: 'y', label: '메모 있음' },
-      { value: 'n', label: '메모 없음' },
-    ],
-    []
-  );
 
   return (
     <div>
@@ -158,7 +157,7 @@ const RegisterAttendeeListTypeTossFilters = ({
                 (item) => item.value === cSearchParams.registrationStatus
               )[0].label
             }
-            label="등록 상태"
+            label="등록상태"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'registrationStatus', value });
             }}
@@ -167,7 +166,7 @@ const RegisterAttendeeListTypeTossFilters = ({
             }}
             popover={
               <TableOneSelectFilterPopover
-                title="등록 상태 선택"
+                title="등록상태 선택"
                 data={REGISTRATION_STATUS}
               />
             }
@@ -181,7 +180,7 @@ const RegisterAttendeeListTypeTossFilters = ({
                 (item) => item.value === cSearchParams.paymentStatus
               )[0].label
             }
-            label="결제 상태"
+            label="결제상태"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'paymentStatus', value });
             }}
@@ -190,7 +189,7 @@ const RegisterAttendeeListTypeTossFilters = ({
             }}
             popover={
               <TableOneSelectFilterPopover
-                title="결제 상태 선택"
+                title="결제상태 선택"
                 data={PAYMENT_STATUS}
               />
             }
@@ -218,6 +217,29 @@ const RegisterAttendeeListTypeTossFilters = ({
               />
             }
             value={cSearchParams?.paymentSource}
+          />
+
+          <FilterButton
+            displayValue={
+              cSearchParams?.regifeeIdx &&
+              registrationType.filter(
+                (item) => item.value === cSearchParams.regifeeIdx
+              )[0].label
+            }
+            label="등록구분"
+            onFilterApply={(value) => {
+              onChangeSelect({ name: 'regifeeIdx', value });
+            }}
+            onFilterDelete={() => {
+              onChangeSelect({ name: 'regifeeIdx', value: null });
+            }}
+            popover={
+              <TableOneSelectFilterPopover
+                title="등록구분 선택"
+                data={registrationType}
+              />
+            }
+            value={cSearchParams?.regifeeIdx}
           />
 
           <FilterButton

@@ -16,24 +16,30 @@ import { useSelector } from 'react-redux';
 import TableBody from '@/components/core/table/TableBody';
 import {
   JoinAttendeeDtVo,
+  USER_STATUS,
   genderLabels,
   registrationStatusLabels,
+  userStatusLabels,
 } from '@/api/types/attendeeTypes';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { JoinAttendeeListFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/JoinAttendeeListFilters';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import { MemoIcon } from '@/components/icons/MemoIcon';
-import { registrationStatusColor } from '../../libs';
 import { numberWithComma } from '@/lib/numberWithComma';
 import { DownloadIcon } from '@/components/icons/DownloadIcon';
+import { Chip } from '@/components/core/Chip';
+import {
+  setRegistrationStatusChipColor,
+  setUserStatusChipColor,
+} from '@/lib/chipColors';
 
 export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
   birthDateStartT?: string;
   birthDateEndT?: string;
   gender?: string;
   registrationStatus?: 'not_registered' | 'pre' | 'onsite'; // 등록 상태
-  wuserStatus?: 'prospective' | 'active' | 'delete'; // 회원 상태
+  wuserStatus?: USER_STATUS; // 회원 상태
 }
 
 const JoinAttendeeList = () => {
@@ -189,37 +195,20 @@ const JoinAttendeeList = () => {
       }),
       columnHelper.display({
         header: '회원상태',
-        cell: (info) => {
-          if (info.row.original.wuserStatus === 'active') {
-            return (
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  fontWeight: 500,
-                }}
-              >
-                회원
-              </Box>
-            );
-          } else if (info.row.original.wuserStatus === 'prospective') {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <span className="text-primary-darkest">기회원</span>
-              </Box>
-            );
-          } else {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <span className="text-error-dark">탈퇴</span>
-              </Box>
-            );
-          }
-        },
-        size: 60,
+        cell: (info) => (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Chip
+              key={userStatusLabels[info.row.original.wuserStatus]}
+              label={userStatusLabels[info.row.original.wuserStatus]}
+              type="soft"
+              color={setUserStatusChipColor(info.row.original.wuserStatus)}
+            />
+          </Box>
+        ),
+        size: 80,
       }),
       columnHelper.accessor('wuserCreateT', {
-        header: '가입 날짜',
+        header: '가입날짜',
         cell: (info) => {
           return (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -230,15 +219,21 @@ const JoinAttendeeList = () => {
         size: 110,
       }),
       columnHelper.display({
-        header: '등록 상태',
+        header: '등록상태',
         cell: (info) => (
-          <Box
-            sx={{ display: 'flex', justifyContent: 'center' }}
-            className={registrationStatusColor(
-              info.row.original.registrationStatus
-            )}
-          >
-            {registrationStatusLabels[info.row.original.registrationStatus]}
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Chip
+              key={
+                registrationStatusLabels[info.row.original.registrationStatus]
+              }
+              label={
+                registrationStatusLabels[info.row.original.registrationStatus]
+              }
+              type="strong"
+              color={setRegistrationStatusChipColor(
+                info.row.original.registrationStatus
+              )}
+            />
           </Box>
         ),
         size: 110,
