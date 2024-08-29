@@ -125,7 +125,7 @@ const JoinAttendeeListFilters = ({
                 (item) => item.value === cSearchParams.wuserStatus
               )[0].label
             }
-            label="회원 상태"
+            label="회원상태"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'wuserStatus', value });
             }}
@@ -134,7 +134,7 @@ const JoinAttendeeListFilters = ({
             }}
             popover={
               <TableOneSelectFilterPopover
-                title="회원 상태 선택"
+                title="회원상태 선택"
                 data={WUSER_STATUS}
               />
             }
@@ -147,7 +147,7 @@ const JoinAttendeeListFilters = ({
                 (item) => item.value === cSearchParams.registrationStatus
               )[0].label
             }
-            label="등록 상태"
+            label="등록상태"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'registrationStatus', value });
             }}
@@ -156,7 +156,7 @@ const JoinAttendeeListFilters = ({
             }}
             popover={
               <TableOneSelectFilterPopover
-                title="등록 상태 선택"
+                title="등록상태 선택"
                 data={REGISTRATION_STATUS}
               />
             }

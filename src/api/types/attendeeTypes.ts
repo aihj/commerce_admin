@@ -14,6 +14,19 @@ export const genderLabels = {
   [GENDER.M]: '남',
 };
 
+// 회원상태
+export enum USER_STATUS {
+  active = 'active',
+  prospective = 'prospective',
+  delete = 'delete',
+}
+
+export const userStatusLabels = {
+  [USER_STATUS.active]: '회원',
+  [USER_STATUS.prospective]: '기회원',
+  [USER_STATUS.delete]: '탈퇴',
+};
+
 // 등록구분
 export enum REGISTRATION_STATUS {
   preRegistered = 'preRegistered',
@@ -23,9 +36,9 @@ export enum REGISTRATION_STATUS {
 }
 
 export const registrationStatusLabels = {
-  [REGISTRATION_STATUS.preRegistered]: '사전 등록',
-  [REGISTRATION_STATUS.onSiteRegistered]: '현장 등록',
-  [REGISTRATION_STATUS.cancelled]: '등록 취소',
+  [REGISTRATION_STATUS.preRegistered]: '사전등록',
+  [REGISTRATION_STATUS.onSiteRegistered]: '현장등록',
+  [REGISTRATION_STATUS.cancelled]: '등록취소',
   [REGISTRATION_STATUS.unregistered]: '미등록',
 };
 
@@ -40,12 +53,12 @@ export enum PAYMENT_STATUS {
 }
 
 export const paymentStatusLabels = {
-  [PAYMENT_STATUS.freeRegi]: '무료 등록',
-  [PAYMENT_STATUS.freeRegiCancelled]: '무료 등록 취소',
-  [PAYMENT_STATUS.paymentCompleted]: '결제 완료',
-  [PAYMENT_STATUS.pendingPayment]: '결제 대기',
-  [PAYMENT_STATUS.cancelRequest]: '취소 요쳥',
-  [PAYMENT_STATUS.cancelCompleted]: '취소 완료',
+  [PAYMENT_STATUS.freeRegi]: '무료등록',
+  [PAYMENT_STATUS.freeRegiCancelled]: '무료등록취소',
+  [PAYMENT_STATUS.paymentCompleted]: '결제완료',
+  [PAYMENT_STATUS.pendingPayment]: '결제대기',
+  [PAYMENT_STATUS.cancelRequest]: '취소요쳥',
+  [PAYMENT_STATUS.cancelCompleted]: '환불완료',
 };
 
 // 결제 방식
@@ -80,7 +93,7 @@ export interface JoinAttendeeDtVo {
   phone: string;
   registrationStatus: REGISTRATION_STATUS;
   wuserCreateT?: string;
-  wuserStatus?: string;
+  wuserStatus: USER_STATUS;
   memo: string;
 }
 
@@ -169,4 +182,15 @@ export interface AttendeeRegisterDetailInfoRequest {
   conferenceIdx: number;
   wuserIdx: number;
   optionsJson: string;
+}
+
+export interface RegistrationTypeResponse {
+  regifeeIdx: number;
+  conferenceIdx: number;
+  regifeeName: string;
+  regifeePrice: number;
+  isPreRegistration: 1 | 0;
+  status: string;
+  selectedCount: number;
+  limitCount: number;
 }

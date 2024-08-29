@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 import { PATH } from '@/paths';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
@@ -19,12 +19,20 @@ import { TableSearchParams } from '@/api/types/tableSearchParams';
 import { useParams, useRouter } from 'next/navigation';
 import { Box, Button, Card, Stack, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { getRegisterAttendeeDtTypeToss } from '@/api/attendeeApi';
+import {
+  getRegisterAttendeeDtTypeToss,
+  getRegistrationType,
+} from '@/api/attendeeApi';
 import { RegisterAttendeeListTypeTossFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeTossFilters';
 import { DownloadIcon } from '@/components/icons/DownloadIcon';
 import { numberWithComma } from '@/lib/numberWithComma';
 import { MemoIcon } from '@/components/icons/MemoIcon';
-import { registrationStatusColor } from '../../libs';
+import { Chip } from '@/components/core/Chip';
+import {
+  setPaymentStatusChipColor,
+  setRegistrationStatusChipColor,
+} from '@/lib/chipColors';
+import { logger } from '@/lib/logger/defaultLogger';
 
 type RegisterAttendeeListTypeTossTypes = NonNullable<unknown>;
 
@@ -38,6 +46,7 @@ export interface RegisterAttendeeListTypeTossSearchParamsType
   paymentSource?: string;
   wuserStatus?: 'prospective' | 'active' | 'delete'; // 회원 상태
   hasMemo?: 'y' | 'n';
+  regifeeIdx: number; // 등록구분
 }
 
 const RegisterAttendeeListTypeToss =
@@ -47,6 +56,12 @@ const RegisterAttendeeListTypeToss =
     const conferenceIdx = useSelector(selectConferenceIdx);
     const router = useRouter();
 
+    const [registrationType, setRegistrationType] = useState<
+      {
+        value: number;
+        label: string;
+      }[]
+    >([]);
     // region ***************** params 동기화 *****************
     const initSearchParam = useMemo((): TableSearchParams => {
       return {
@@ -167,30 +182,41 @@ const RegisterAttendeeListTypeToss =
 
         // (기본 프로그램 등록 기준, 추후 추가 프로그램 현장등록했다고 해도 사전등록으로 인정)
         columnHelper.display({
-          header: '등록 상태',
-          cell: (info) => (
-            <Box
-              sx={{ display: 'flex', justifyContent: 'center' }}
-              className={registrationStatusColor(
-                info.row.original.registrationStatus
-              )}
-            >
-              {registrationStatusLabels[info.row.original.registrationStatus]}
-            </Box>
-          ),
-          size: 110,
-        }),
-        columnHelper.display({
-          header: '결제 상태',
+          header: '등록상태',
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              {paymentStatusLabels[info.row.original.paymentStatus]}
+              <Chip
+                key={info.row.original.registrationStatus}
+                label={
+                  registrationStatusLabels[info.row.original.registrationStatus]
+                }
+                type="soft"
+                color={setRegistrationStatusChipColor(
+                  info.row.original.registrationStatus
+                )}
+              />
             </Box>
           ),
           size: 110,
         }),
         columnHelper.display({
-          header: '결제 수단',
+          header: '결제상태',
+          cell: (info) => (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Chip
+                key="birthFullYear"
+                label={paymentStatusLabels[info.row.original.paymentStatus]}
+                type="strong"
+                color={setPaymentStatusChipColor(
+                  info.row.original.paymentStatus
+                )}
+              />
+            </Box>
+          ),
+          size: 110,
+        }),
+        columnHelper.display({
+          header: '결제수단',
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               {info.row.original.paymentSource === null
@@ -203,7 +229,7 @@ const RegisterAttendeeListTypeToss =
           size: 110,
         }),
         columnHelper.display({
-          header: '등록 구분',
+          header: '등록구분',
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               {info.row.original.regifeeName}
@@ -227,18 +253,22 @@ const RegisterAttendeeListTypeToss =
           cell: (info) => {
             return (
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                {info.getValue() === null ? '-' : info.getValue()}
+                {info.getValue() === null
+                  ? '-'
+                  : numberWithComma(Number(info.getValue()))}
               </Box>
             );
           },
           size: 110,
         }),
         columnHelper.accessor('indicatedAmount', {
-          header: '결제 금액',
+          header: '결제금액',
           cell: (info) => {
             return (
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                {info.getValue() === null ? '-' : info.getValue()}
+                {info.getValue() === null
+                  ? '-'
+                  : numberWithComma(Number(info.getValue()))}
               </Box>
             );
           },
@@ -261,6 +291,27 @@ const RegisterAttendeeListTypeToss =
       [columnHelper, moveUserDetail]
     );
     // endregion ****************************** 열 구성 설정 ******************************
+
+    const { data: getRegistrationTypeData } = useQuery({
+      queryKey: ['getRegistrationType', conferenceIdx],
+      queryFn: () =>
+        getRegistrationType(conferenceIdx as number)
+          .then((result) => {
+            if (result && result.content) {
+              const newData = result?.content?.map((item) => ({
+                label: `${item.isPreRegistration ? '(사전)' : '(현장)'} ${item.regifeeName}`,
+                value: item.regifeeIdx,
+              }));
+              setRegistrationType(newData);
+              logger.debug('getRegistrationTypeData', getRegistrationTypeData);
+              return result;
+            }
+          })
+          .catch((error) => {
+            logger.error('<getRegistrationType error>', error);
+          }),
+    });
+
     const { isLoading, error, data } = useQuery({
       queryKey: ['getRegisterAttendeeDtTypeToss', cSearchParams],
       queryFn: () =>
@@ -306,6 +357,7 @@ const RegisterAttendeeListTypeToss =
               }
               setCSearchParamsFunc={setCSearchParamsFunc}
               deleteCSearchParams={deleteCSearchParams}
+              registrationType={registrationType}
             />
             <Stack
               direction="row"

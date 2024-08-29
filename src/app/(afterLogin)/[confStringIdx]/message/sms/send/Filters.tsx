@@ -20,7 +20,7 @@ import { ResetIcon } from '@/components/icons/ResetIcon';
 import { Option } from '@/components/core/Option';
 import { getTotalUserAmount } from '@/api/messageApi';
 import Swal from 'sweetalert2';
-import { Chip as MyChip } from '@/components/core/Chip';
+import { CHIP_COLOR, Chip } from '@/components/core/Chip';
 
 export interface Filter {
   conferenceIdx?: number;
@@ -125,11 +125,11 @@ const Filters = ({
     const chips = [];
     if (allUser) {
       chips.push(
-        <MyChip
+        <Chip
           key="birthFullYear"
           label={`전체 ${total}명`}
           type="soft"
-          color="secondary"
+          color={CHIP_COLOR.secondary}
         />
       );
       setFilteredChips(chips);
@@ -137,11 +137,11 @@ const Filters = ({
     } else {
       if (searchParam.birthDateStartT && searchParam.birthDateEndT) {
         chips.push(
-          <MyChip
+          <Chip
             key="birthFullYear"
             label={`${searchParam.birthDateStartT}년생 ~ ${searchParam.birthDateEndT}년생`}
             type="soft"
-            color="secondary"
+            color={CHIP_COLOR.secondary}
             onDelete={() => {
               setBirthDateStartT('');
               setBirthDateEndT('');
@@ -151,11 +151,11 @@ const Filters = ({
         );
       } else if (searchParam.birthDateStartT) {
         chips.push(
-          <MyChip
+          <Chip
             key="birthDateStartT"
             label={`${searchParam.birthDateStartT}년생~`}
             type="soft"
-            color="secondary"
+            color={CHIP_COLOR.secondary}
             onDelete={() => {
               setBirthDateStartT('');
               handleDelete('birthDateStartT');
@@ -164,11 +164,11 @@ const Filters = ({
         );
       } else if (searchParam.birthDateEndT) {
         chips.push(
-          <MyChip
+          <Chip
             key="birthDateEndT"
             label={`~${searchParam.birthDateEndT}년생`}
             type="soft"
-            color="secondary"
+            color={CHIP_COLOR.secondary}
             onDelete={() => {
               setBirthDateEndT('');
               handleDelete('birthDateEndT');
@@ -178,11 +178,11 @@ const Filters = ({
       }
       if (searchParam.gender) {
         chips.push(
-          <MyChip
+          <Chip
             key="gender"
             label={`${GENDERS.filter((item) => item.value === searchParam.gender)[0].label}`}
             type="soft"
-            color="secondary"
+            color={CHIP_COLOR.secondary}
             onDelete={() => {
               setGender('');
               handleDelete('gender');
@@ -192,11 +192,11 @@ const Filters = ({
       }
       if (searchParam.wuserStatus) {
         chips.push(
-          <MyChip
+          <Chip
             key="wuserStatus"
             label={`${WUSER_STATUS.filter((item) => item.value === searchParam.wuserStatus)[0].label}`}
             type="soft"
-            color="secondary"
+            color={CHIP_COLOR.secondary}
             onDelete={() => {
               setWuserStatus('');
               handleDelete('wuserStatus');
@@ -206,11 +206,11 @@ const Filters = ({
       }
       if (searchParam.registrationStatus) {
         chips.push(
-          <MyChip
+          <Chip
             key="registrationStatus"
             label={`${REGISTRATION_STATUS.filter((item) => item.value === searchParam.registrationStatus)[0].label}`}
             type="soft"
-            color="secondary"
+            color={CHIP_COLOR.secondary}
             onDelete={() => {
               setRegistrationStatus('');
               handleDelete('registrationStatus');
@@ -220,11 +220,11 @@ const Filters = ({
       }
       if (searchParam.paymentStatus) {
         chips.push(
-          <MyChip
+          <Chip
             key="paymentStatus"
             label={`${PAYMENT_STATUS.filter((item) => item.value === searchParam.paymentStatus)[0].label}`}
             type="soft"
-            color="secondary"
+            color={CHIP_COLOR.secondary}
             onDelete={() => {
               setPaymentStatus('');
               handleDelete('paymentStatus');
