@@ -7,7 +7,7 @@ import { ResetIcon } from '@/components/icons/ResetIcon';
 import {
   HAS_FAIL,
   HAS_MEMO,
-  SEND_STATUS,
+  SEND_STATUS_OPTIONS,
 } from '@/constants/filterSelectOptions';
 import { hasFilters } from '@/lib/hasFilters';
 import { Button, Stack } from '@mui/material';
@@ -82,7 +82,7 @@ const SMSListFilters = ({
       <FilterButton
         displayValue={
           cSearchParams?.sendStatus &&
-          SEND_STATUS.filter(
+          SEND_STATUS_OPTIONS.filter(
             (item) => item.value === cSearchParams.sendStatus
           )[0].label
         }
@@ -96,7 +96,7 @@ const SMSListFilters = ({
         popover={
           <TableOneSelectFilterPopover
             title="발송 상태 선택"
-            data={SEND_STATUS}
+            data={SEND_STATUS_OPTIONS}
           />
         }
         value={cSearchParams?.sendStatus}

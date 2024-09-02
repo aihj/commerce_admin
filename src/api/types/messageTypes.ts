@@ -22,7 +22,7 @@ export interface sendSMSTestRequest {
 }
 
 export enum SEND_STATUS {
-  inProgress = 'inProgress',
+  inProgress = 'in_progress',
   complete = 'complete',
   failure = 'failure',
 }

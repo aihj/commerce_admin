@@ -288,7 +288,13 @@ const Filters = ({
               >
                 <Option value="">선택</Option>
                 {BIRTH_YEAR_RANGE.map((item) => (
-                  <Option key={item.value} value={item.value}>
+                  <Option
+                    key={item.value}
+                    value={item.value}
+                    disabled={
+                      birthDateEndT ? item.value > birthDateEndT : false
+                    }
+                  >
                     {item.label}
                   </Option>
                 ))}
@@ -315,7 +321,13 @@ const Filters = ({
               >
                 <Option value="">선택</Option>
                 {BIRTH_YEAR_RANGE.map((item) => (
-                  <Option key={item.value} value={item.value}>
+                  <Option
+                    key={item.value}
+                    value={item.value}
+                    disabled={
+                      birthDateStartT ? item.value < birthDateStartT : false
+                    }
+                  >
                     {item.label}
                   </Option>
                 ))}

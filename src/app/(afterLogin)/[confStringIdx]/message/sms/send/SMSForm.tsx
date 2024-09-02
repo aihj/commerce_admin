@@ -100,10 +100,17 @@ const SMSForm = ({
         })
         .catch((error) => {
           logger.error('<sendSMSFilteredUsers> error', error);
-          Swal.fire({
-            title: '문자 전송 실패',
-            text: '문자 전송을 할 수 없습니다. 잠시 후 다시 시도해 주세요.',
-          });
+          if (error.response.data.code.split('.').pop() === 'no_user') {
+            Swal.fire({
+              title: '문자 전송 실패',
+              text: '선택한 필터에 해당하는 유저가 없습니다.',
+            });
+          } else {
+            Swal.fire({
+              title: '문자 전송 실패',
+              text: '문자 전송을 할 수 없습니다. 잠시 후 다시 시도해 주세요.',
+            });
+          }
         });
     }
   };
@@ -226,9 +233,8 @@ const SMSForm = ({
                 control={control}
                 name="subject"
                 rules={{
-                  required: '발송 제목을 입력해 주세요.',
                   pattern: {
-                    value: /^[a-zA-Zㄱ-ㅎ가-힣0-9.!\s]{2,25}$/,
+                    value: /^.{2,25}$/,
                     message: '발송 제목을 올바르게 입력해 주세요.',
                   },
                 }}
