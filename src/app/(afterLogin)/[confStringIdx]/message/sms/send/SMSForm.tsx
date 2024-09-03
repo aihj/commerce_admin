@@ -16,11 +16,7 @@ import { toast } from '@/components/core/Toaster';
 import { sendSMSFilteredUsers, sendSMSTest } from '@/api/messageApi';
 import Swal from 'sweetalert2';
 import { logger } from '@/lib/logger/defaultLogger';
-
-const calculateByteLength = (text: string) => {
-  // UTF-8로 인코딩된 문자열의 바이트 길이를 계산하는 함수
-  return new TextEncoder().encode(text).length;
-};
+import { calculateByteLength } from '@/lib/calculateByteLength';
 
 interface SMSFormData {
   subject: string;
@@ -85,8 +81,10 @@ const SMSForm = ({
       setSearchParamError(true);
     } else {
       setSearchParamError(false);
+      const messageType = isSMSMode ? 'sms' : 'mms';
       const formData = {
         searchParam,
+        messageType,
         ...data,
       };
       sendSMSFilteredUsers(formData)
@@ -284,7 +282,7 @@ const SMSForm = ({
                     <Box sx={{ display: 'flex' }}>
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                         <TextField
-                          label="내용*"
+                          label="내용"
                           sx={{
                             mt: 1,
                             p: 0,

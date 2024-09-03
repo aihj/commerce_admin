@@ -5,30 +5,21 @@ import { SMSDetailListDT, sendStatusLabels } from '@/api/types/messageTypes';
 import TableBody from '@/components/core/table/TableBody';
 import { DTCellBox } from '@/components/DTCellBox';
 import { TablePagination } from '@/components/core/table/TablePagination';
-import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
-import { useSelector } from 'react-redux';
-import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 
-interface SMSDetailListProps {
+interface SMSDetailListProps<T> {
   data: SMSDetailListDT[];
+  totalCount: number;
+  cSearchParams: T;
+  setCSearchParamsFunc: (parma: any) => any;
 }
 
-const SMSDetailList = ({ data }: SMSDetailListProps) => {
-  const conferenceIdx = useSelector(selectConferenceIdx);
-  // TODO 공통으로 빼기
-  const initSearchParam = useMemo((): TableSearchParams => {
-    return {
-      conferenceIdx: conferenceIdx as number,
-      currentPage: 0,
-      rowsPerPage: 10,
-
-      sortType: 'tbl_letter.letter_idx',
-      sortDir: 'desc',
-    };
-  }, [conferenceIdx]);
-  const { cSearchParams, setCSearchParamsFunc } =
-    useCustomSearchParams<TableSearchParams>(initSearchParam);
+const SMSDetailList = <T extends object>({
+  data,
+  totalCount,
+  cSearchParams,
+  setCSearchParamsFunc,
+}: SMSDetailListProps<T>) => {
   const columnHelper = createColumnHelper<SMSDetailListDT>();
   const columns = useMemo(
     () => [
@@ -76,7 +67,7 @@ const SMSDetailList = ({ data }: SMSDetailListProps) => {
         },
       }),
     ],
-    []
+    [columnHelper]
   );
   return (
     <Box sx={{ mt: 2 }}>
@@ -94,7 +85,7 @@ const SMSDetailList = ({ data }: SMSDetailListProps) => {
         cSearchParams={cSearchParams as TableSearchParams}
         setCSearchParamsFunc={setCSearchParamsFunc}
         // totalCount={data.totalCount as unknown as number}
-        totalCount={data.length}
+        totalCount={totalCount}
       />
     </Box>
   );

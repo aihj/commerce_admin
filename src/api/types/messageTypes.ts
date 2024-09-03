@@ -1,4 +1,5 @@
 import { Filter } from '@/app/(afterLogin)/[confStringIdx]/message/sms/send/Filters';
+import { TableSearchParams } from './tableSearchParams';
 
 export interface sendSMSFilteredUsersRequest {
   searchParam: Filter;
@@ -8,6 +9,7 @@ export interface sendSMSFilteredUsersRequest {
   memo: string;
   type: string; // default value: 'custom'
   senderPhoneNumber: string;
+  messageType: string;
 }
 
 export interface sendSMSTestRequest {
@@ -60,4 +62,39 @@ export interface SMSDetailListDT {
   sendStatus: SEND_STATUS;
   // sendStatus: string;
   failReason?: string | null;
+}
+
+export interface SMSItem {
+  letterItemIdx: number;
+  letterItemSendDate: string;
+  smsMsgId: number | null;
+  mmsMsgId: number | null;
+  receiverWuserIdx: number;
+  phone: string;
+  name: string;
+  sendStatus: SEND_STATUS;
+  failReason: string | null;
+}
+
+export interface getSMSDetailRequest extends TableSearchParams {
+  letterIdx: string;
+}
+
+export interface getSMSDetailResponse {
+  letterIdx: number;
+  templateIdx: number | null;
+  count: number; // 전체 발송 건
+  failureCount: number; // 실패 발송 건
+  filterJson: string;
+  type: string; // default 'custom';
+  subject: string | null;
+  content: string;
+  memo: string;
+  sendDate: string;
+  completeDate: string | null;
+  senderPhoneNumber: string;
+  senderWuserIdx: number;
+  senderName: string;
+  messageType: string;
+  letterItemList: SMSItem[];
 }

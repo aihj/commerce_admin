@@ -4,6 +4,8 @@ import { adminAxiosInstance } from './authApi';
 import { Filter } from '@/app/(afterLogin)/[confStringIdx]/message/sms/send/Filters';
 import {
   LetterDtResponse,
+  getSMSDetailRequest,
+  getSMSDetailResponse,
   sendSMSFilteredUsersRequest,
   sendSMSTestRequest,
 } from './types/messageTypes';
@@ -80,6 +82,24 @@ export const getSMSList = (
     })
     .then((response) => {
       logger.debug('<getSMSList> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 문자 보낸 내역 아이템 리스트
+ * @param Filter
+ */
+export const getSMSDetail = (
+  searchParam: getSMSDetailRequest
+): Promise<ResponseMessageVo<getSMSDetailResponse>> => {
+  logger.debug('<getSMSDetail> params ', searchParam);
+  return adminAxiosInstance
+    .post(`/api/pco/admin/total/letter-item-dt`, {
+      ...searchParam,
+    })
+    .then((response) => {
+      logger.debug('<getSMSDetail> response.data : ', response.data);
       return response.data;
     });
 };
