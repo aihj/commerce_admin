@@ -13,11 +13,7 @@ import {
   styled,
   tooltipClasses,
 } from '@mui/material';
-import {
-  LetterDtResponse,
-  // SEND_STATUS,
-  sendStatusLabels,
-} from '@/api/types/messageTypes';
+import { LetterDtResponse, taskStatusLabels } from '@/api/types/messageTypes';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
@@ -177,17 +173,14 @@ const SMSList = () => {
         ),
         size: 80,
       }),
-      columnHelper.accessor('sendStatus', {
+      columnHelper.accessor('taskStatus', {
         header: '상태',
         cell: (info) => (
           <DTCellBox>
             <Chip
               variant="outlined"
-              // sx={{ borderColor: 'red' }}
-              // icon
-              label={sendStatusLabels[info.row.original.sendStatus]}
+              label={taskStatusLabels[info.row.original.taskStatus]}
             />
-            {/* {sendStatusLabels[info.row.original.sendStatus]} */}
           </DTCellBox>
         ),
         size: 80,

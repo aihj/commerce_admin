@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Box, Chip } from '@mui/material';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { SMSDetailListDT, sendStatusLabels } from '@/api/types/messageTypes';
+import { SMSDetailListDT, taskStatusLabels } from '@/api/types/messageTypes';
 import TableBody from '@/components/core/table/TableBody';
 import { DTCellBox } from '@/components/DTCellBox';
 import { TablePagination } from '@/components/core/table/TablePagination';
@@ -43,14 +43,14 @@ const SMSDetailList = <T extends object>({
           );
         },
       }),
-      columnHelper.accessor('sendStatus', {
+      columnHelper.accessor('taskStatus', {
         header: '발송상태',
         cell: (info) => {
           return (
             <DTCellBox>
               <Chip
                 variant="outlined"
-                label={sendStatusLabels[info.row.original.sendStatus]}
+                label={taskStatusLabels[info.row.original.taskStatus]}
               />
             </DTCellBox>
           );

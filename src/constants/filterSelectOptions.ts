@@ -1,4 +1,4 @@
-import { SEND_STATUS, sendStatusLabels } from '@/api/types/messageTypes';
+import { TASK_STATUS, taskStatusLabels } from '@/api/types/messageTypes';
 
 export const GENDERS = [
   { value: 'M', label: '남성' },
@@ -37,16 +37,16 @@ export const HAS_MEMO = [
 
 export const SEND_STATUS_OPTIONS = [
   {
-    value: SEND_STATUS.inProgress,
-    label: sendStatusLabels[SEND_STATUS.inProgress],
+    value: TASK_STATUS.inProgress,
+    label: taskStatusLabels[TASK_STATUS.inProgress],
   },
   {
-    value: SEND_STATUS.complete,
-    label: sendStatusLabels[SEND_STATUS.complete],
+    value: TASK_STATUS.complete,
+    label: taskStatusLabels[TASK_STATUS.complete],
   },
   {
-    value: SEND_STATUS.failure,
-    label: sendStatusLabels[SEND_STATUS.failure],
+    value: TASK_STATUS.failure,
+    label: taskStatusLabels[TASK_STATUS.failure],
   },
 ];
 

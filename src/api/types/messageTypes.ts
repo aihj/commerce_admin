@@ -23,16 +23,16 @@ export interface sendSMSTestRequest {
   senderPhoneNumber: string;
 }
 
-export enum SEND_STATUS {
+export enum TASK_STATUS {
   inProgress = 'in_progress',
   complete = 'complete',
   failure = 'failure',
 }
 
-export const sendStatusLabels = {
-  [SEND_STATUS.inProgress]: '발송중',
-  [SEND_STATUS.complete]: '발송완료',
-  [SEND_STATUS.failure]: '발송실패',
+export const taskStatusLabels = {
+  [TASK_STATUS.inProgress]: '발송중',
+  [TASK_STATUS.complete]: '발송완료',
+  [TASK_STATUS.failure]: '발송실패',
 };
 
 export interface LetterDtResponse {
@@ -46,7 +46,7 @@ export interface LetterDtResponse {
   receiverInfo?: string;
   sendDate?: string;
   senderName?: string;
-  sendStatus: SEND_STATUS;
+  taskStatus: TASK_STATUS;
   senderWuserIdx?: number;
   messageType: string;
 }
@@ -59,8 +59,7 @@ export interface SMSDetailListDT {
   receiverWuserIdx: number;
   phone: string;
   name: string;
-  sendStatus: SEND_STATUS;
-  // sendStatus: string;
+  taskStatus: TASK_STATUS;
   failReason?: string | null;
 }
 
@@ -72,7 +71,7 @@ export interface SMSItem {
   receiverWuserIdx: number;
   phone: string;
   name: string;
-  sendStatus: SEND_STATUS;
+  taskStatus: TASK_STATUS;
   failReason: string | null;
 }
 

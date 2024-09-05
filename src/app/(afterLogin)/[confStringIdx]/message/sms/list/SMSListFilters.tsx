@@ -15,7 +15,7 @@ import { useCallback } from 'react';
 
 export interface SMSListFiltersType extends TableSearchParams {
   sendDateStartT?: string;
-  sendStatus?: string;
+  taskStatus?: string;
   isFail?: boolean;
   senderWuserIdx?: number;
   searchText?: string;
@@ -81,17 +81,17 @@ const SMSListFilters = ({
       />
       <FilterButton
         displayValue={
-          cSearchParams?.sendStatus &&
+          cSearchParams?.taskStatus &&
           SEND_STATUS_OPTIONS.filter(
-            (item) => item.value === cSearchParams.sendStatus
+            (item) => item.value === cSearchParams.taskStatus
           )[0].label
         }
         label="발송 상태"
         onFilterApply={(value) => {
-          onChangeSelect({ name: 'sendStatus', value });
+          onChangeSelect({ name: 'taskStatus', value });
         }}
         onFilterDelete={() => {
-          onChangeSelect({ name: 'sendStatus', value: null });
+          onChangeSelect({ name: 'taskStatus', value: null });
         }}
         popover={
           <TableOneSelectFilterPopover
@@ -99,7 +99,7 @@ const SMSListFilters = ({
             data={SEND_STATUS_OPTIONS}
           />
         }
-        value={cSearchParams?.sendStatus}
+        value={cSearchParams?.taskStatus}
       />
       <FilterButton
         displayValue={
