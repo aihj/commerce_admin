@@ -122,12 +122,7 @@ const SMSForm = ({
         text: '테스트 전송을 위한 휴대폰 번호를 확인 후 다시 입력해 주세요.',
       });
       return;
-    } else if (
-      errors.subject ||
-      errors.content ||
-      !data.subject ||
-      !data.content
-    ) {
+    } else if (errors.content || !data.content) {
       Swal.fire({
         title: '필수 정보 확인',
         text: '문자 전송을 위한 필수 정보를 확인 후 다시 입력해 주세요.',
@@ -167,7 +162,7 @@ const SMSForm = ({
             rules={{
               required: '메모를 입력해 주세요.',
               pattern: {
-                value: /^[a-zA-Zㄱ-ㅎ가-힣0-9.!\s]{1,50}$/,
+                value: /^.{1,50}$/,
                 message: '50자 이내로 입력해 주세요.',
               },
             }}
