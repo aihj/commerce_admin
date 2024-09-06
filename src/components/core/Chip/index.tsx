@@ -28,7 +28,7 @@ const getStyle = (type: string, color: string) => {
       case 'error':
         return `text-error-main bg-error-lightest`;
       case 'neutral':
-        return `text-secondary-main bg-neutral-lightest`;
+        return `text-neutral-main bg-neutral-lightest`;
       case 'secondary':
         return `text-secondary-main bg-neutral-lightest`;
       case 'info':

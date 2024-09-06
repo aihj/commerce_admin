@@ -7,16 +7,17 @@ import { useAppSelector } from '@/redux/hooks';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { Filter, Filters } from './Filters';
 import { SMSForm } from './SMSForm';
+import { SelectUsers } from './SelectUsers';
 
 const tabs = [
   {
     idx: 1,
-    label: '그룹으로 보내기',
+    label: '회원에게 보내기',
     value: 0,
   },
   {
     idx: 2,
-    label: '회원에게 보내기',
+    label: '그룹으로 보내기',
     value: 1,
   },
   {
@@ -95,14 +96,14 @@ const SMSSend = () => {
       </Box>
       <Box>
         <TabPanel value={tabIndex} index={0}>
+          <SelectUsers />
+        </TabPanel>
+        <TabPanel value={tabIndex} index={1}>
           <Filters
             conferenceIdx={conferenceIdx as number}
             handleSearchParam={(param: Filter) => setSearchParam(param)}
             searchParamError={searchParamError}
           />
-        </TabPanel>
-        <TabPanel value={tabIndex} index={1}>
-          개인으로 보내기 Coming Soon
         </TabPanel>
         <TabPanel value={tabIndex} index={2}>
           직접 입력 Coming Soon
