@@ -12,19 +12,20 @@ import { SelectUsers } from './SelectUsers';
 const tabs = [
   {
     idx: 1,
-    label: '회원에게 보내기',
+    // label: '회원에게 보내기',
+    label: '그룹으로 보내기',
     value: 0,
   },
-  {
-    idx: 2,
-    label: '그룹으로 보내기',
-    value: 1,
-  },
-  {
-    idx: 3,
-    label: '직접입력',
-    value: 2,
-  },
+  // {
+  //   idx: 2,
+  //   label: '그룹으로 보내기',
+  //   value: 1,
+  // },
+  // {
+  //   idx: 3,
+  //   label: '직접입력',
+  //   value: 2,
+  // },
 ];
 
 interface TabPanelProps {
@@ -96,14 +97,14 @@ const SMSSend = () => {
       </Box>
       <Box>
         <TabPanel value={tabIndex} index={0}>
-          <SelectUsers />
-        </TabPanel>
-        <TabPanel value={tabIndex} index={1}>
           <Filters
             conferenceIdx={conferenceIdx as number}
             handleSearchParam={(param: Filter) => setSearchParam(param)}
             searchParamError={searchParamError}
           />
+        </TabPanel>
+        <TabPanel value={tabIndex} index={1}>
+          <SelectUsers />
         </TabPanel>
         <TabPanel value={tabIndex} index={2}>
           직접 입력 Coming Soon
