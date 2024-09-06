@@ -17,9 +17,10 @@ import { sendSMSFilteredUsers, sendSMSTest } from '@/api/messageApi';
 import Swal from 'sweetalert2';
 import { logger } from '@/lib/logger/defaultLogger';
 import { calculateByteLength } from '@/lib/calculateByteLength';
+import { DevTool } from '@hookform/devtools';
 
 interface SMSFormData {
-  subject: string;
+  subject?: string;
   memo: string;
   content: string;
   message: string;
@@ -49,7 +50,7 @@ const SMSForm = ({
     control,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, touchedFields, dirtyFields },
   } = useForm<SMSFormData>({
     defaultValues: { letterTemplateIdx: null, type: 'custom' },
     mode: 'onBlur',
@@ -82,6 +83,11 @@ const SMSForm = ({
     } else {
       setSearchParamError(false);
       const messageType = isSMSMode ? 'sms' : 'mms';
+
+      if (touchedFields.subject && dirtyFields.subject) {
+        delete data['subject'];
+      }
+
       const formData = {
         searchParam,
         messageType,
@@ -98,17 +104,10 @@ const SMSForm = ({
         })
         .catch((error) => {
           logger.error('<sendSMSFilteredUsers> error', error);
-          if (error.response.data.code.split('.').pop() === 'no_user') {
-            Swal.fire({
-              title: '문자 전송 실패',
-              text: '선택한 필터에 해당하는 유저가 없습니다.',
-            });
-          } else {
-            Swal.fire({
-              title: '문자 전송 실패',
-              text: '문자 전송을 할 수 없습니다. 잠시 후 다시 시도해 주세요.',
-            });
-          }
+          Swal.fire({
+            title: '문자 전송 실패',
+            text: `${error.response.data.message}`,
+          });
         });
     }
   };
@@ -128,19 +127,31 @@ const SMSForm = ({
         text: '문자 전송을 위한 필수 정보를 확인 후 다시 입력해 주세요.',
       });
     } else {
+      if (touchedFields.subject && dirtyFields.subject) {
+        delete data['subject'];
+      }
       const formData = {
         conferenceIdx,
         ...data,
+        type: 'test',
       };
-      sendSMSTest(formData).then((result) => {
-        if (result.status === 200) {
+      sendSMSTest(formData)
+        .then((result) => {
+          if (result.status === 200) {
+            Swal.fire({
+              title: '테스트 전송 완료',
+              text: `요청하신 ${data.testPhoneNumber} 번호로 테스트 문자가 전송되었습니다.`,
+            });
+            setTestCompleted(true);
+          }
+        })
+        .catch((error) => {
+          logger.error('<sendSMSTest> error', error);
           Swal.fire({
-            title: '테스트 전송 완료',
-            text: `요청하신 ${data.testPhoneNumber} 번호로 테스트 문자가 전송되었습니다.`,
+            title: '테스트 전송 실패',
+            text: `${error.response.data.message}`,
           });
-          setTestCompleted(true);
-        }
-      });
+        });
     }
   };
 
@@ -155,6 +166,7 @@ const SMSForm = ({
       }}
     >
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+        <DevTool control={control} />
         <Stack spacing={2}>
           <Controller
             control={control}
@@ -345,6 +357,7 @@ const SMSForm = ({
                   variant="contained"
                   color="secondary"
                   onClick={() => handleSendTest()}
+                  disabled={testCompleted}
                 >
                   테스트 전송
                 </Button>

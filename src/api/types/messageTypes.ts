@@ -4,7 +4,7 @@ import { TableSearchParams } from './tableSearchParams';
 export interface sendSMSFilteredUsersRequest {
   searchParam: Filter;
   letterTemplateIdx: number | null; // 양식을 선택안했을때는 null로
-  subject: string;
+  subject?: string;
   content: string;
   memo: string;
   type: string; // default value: 'custom'
@@ -16,7 +16,7 @@ export interface sendSMSTestRequest {
   conferenceIdx: number;
   testPhoneNumber?: string;
   letterTemplateIdx: number | null; // 양식을 선택안했을때는 null로
-  subject: string;
+  subject?: string;
   content: string;
   memo: string;
   type: string; // default value: 'custom'
@@ -24,13 +24,17 @@ export interface sendSMSTestRequest {
 }
 
 export enum TASK_STATUS {
-  inProgress = 'in_progress',
-  complete = 'complete',
-  failure = 'failure',
+  inInProgress = 'in_progress',
+  inInComplete = 'interior_complete',
+  apiInProgress = 'api_in_progress',
+  complete = 'api_complete',
+  failure = 'interior_fail',
 }
 
 export const taskStatusLabels = {
-  [TASK_STATUS.inProgress]: '발송중',
+  [TASK_STATUS.inInProgress]: '발송중',
+  [TASK_STATUS.inInComplete]: '발송중',
+  [TASK_STATUS.apiInProgress]: '발송중',
   [TASK_STATUS.complete]: '발송완료',
   [TASK_STATUS.failure]: '발송실패',
 };
@@ -96,4 +100,11 @@ export interface getSMSDetailResponse {
   senderName: string;
   messageType: string;
   letterItemList: SMSItem[];
+}
+
+export interface getResendTotalFailedUserRequest {
+  conferenceIdx: number;
+  letterIdx: number;
+  type: string; // failedTotal | selected
+  letterItemIdxListJson?: string;
 }

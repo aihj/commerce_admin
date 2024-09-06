@@ -13,7 +13,11 @@ import {
   styled,
   tooltipClasses,
 } from '@mui/material';
-import { LetterDtResponse, taskStatusLabels } from '@/api/types/messageTypes';
+import {
+  LetterDtResponse,
+  TASK_STATUS,
+  taskStatusLabels,
+} from '@/api/types/messageTypes';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
@@ -33,6 +37,7 @@ import { getAdministrators } from '@/api/mediAdminApi';
 import { logger } from '@/lib/logger/defaultLogger';
 import { getSMSList } from '@/api/messageApi';
 import { Loading } from '@/components/core/Loading';
+import { toast } from '@/components/core/Toaster';
 
 const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -95,9 +100,16 @@ const SMSList = () => {
                   textDecoration: 'underline',
                   textUnderlinePosition: 'under',
                 }}
-                onClick={() =>
-                  moveSMSSendDetail(info.row.original.letterIdx as number)
-                }
+                onClick={() => {
+                  if (info.row.original.taskStatus !== TASK_STATUS.complete) {
+                    // Toast UI 점검 및 변경
+                    toast.info('발송 완료 후 조회 가능 합니다.', {
+                      duration: 1000,
+                    });
+                  } else {
+                    moveSMSSendDetail(info.row.original.letterIdx as number);
+                  }
+                }}
                 title={`${info.row.original.letterIdx}`}
               >
                 {`${info.getValue()}`}
