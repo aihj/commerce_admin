@@ -68,7 +68,7 @@ const Chip = ({
 }: ChipProps) => {
   return (
     <div
-      className={`flex items-center py-3 px-10 rounded-12 ${getStyle(type, color)}`}
+      className={`flex items-center py-3 px-10 rounded-12 w-max ${getStyle(type, color)}`}
     >
       <span className="text-12 leading-18 font-semibold">{label}</span>
       {onDelete ? (

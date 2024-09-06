@@ -4,7 +4,7 @@ import { adminAxiosInstance } from './authApi';
 import { Filter } from '@/app/(afterLogin)/[confStringIdx]/message/sms/send/Filters';
 import {
   LetterDtResponse,
-  resendTotalFailedUserRequest,
+  resendFailedUserRequest,
   getSMSDetailRequest,
   getSMSDetailResponse,
   sendSMSFilteredUsersRequest,
@@ -107,17 +107,17 @@ export const getSMSDetail = (
 
 /**
  * 문자 발송 실패 전체 재발송
- * @param resendTotalFailedUserRequest
+ * @param resendFailedUserRequest
  * @returns
  */
-export const resendTotalFailedUser = (data: resendTotalFailedUserRequest) => {
-  logger.debug('<resendTotalFailedUser> params ', data);
+export const resendFailedUser = (data: resendFailedUserRequest) => {
+  logger.debug('<resendFailedUser> params ', data);
   return adminAxiosInstance
     .post(`/api/pco/admin/total/top/letter-item-dt/resend`, {
       ...data,
     })
     .then((response) => {
-      logger.debug('<resendTotalFailedUser> response.data : ', response.data);
+      logger.debug('<resendFailedUser> response.data : ', response.data);
       return response.data;
     });
 };

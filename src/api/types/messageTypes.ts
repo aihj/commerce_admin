@@ -90,7 +90,7 @@ export interface getSMSDetailResponse {
   letterItemList: SMSDetailListDT[];
 }
 
-export interface resendTotalFailedUserRequest {
+export interface resendFailedUserRequest {
   conferenceIdx: number;
   letterIdx: number;
   type: string; // failedTotal | selected

@@ -1,16 +1,16 @@
 'use client';
 
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Box, Button, Card, Divider, Stack, TextField } from '@mui/material';
+import Swal from 'sweetalert2';
+import { useSelector } from 'react-redux';
 import { PageTitle } from '@/components/core/PageTitle';
-import { SMSDetailList } from './SMSDetailList';
 import { getSMSDetailResponse } from '@/api/types/messageTypes';
 import { Label } from '@/components/core/Label';
 import { numberWithComma } from '@/lib/numberWithComma';
-import { useQuery } from '@tanstack/react-query';
-import { getSMSDetail, resendTotalFailedUser } from '@/api/messageApi';
-import { useSelector } from 'react-redux';
+import { getSMSDetail, resendFailedUser } from '@/api/messageApi';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
-import { useMemo, useState } from 'react';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 import { logger } from '@/lib/logger/defaultLogger';
@@ -22,8 +22,8 @@ import {
   REGISTRATION_STATUS,
   WUSER_STATUS,
 } from '@/constants/filterSelectOptions';
-import Swal from 'sweetalert2';
 import { Loading } from '@/components/core/Loading';
+import { SMSDetailList } from './SMSDetailList';
 
 interface SMSSendDetailProps {
   letterIdx: string;
@@ -136,6 +136,8 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
     }
   };
 
+  const [selectedUser, setSelectedUser] = useState<number[]>([]);
+
   const { error, data } = useQuery({
     queryKey: ['getSMSDetail', letterIdx],
     queryFn: () =>
@@ -154,10 +156,39 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
     }).then((result) => {
       if (result.isConfirmed) {
         setIsPending(true);
-        resendTotalFailedUser({
+        resendFailedUser({
           conferenceIdx: conferenceIdx as number,
           letterIdx: data?.letterIdx as number,
           type: 'failedTotal',
+        })
+          .then((result) => {
+            return result;
+          })
+          .catch((error) => {
+            logger.error(error);
+          })
+          .finally(() => {
+            setIsPending(false);
+          });
+      }
+    });
+  };
+
+  const handleSelectedFailedResend = () => {
+    Swal.fire({
+      title: '실패 문자 재발송',
+      text: `선택된 ${data?.failureCount}명에게 문자 내용을 재발송 하시겠습니까?`,
+      confirmButtonText: '발송',
+      showCancelButton: true,
+      cancelButtonText: '취소',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setIsPending(true);
+        resendFailedUser({
+          conferenceIdx: conferenceIdx as number,
+          letterIdx: data?.letterIdx as number,
+          type: 'selected',
+          letterItemIdxListJson: JSON.stringify(selectedUser),
         })
           .then((result) => {
             return result;
@@ -329,7 +360,11 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                 >
                   실패 건 전체 재발송
                 </Button>
-                <Button variant="outlined" color="secondary">
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => handleSelectedFailedResend()}
+                >
                   선택 건 재발송
                 </Button>
               </Stack>
@@ -338,6 +373,9 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                 cSearchParams={cSearchParams as TableSearchParams}
                 setCSearchParamsFunc={setCSearchParamsFunc}
                 totalCount={data.count}
+                handleSelectedUser={(selectedUser: number[]) => {
+                  setSelectedUser(selectedUser);
+                }}
               />
             </Card>
           </Stack>

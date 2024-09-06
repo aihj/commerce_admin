@@ -1,11 +1,11 @@
+import { useMemo, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Box, Button, Stack, TextField } from '@mui/material';
 import { CHIP_COLOR, Chip } from '@/components/core/Chip';
 import { ColumnDef, DataTable } from '@/components/core/DataTable';
 import { Label } from '@/components/core/Label';
-import { useSelection } from '@/hooks/useSelection';
 import { showPhoneWithHyphen } from '@/lib/showPhoneWithHyphen';
-import { Box, Button, Stack, TextField } from '@mui/material';
-import { useMemo, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useSelection } from '@/hooks/useSelection';
 
 interface SMSSelectUserFormData {
   searchWord: string;
@@ -79,10 +79,7 @@ const SelectUsers = () => {
     },
     {
       formatter: (row): JSX.Element => (
-        <Box>
-          {showPhoneWithHyphen(row.phone.toString())}
-          {/* 010-3123-7207 */}
-        </Box>
+        <Box>{showPhoneWithHyphen(row.phone.toString())}</Box>
       ),
       name: '휴대폰 번호',
     },
@@ -128,7 +125,6 @@ const SelectUsers = () => {
     setSearchedUserList(dummyUsers);
   };
 
-  console.log(selected);
   return (
     <Stack spacing={3} sx={{ mt: 4 }}>
       <form onSubmit={handleSubmit(handleSearchUser)} className="w-full">
