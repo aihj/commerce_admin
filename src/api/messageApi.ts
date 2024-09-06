@@ -4,6 +4,7 @@ import { adminAxiosInstance } from './authApi';
 import { Filter } from '@/app/(afterLogin)/[confStringIdx]/message/sms/send/Filters';
 import {
   LetterDtResponse,
+  resendTotalFailedUserRequest,
   getSMSDetailRequest,
   getSMSDetailResponse,
   sendSMSFilteredUsersRequest,
@@ -68,7 +69,7 @@ export const sendSMSTest = (
 };
 
 /**
- * 문자 발송 테스트
+ * 문자 발송 내역
  * @param SMSListFiltersType
  * @returns
  */
@@ -100,6 +101,23 @@ export const getSMSDetail = (
     })
     .then((response) => {
       logger.debug('<getSMSDetail> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 문자 발송 실패 전체 재발송
+ * @param resendTotalFailedUserRequest
+ * @returns
+ */
+export const resendTotalFailedUser = (data: resendTotalFailedUserRequest) => {
+  logger.debug('<resendTotalFailedUser> params ', data);
+  return adminAxiosInstance
+    .post(`/api/pco/admin/total/top/letter-item-dt/resend`, {
+      ...data,
+    })
+    .then((response) => {
+      logger.debug('<resendTotalFailedUser> response.data : ', response.data);
       return response.data;
     });
 };

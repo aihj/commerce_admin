@@ -7,11 +7,7 @@ import {
   Chip,
   IconButton,
   Stack,
-  Tooltip,
-  TooltipProps,
   Typography,
-  styled,
-  tooltipClasses,
 } from '@mui/material';
 import {
   LetterDtResponse,
@@ -38,16 +34,7 @@ import { logger } from '@/lib/logger/defaultLogger';
 import { getSMSList } from '@/api/messageApi';
 import { Loading } from '@/components/core/Loading';
 import { toast } from '@/components/core/Toaster';
-
-const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))({
-  [`& .${tooltipClasses.tooltip}`]: {
-    maxWidth: 200,
-    background: '#384250',
-    marginTop: '0 !important',
-  },
-});
+import { CustomTooltip } from '@/components/CustomTooltip';
 
 const SMSList = () => {
   const [failModalOpen, setFailModalOpen] = useState<boolean>(false);

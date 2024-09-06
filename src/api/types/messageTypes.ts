@@ -63,20 +63,8 @@ export interface SMSDetailListDT {
   receiverWuserIdx: number;
   phone: string;
   name: string;
-  taskStatus: TASK_STATUS;
-  failReason?: string | null;
-}
-
-export interface SMSItem {
-  letterItemIdx: number;
-  letterItemSendDate: string;
-  smsMsgId: number | null;
-  mmsMsgId: number | null;
-  receiverWuserIdx: number;
-  phone: string;
-  name: string;
-  taskStatus: TASK_STATUS;
-  failReason: string | null;
+  resultCode: string;
+  resultDescription?: string;
 }
 
 export interface getSMSDetailRequest extends TableSearchParams {
@@ -99,10 +87,10 @@ export interface getSMSDetailResponse {
   senderWuserIdx: number;
   senderName: string;
   messageType: string;
-  letterItemList: SMSItem[];
+  letterItemList: SMSDetailListDT[];
 }
 
-export interface getResendTotalFailedUserRequest {
+export interface resendTotalFailedUserRequest {
   conferenceIdx: number;
   letterIdx: number;
   type: string; // failedTotal | selected

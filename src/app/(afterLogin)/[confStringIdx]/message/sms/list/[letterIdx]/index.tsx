@@ -7,10 +7,10 @@ import { getSMSDetailResponse } from '@/api/types/messageTypes';
 import { Label } from '@/components/core/Label';
 import { numberWithComma } from '@/lib/numberWithComma';
 import { useQuery } from '@tanstack/react-query';
-import { getSMSDetail } from '@/api/messageApi';
+import { getSMSDetail, resendTotalFailedUser } from '@/api/messageApi';
 import { useSelector } from 'react-redux';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 import { logger } from '@/lib/logger/defaultLogger';
@@ -22,6 +22,8 @@ import {
   REGISTRATION_STATUS,
   WUSER_STATUS,
 } from '@/constants/filterSelectOptions';
+import Swal from 'sweetalert2';
+import { Loading } from '@/components/core/Loading';
 
 interface SMSSendDetailProps {
   letterIdx: string;
@@ -42,6 +44,8 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
   }, [conferenceIdx]);
   const { cSearchParams, setCSearchParamsFunc } =
     useCustomSearchParams<TableSearchParams>(initSearchParam);
+
+  const [isPending, setIsPending] = useState<boolean>(false);
 
   const handleFilterChips = (filterString: string) => {
     const filterJson = JSON.parse(filterString);
@@ -140,6 +144,34 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
       }),
   });
 
+  const handleAllFailedResend = () => {
+    Swal.fire({
+      title: '실패 문자 재발송',
+      text: `문자 발송 실패한 ${data?.failureCount}명에게 문자 내용을 재발송 하시겠습니까?`,
+      confirmButtonText: '발송',
+      showCancelButton: true,
+      cancelButtonText: '취소',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setIsPending(true);
+        resendTotalFailedUser({
+          conferenceIdx: conferenceIdx as number,
+          letterIdx: data?.letterIdx as number,
+          type: 'failedTotal',
+        })
+          .then((result) => {
+            return result;
+          })
+          .catch((error) => {
+            logger.error(error);
+          })
+          .finally(() => {
+            setIsPending(false);
+          });
+      }
+    });
+  };
+
   if (error) {
     logger.error(error);
     return <div>Error</div>;
@@ -154,6 +186,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
         width: 'var(--Content-width)',
       }}
     >
+      <Loading open={isPending} />
       {data?.content ? (
         <>
           <div>
@@ -289,7 +322,11 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                 direction="row"
                 sx={{ m: 2, justifyContent: 'flex-end' }}
               >
-                <Button variant="contained" color="secondary">
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleAllFailedResend()}
+                >
                   실패 건 전체 재발송
                 </Button>
                 <Button variant="outlined" color="secondary">
