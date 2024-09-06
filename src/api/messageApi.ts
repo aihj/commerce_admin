@@ -4,6 +4,9 @@ import { adminAxiosInstance } from './authApi';
 import { Filter } from '@/app/(afterLogin)/[confStringIdx]/message/sms/send/Filters';
 import {
   LetterDtResponse,
+  resendFailedUserRequest,
+  getSMSDetailRequest,
+  getSMSDetailResponse,
   sendSMSFilteredUsersRequest,
   sendSMSTestRequest,
 } from './types/messageTypes';
@@ -66,7 +69,7 @@ export const sendSMSTest = (
 };
 
 /**
- * 문자 발송 테스트
+ * 문자 발송 내역
  * @param SMSListFiltersType
  * @returns
  */
@@ -80,6 +83,41 @@ export const getSMSList = (
     })
     .then((response) => {
       logger.debug('<getSMSList> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 문자 보낸 내역 아이템 리스트
+ * @param Filter
+ */
+export const getSMSDetail = (
+  searchParam: getSMSDetailRequest
+): Promise<ResponseMessageVo<getSMSDetailResponse>> => {
+  logger.debug('<getSMSDetail> params ', searchParam);
+  return adminAxiosInstance
+    .post(`/api/pco/admin/total/letter-item-dt`, {
+      ...searchParam,
+    })
+    .then((response) => {
+      logger.debug('<getSMSDetail> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 문자 발송 실패 전체 재발송
+ * @param resendFailedUserRequest
+ * @returns
+ */
+export const resendFailedUser = (data: resendFailedUserRequest) => {
+  logger.debug('<resendFailedUser> params ', data);
+  return adminAxiosInstance
+    .post(`/api/pco/admin/total/top/letter-item-dt/resend`, {
+      ...data,
+    })
+    .then((response) => {
+      logger.debug('<resendFailedUser> response.data : ', response.data);
       return response.data;
     });
 };

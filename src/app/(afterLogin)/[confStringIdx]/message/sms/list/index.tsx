@@ -7,16 +7,12 @@ import {
   Chip,
   IconButton,
   Stack,
-  Tooltip,
-  TooltipProps,
   Typography,
-  styled,
-  tooltipClasses,
 } from '@mui/material';
 import {
   LetterDtResponse,
-  // SEND_STATUS,
-  sendStatusLabels,
+  TASK_STATUS,
+  taskStatusLabels,
 } from '@/api/types/messageTypes';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
@@ -37,62 +33,8 @@ import { getAdministrators } from '@/api/mediAdminApi';
 import { logger } from '@/lib/logger/defaultLogger';
 import { getSMSList } from '@/api/messageApi';
 import { Loading } from '@/components/core/Loading';
-
-// const dummyData = [
-//   {
-//     letterIdx: 0,
-//     receiverInfo: '테스트 정혜경외 2명',
-//     sendDate: '2024-08-16 21:49:12',
-//     completeDate: '2024-08-16 21:49:12',
-//     hasMemo: true,
-//     memo: '기회원 알림 단체 문자',
-//     content: '안녕하세요 [|userName|]님',
-//     sendStatus: SEND_STATUS.inProgress,
-//     count: 2,
-//     failureCount: 0,
-//     senderName: '정혜경',
-//     senderWuserIdx: 868,
-//   },
-//   {
-//     letterIdx: 3,
-//     receiverInfo: '김민정외 2명',
-//     sendDate: '2024-08-16 22:06:55',
-//     completeDate: '2024-08-16 22:06:55',
-//     hasMemo: true,
-//     memo: '테스트 미리보기용',
-//     content: '안녕하세요 홍길동님',
-//     sendStatus: SEND_STATUS.complete,
-//     count: 1,
-//     failureCount: 0,
-//     senderName: '정혜경',
-//     senderWuserIdx: 868,
-//   },
-//   {
-//     letterIdx: 4,
-//     receiverInfo: '정혜경외 4명',
-//     sendDate: '2024-08-19 14:14:11',
-//     completeDate: '2024-08-19 14:14:11',
-//     hasMemo: false,
-//     memo: '기회원 알림 단체 문자',
-//     content:
-//       '안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님안녕하세요 [|userName|]님',
-//     sendStatus: SEND_STATUS.failure,
-//     count: 4,
-//     failureCount: 0,
-//     senderName: '정혜경',
-//     senderWuserIdx: 868,
-//   },
-// ] satisfies LetterDtResponse[];
-
-const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))({
-  [`& .${tooltipClasses.tooltip}`]: {
-    maxWidth: 200,
-    background: '#384250',
-    marginTop: '0 !important',
-  },
-});
+import { toast } from '@/components/core/Toaster';
+import { CustomTooltip } from '@/components/CustomTooltip';
 
 const SMSList = () => {
   const [failModalOpen, setFailModalOpen] = useState<boolean>(false);
@@ -145,9 +87,16 @@ const SMSList = () => {
                   textDecoration: 'underline',
                   textUnderlinePosition: 'under',
                 }}
-                onClick={() =>
-                  moveSMSSendDetail(info.row.original.letterIdx as number)
-                }
+                onClick={() => {
+                  if (info.row.original.taskStatus !== TASK_STATUS.complete) {
+                    // Toast UI 점검 및 변경
+                    toast.info('발송 완료 후 조회 가능 합니다.', {
+                      duration: 1000,
+                    });
+                  } else {
+                    moveSMSSendDetail(info.row.original.letterIdx as number);
+                  }
+                }}
                 title={`${info.row.original.letterIdx}`}
               >
                 {`${info.getValue()}`}
@@ -217,23 +166,20 @@ const SMSList = () => {
                   ? 'success'
                   : 'secondary'
               }
-              label={[info.row.original.messageType]}
+              label={info.row.original.messageType?.toUpperCase()}
             />
           </DTCellBox>
         ),
         size: 80,
       }),
-      columnHelper.accessor('sendStatus', {
+      columnHelper.accessor('taskStatus', {
         header: '상태',
         cell: (info) => (
           <DTCellBox>
             <Chip
               variant="outlined"
-              // sx={{ borderColor: 'red' }}
-              // icon
-              label={sendStatusLabels[info.row.original.sendStatus]}
+              label={taskStatusLabels[info.row.original.taskStatus]}
             />
-            {/* {sendStatusLabels[info.row.original.sendStatus]} */}
           </DTCellBox>
         ),
         size: 80,

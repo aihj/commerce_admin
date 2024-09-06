@@ -28,7 +28,7 @@ const getStyle = (type: string, color: string) => {
       case 'error':
         return `text-error-main bg-error-lightest`;
       case 'neutral':
-        return `text-secondary-main bg-neutral-lightest`;
+        return `text-neutral-main bg-neutral-lightest`;
       case 'secondary':
         return `text-secondary-main bg-neutral-lightest`;
       case 'info':
@@ -68,7 +68,7 @@ const Chip = ({
 }: ChipProps) => {
   return (
     <div
-      className={`flex items-center py-3 px-10 rounded-12 ${getStyle(type, color)}`}
+      className={`flex items-center py-3 px-10 rounded-12 w-max ${getStyle(type, color)}`}
     >
       <span className="text-12 leading-18 font-semibold">{label}</span>
       {onDelete ? (

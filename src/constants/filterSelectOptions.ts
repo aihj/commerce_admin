@@ -1,3 +1,5 @@
+import { TASK_STATUS, taskStatusLabels } from '@/api/types/messageTypes';
+
 export const GENDERS = [
   { value: 'M', label: '남성' },
   { value: 'F', label: '여성' },
@@ -33,10 +35,19 @@ export const HAS_MEMO = [
   { value: 'n', label: '메모 없음' },
 ];
 
-export const SEND_STATUS = [
-  { value: 'inProgress', label: '발송중' },
-  { value: 'complete', label: '발송완료' },
-  { value: 'failure', label: '발송실패' },
+export const SEND_STATUS_OPTIONS = [
+  {
+    value: TASK_STATUS.inProgress,
+    label: taskStatusLabels[TASK_STATUS.inProgress],
+  },
+  {
+    value: TASK_STATUS.complete,
+    label: taskStatusLabels[TASK_STATUS.complete],
+  },
+  {
+    value: TASK_STATUS.failure,
+    label: taskStatusLabels[TASK_STATUS.failure],
+  },
 ];
 
 export const HAS_FAIL = [

@@ -16,14 +16,11 @@ import { toast } from '@/components/core/Toaster';
 import { sendSMSFilteredUsers, sendSMSTest } from '@/api/messageApi';
 import Swal from 'sweetalert2';
 import { logger } from '@/lib/logger/defaultLogger';
-
-const calculateByteLength = (text: string) => {
-  // UTF-8로 인코딩된 문자열의 바이트 길이를 계산하는 함수
-  return new TextEncoder().encode(text).length;
-};
+import { calculateByteLength } from '@/lib/calculateByteLength';
+import { DevTool } from '@hookform/devtools';
 
 interface SMSFormData {
-  subject: string;
+  subject?: string;
   memo: string;
   content: string;
   message: string;
@@ -53,7 +50,7 @@ const SMSForm = ({
     control,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, touchedFields, dirtyFields },
   } = useForm<SMSFormData>({
     defaultValues: { letterTemplateIdx: null, type: 'custom' },
     mode: 'onBlur',
@@ -85,8 +82,15 @@ const SMSForm = ({
       setSearchParamError(true);
     } else {
       setSearchParamError(false);
+      const messageType = isSMSMode ? 'sms' : 'mms';
+
+      if (touchedFields.subject && dirtyFields.subject) {
+        delete data['subject'];
+      }
+
       const formData = {
         searchParam,
+        messageType,
         ...data,
       };
       sendSMSFilteredUsers(formData)
@@ -102,7 +106,7 @@ const SMSForm = ({
           logger.error('<sendSMSFilteredUsers> error', error);
           Swal.fire({
             title: '문자 전송 실패',
-            text: '문자 전송을 할 수 없습니다. 잠시 후 다시 시도해 주세요.',
+            text: `${error.response.data.message}`,
           });
         });
     }
@@ -117,30 +121,37 @@ const SMSForm = ({
         text: '테스트 전송을 위한 휴대폰 번호를 확인 후 다시 입력해 주세요.',
       });
       return;
-    } else if (
-      errors.subject ||
-      errors.content ||
-      !data.subject ||
-      !data.content
-    ) {
+    } else if (errors.content || !data.content) {
       Swal.fire({
         title: '필수 정보 확인',
         text: '문자 전송을 위한 필수 정보를 확인 후 다시 입력해 주세요.',
       });
     } else {
+      if (touchedFields.subject && dirtyFields.subject) {
+        delete data['subject'];
+      }
       const formData = {
         conferenceIdx,
         ...data,
+        type: 'test',
       };
-      sendSMSTest(formData).then((result) => {
-        if (result.status === 200) {
+      sendSMSTest(formData)
+        .then((result) => {
+          if (result.status === 200) {
+            Swal.fire({
+              title: '테스트 전송 완료',
+              text: `요청하신 ${data.testPhoneNumber} 번호로 테스트 문자가 전송되었습니다.`,
+            });
+            setTestCompleted(true);
+          }
+        })
+        .catch((error) => {
+          logger.error('<sendSMSTest> error', error);
           Swal.fire({
-            title: '테스트 전송 완료',
-            text: `요청하신 ${data.testPhoneNumber} 번호로 테스트 문자가 전송되었습니다.`,
+            title: '테스트 전송 실패',
+            text: `${error.response.data.message}`,
           });
-          setTestCompleted(true);
-        }
-      });
+        });
     }
   };
 
@@ -155,6 +166,7 @@ const SMSForm = ({
       }}
     >
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+        <DevTool control={control} />
         <Stack spacing={2}>
           <Controller
             control={control}
@@ -162,7 +174,7 @@ const SMSForm = ({
             rules={{
               required: '메모를 입력해 주세요.',
               pattern: {
-                value: /^[a-zA-Zㄱ-ㅎ가-힣0-9.!\s]{1,50}$/,
+                value: /^.{1,50}$/,
                 message: '50자 이내로 입력해 주세요.',
               },
             }}
@@ -226,9 +238,8 @@ const SMSForm = ({
                 control={control}
                 name="subject"
                 rules={{
-                  required: '발송 제목을 입력해 주세요.',
                   pattern: {
-                    value: /^[a-zA-Zㄱ-ㅎ가-힣0-9.!\s]{2,25}$/,
+                    value: /^.{2,25}$/,
                     message: '발송 제목을 올바르게 입력해 주세요.',
                   },
                 }}
@@ -278,7 +289,7 @@ const SMSForm = ({
                     <Box sx={{ display: 'flex' }}>
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                         <TextField
-                          label="내용*"
+                          label="내용"
                           sx={{
                             mt: 1,
                             p: 0,
@@ -346,6 +357,7 @@ const SMSForm = ({
                   variant="contained"
                   color="secondary"
                   onClick={() => handleSendTest()}
+                  disabled={testCompleted}
                 >
                   테스트 전송
                 </Button>

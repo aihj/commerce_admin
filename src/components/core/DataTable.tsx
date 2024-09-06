@@ -53,7 +53,6 @@ export function DataTable<TRowModel extends object & { id?: RowId | null }>({
   const selectedSome =
     (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < rows.length;
   const selectedAll = rows.length > 0 && selected?.size === rows.length;
-
   return (
     <Table {...props}>
       <TableHead

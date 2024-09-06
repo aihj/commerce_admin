@@ -1,36 +1,42 @@
 import { Filter } from '@/app/(afterLogin)/[confStringIdx]/message/sms/send/Filters';
+import { TableSearchParams } from './tableSearchParams';
 
 export interface sendSMSFilteredUsersRequest {
   searchParam: Filter;
   letterTemplateIdx: number | null; // 양식을 선택안했을때는 null로
-  subject: string;
+  subject?: string;
   content: string;
   memo: string;
   type: string; // default value: 'custom'
   senderPhoneNumber: string;
+  messageType: string;
 }
 
 export interface sendSMSTestRequest {
   conferenceIdx: number;
   testPhoneNumber?: string;
   letterTemplateIdx: number | null; // 양식을 선택안했을때는 null로
-  subject: string;
+  subject?: string;
   content: string;
   memo: string;
   type: string; // default value: 'custom'
   senderPhoneNumber: string;
 }
 
-export enum SEND_STATUS {
-  inProgress = 'inProgress',
-  complete = 'complete',
-  failure = 'failure',
+export enum TASK_STATUS {
+  inInProgress = 'in_progress',
+  inInComplete = 'interior_complete',
+  apiInProgress = 'api_in_progress',
+  complete = 'api_complete',
+  failure = 'interior_fail',
 }
 
-export const sendStatusLabels = {
-  [SEND_STATUS.inProgress]: '발송중',
-  [SEND_STATUS.complete]: '발송완료',
-  [SEND_STATUS.failure]: '발송실패',
+export const taskStatusLabels = {
+  [TASK_STATUS.inInProgress]: '발송중',
+  [TASK_STATUS.inInComplete]: '발송중',
+  [TASK_STATUS.apiInProgress]: '발송중',
+  [TASK_STATUS.complete]: '발송완료',
+  [TASK_STATUS.failure]: '발송실패',
 };
 
 export interface LetterDtResponse {
@@ -44,7 +50,7 @@ export interface LetterDtResponse {
   receiverInfo?: string;
   sendDate?: string;
   senderName?: string;
-  sendStatus: SEND_STATUS;
+  taskStatus: TASK_STATUS;
   senderWuserIdx?: number;
   messageType: string;
 }
@@ -57,7 +63,36 @@ export interface SMSDetailListDT {
   receiverWuserIdx: number;
   phone: string;
   name: string;
-  sendStatus: SEND_STATUS;
-  // sendStatus: string;
-  failReason?: string | null;
+  resultCode: string;
+  resultDescription?: string;
+}
+
+export interface getSMSDetailRequest extends TableSearchParams {
+  letterIdx: string;
+}
+
+export interface getSMSDetailResponse {
+  letterIdx: number;
+  templateIdx: number | null;
+  count: number; // 전체 발송 건
+  failureCount: number; // 실패 발송 건
+  filterJson: string;
+  type: string; // default 'custom';
+  subject: string | null;
+  content: string;
+  memo: string;
+  sendDate: string;
+  completeDate: string | null;
+  senderPhoneNumber: string;
+  senderWuserIdx: number;
+  senderName: string;
+  messageType: string;
+  letterItemList: SMSDetailListDT[];
+}
+
+export interface resendFailedUserRequest {
+  conferenceIdx: number;
+  letterIdx: number;
+  type: string; // failedTotal | selected
+  letterItemIdxListJson?: string;
 }

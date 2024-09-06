@@ -7,7 +7,7 @@ import { ResetIcon } from '@/components/icons/ResetIcon';
 import {
   HAS_FAIL,
   HAS_MEMO,
-  SEND_STATUS,
+  SEND_STATUS_OPTIONS,
 } from '@/constants/filterSelectOptions';
 import { hasFilters } from '@/lib/hasFilters';
 import { Button, Stack } from '@mui/material';
@@ -15,7 +15,7 @@ import { useCallback } from 'react';
 
 export interface SMSListFiltersType extends TableSearchParams {
   sendDateStartT?: string;
-  sendStatus?: string;
+  taskStatus?: string;
   isFail?: boolean;
   senderWuserIdx?: number;
   searchText?: string;
@@ -81,25 +81,25 @@ const SMSListFilters = ({
       />
       <FilterButton
         displayValue={
-          cSearchParams?.sendStatus &&
-          SEND_STATUS.filter(
-            (item) => item.value === cSearchParams.sendStatus
+          cSearchParams?.taskStatus &&
+          SEND_STATUS_OPTIONS.filter(
+            (item) => item.value === cSearchParams.taskStatus
           )[0].label
         }
         label="발송 상태"
         onFilterApply={(value) => {
-          onChangeSelect({ name: 'sendStatus', value });
+          onChangeSelect({ name: 'taskStatus', value });
         }}
         onFilterDelete={() => {
-          onChangeSelect({ name: 'sendStatus', value: null });
+          onChangeSelect({ name: 'taskStatus', value: null });
         }}
         popover={
           <TableOneSelectFilterPopover
             title="발송 상태 선택"
-            data={SEND_STATUS}
+            data={SEND_STATUS_OPTIONS}
           />
         }
-        value={cSearchParams?.sendStatus}
+        value={cSearchParams?.taskStatus}
       />
       <FilterButton
         displayValue={
