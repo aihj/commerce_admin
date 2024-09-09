@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Box, Button, Stack, TextField } from '@mui/material';
 import { CHIP_COLOR, Chip } from '@/components/core/Chip';
@@ -6,63 +6,83 @@ import { ColumnDef, DataTable } from '@/components/core/DataTable';
 import { Label } from '@/components/core/Label';
 import { showPhoneWithHyphen } from '@/lib/showPhoneWithHyphen';
 import { useSelection } from '@/hooks/useSelection';
+import { getUsersWithNameOrPhone } from '@/api/messageApi';
+import { getUsersWithNameOrPhoneResponse } from '@/api/types/messageTypes';
 
 interface SMSSelectUserFormData {
-  searchWord: string;
-}
-
-interface SearchedUser {
-  wuserIdx: number;
-  name: string;
-  phone: string;
+  conferenceIdx: number;
+  type: string; // default: 'nameAndPhone'
+  searchText: string;
 }
 
 const dummyUsers = [
   {
-    wuserIdx: 1,
-    name: '김민정',
+    wuserIdx: 830,
     phone: '01031237207',
+    name: '김민정',
   },
   {
-    wuserIdx: 2,
+    wuserIdx: 842,
+    phone: '01031237207',
     name: '김민정',
-    phone: '01031237206',
   },
   {
-    wuserIdx: 3,
+    wuserIdx: 843,
+    phone: '01031237207',
     name: '김민정',
-    phone: '01031237205',
   },
   {
-    wuserIdx: 4,
+    wuserIdx: 857,
+    phone: '01031237207',
     name: '김민정',
-    phone: '01031237204',
   },
   {
-    wuserIdx: 5,
+    wuserIdx: 859,
+    phone: '01031237207',
     name: '김민정',
-    phone: '01031237203',
   },
   {
-    wuserIdx: 6,
+    wuserIdx: 866,
+    phone: '01031237207',
     name: '김민정',
-    phone: '01031237202',
+  },
+  {
+    wuserIdx: 873,
+    phone: '01031237207',
+    name: '김민정',
   },
 ];
 
-const SelectUsers = () => {
+interface SelectUsersProps {
+  conferenceIdx: number;
+  handleSearchedUsers: (data: number[]) => void;
+  // searchParamError: boolean;
+}
+
+const SelectUsers = ({
+  conferenceIdx,
+  handleSearchedUsers,
+}: SelectUsersProps) => {
   const {
     control,
     handleSubmit,
     // watch,
-    // formState: { errors },
+    formState: { errors },
   } = useForm<SMSSelectUserFormData>({
+    defaultValues: { conferenceIdx, type: 'nameAndPhone' },
     mode: 'onBlur',
     reValidateMode: 'onBlur',
   });
 
-  const [searchedUserList, setSearchedUserList] =
-    useState<SearchedUser[]>(dummyUsers);
+  // 이름, 휴대폰번호로 검색 된 유저
+  const [searchedUserList, setSearchedUserList] = useState<
+    getUsersWithNameOrPhoneResponse[]
+  >([]);
+
+  // 전송 대상으로 확정된 유저
+  const [selectedUser, setSelectedUser] = useState<
+    getUsersWithNameOrPhoneResponse[]
+  >([]);
 
   const searchedUserIds = useMemo(
     () => searchedUserList.map((searchedUser) => searchedUser.wuserIdx),
@@ -83,51 +103,68 @@ const SelectUsers = () => {
       ),
       name: '휴대폰 번호',
     },
-  ] satisfies ColumnDef<SearchedUser>[];
+  ] satisfies ColumnDef<getUsersWithNameOrPhoneResponse>[];
+
+  // const [searchParamError, setSearchParamError] = useState<boolean>(false);
 
   const handleSearchUser = (data: SMSSelectUserFormData) => {
-    // 유저 검색
-    alert(data.searchWord);
+    getUsersWithNameOrPhone(data).then((result) => {
+      // setSearchedUserList(result.content as getUsersWithNameOrPhoneResponse[]);
+      setSearchedUserList(dummyUsers);
+      return result.content;
+    });
 
-    const dummyUsers = [
-      {
-        wuserIdx: 1,
-        name: '김민정',
-        phone: '01031237207',
-      },
-      {
-        wuserIdx: 2,
-        name: '김유정',
-        phone: '01031237206',
-      },
-      {
-        wuserIdx: 1,
-        name: '김혜정',
-        phone: '01031237205',
-      },
-      {
-        wuserIdx: 1,
-        name: '김수정',
-        phone: '01031237204',
-      },
-      {
-        wuserIdx: 1,
-        name: '김희정',
-        phone: '01031237203',
-      },
-      {
-        wuserIdx: 1,
-        name: '김선정',
-        phone: '01031237202',
-      },
-    ] satisfies SearchedUser[];
-
-    setSearchedUserList(dummyUsers);
+    //   {
+    //     wuserIdx: 1,
+    //     name: '김민정',
+    //     phone: '01031237207',
+    //   },
+    //   {
+    //     wuserIdx: 2,
+    //     name: '김유정',
+    //     phone: '01031237206',
+    //   },
+    //   {
+    //     wuserIdx: 1,
+    //     name: '김혜정',
+    //     phone: '01031237205',
+    //   },
+    //   {
+    //     wuserIdx: 1,
+    //     name: '김수정',
+    //     phone: '01031237204',
+    //   },
+    //   {
+    //     wuserIdx: 1,
+    //     name: '김희정',
+    //     phone: '01031237203',
+    //   },
+    //   {
+    //     wuserIdx: 1,
+    //     name: '김선정',
+    //     phone: '01031237202',
+    //   },
+    // ] satisfies SearchedUser[];
   };
 
+  const handleSelectedUser = () => {
+    const filteredItems = searchedUserList.filter((item) =>
+      selected.has(item.wuserIdx)
+    );
+
+    setSelectedUser(filteredItems);
+  };
+
+  useEffect(() => {
+    const filteredItems = selectedUser.map(
+      (selectedUser) => selectedUser.wuserIdx
+    );
+    handleSearchedUsers(filteredItems);
+  }, [selectedUser]);
+
   return (
-    <Stack spacing={3} sx={{ mt: 4 }}>
-      <form onSubmit={handleSubmit(handleSearchUser)} className="w-full">
+    <form onSubmit={handleSubmit(handleSearchUser)} className="w-full">
+      <Stack spacing={3} sx={{ mt: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Label label="회원 선택" minWidth={100} />
           <Box
@@ -140,7 +177,7 @@ const SelectUsers = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Controller
                 control={control}
-                name="searchWord"
+                name="searchText"
                 rules={{
                   required: '검색어를 입력해 주세요.',
                 }}
@@ -148,6 +185,8 @@ const SelectUsers = () => {
                   <TextField
                     sx={{ p: 0, height: 44, width: 480 }}
                     placeholder="이름 또는 휴대폰 번호 입력"
+                    error={Boolean(errors.searchText)}
+                    helperText={errors.searchText?.message}
                     {...field}
                   />
                 )}
@@ -162,28 +201,35 @@ const SelectUsers = () => {
               </Button>
             </Box>
             {searchedUserList.length > 0 ? (
-              <Box sx={{ maxHeight: 600, width: '100%' }}>
-                <div className="text-14 leading-16 my-8">검색결과 6명</div>
-                <DataTable<SearchedUser>
-                  columns={columns}
-                  selectable
-                  rows={searchedUserList}
-                  selected={selected}
-                  onSelectAll={() => selectAll()}
-                  onDeselectAll={() => deselectAll()}
-                  onSelectOne={(_, row) =>
-                    selectOne(row.wuserIdx as unknown as number)
-                  }
-                  onDeselectOne={(_, row) =>
-                    deselectOne(row.wuserIdx as unknown as number)
-                  }
-                  uniqueRowId={(row: SearchedUser) => row.wuserIdx as number}
-                />
+              <Box sx={{ width: '100%' }}>
+                <div className="text-14 leading-16 my-8">
+                  검색결과 {searchedUserList.length}명
+                </div>
+                <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
+                  <DataTable<getUsersWithNameOrPhoneResponse>
+                    columns={columns}
+                    selectable
+                    rows={searchedUserList}
+                    selected={selected}
+                    onSelectAll={() => selectAll()}
+                    onDeselectAll={() => deselectAll()}
+                    onSelectOne={(_, row) =>
+                      selectOne(row.wuserIdx as unknown as number)
+                    }
+                    onDeselectOne={(_, row) =>
+                      deselectOne(row.wuserIdx as unknown as number)
+                    }
+                    uniqueRowId={(row: getUsersWithNameOrPhoneResponse) =>
+                      row.wuserIdx as number
+                    }
+                  />
+                </Box>
                 <div className="text-14 leading-16 my-8 text-center">
                   <Button
                     variant="outlined"
                     sx={{ width: 200 }}
                     disabled={selected.size === 0}
+                    onClick={() => handleSelectedUser()}
                   >
                     {selected.size === 0 ? '' : `${selected.size}명 `}
                     선택 추가
@@ -196,16 +242,31 @@ const SelectUsers = () => {
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Label label="전송 대상*" minWidth={100} />
           <Box>
-            <Chip
-              label="김민정 010-3123-7207"
-              type="soft"
-              color={CHIP_COLOR.secondary}
-              onDelete={() => alert('김민정')}
-            />
+            {selectedUser.length === 0 ? (
+              <span className={`text-14 leading-18 h-26 `}>
+                회원을 선택하여 전송대상을 추가해 주세요.
+              </span>
+            ) : (
+              selectedUser.map((item) => (
+                <Chip
+                  key={item.wuserIdx}
+                  label={`${item.name} ${showPhoneWithHyphen(item.phone)}`}
+                  type="soft"
+                  color={CHIP_COLOR.secondary}
+                  onDelete={() =>
+                    setSelectedUser(() =>
+                      selectedUser.filter(
+                        ({ wuserIdx }) => item.wuserIdx !== wuserIdx
+                      )
+                    )
+                  }
+                />
+              ))
+            )}
           </Box>
         </Box>
-      </form>
-    </Stack>
+      </Stack>
+    </form>
   );
 };
 

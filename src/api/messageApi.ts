@@ -9,6 +9,8 @@ import {
   getSMSDetailResponse,
   sendSMSFilteredUsersRequest,
   sendSMSTestRequest,
+  getUsersWithNameOrPhoneRequest,
+  getUsersWithNameOrPhoneResponse,
 } from './types/messageTypes';
 import { SMSListFiltersType } from '@/app/(afterLogin)/[confStringIdx]/message/sms/list/SMSListFilters';
 
@@ -118,6 +120,25 @@ export const resendFailedUser = (data: resendFailedUserRequest) => {
     })
     .then((response) => {
       logger.debug('<resendFailedUser> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 이름 혹은 전화번호로 회원 검색
+ * @param getUsersWithNameOrPhoneRequest
+ * @returns getUsersWithNameOrPhoneResponse
+ */
+export const getUsersWithNameOrPhone = (
+  data: getUsersWithNameOrPhoneRequest
+): Promise<ResponseMessageVo<getUsersWithNameOrPhoneResponse[]>> => {
+  logger.debug('<getUsersWithNameOrPhone> params ', data);
+  return adminAxiosInstance
+    .post(`/api/pco/admin/total/find-users`, {
+      ...data,
+    })
+    .then((response) => {
+      logger.debug('<getUsersWithNameOrPhone> response.data : ', response.data);
       return response.data;
     });
 };

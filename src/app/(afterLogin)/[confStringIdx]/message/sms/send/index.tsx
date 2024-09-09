@@ -57,9 +57,11 @@ const SMSSend = () => {
     setTabIndex(newValue);
   };
 
-  const [searchParam, setSearchParam] = useState<Filter>({
+  const [searchFilterParam, setSearchFilterParam] = useState<Filter>({
     conferenceIdx: conferenceIdx as number,
   });
+
+  const [searchedUsers, setSearchedUsers] = useState<number[]>([]);
 
   const [searchParamError, setSearchParamError] = useState<boolean>(false);
 
@@ -96,12 +98,16 @@ const SMSSend = () => {
       </Box>
       <Box>
         <TabPanel value={tabIndex} index={0}>
-          <SelectUsers />
+          <SelectUsers
+            conferenceIdx={conferenceIdx as number}
+            handleSearchedUsers={(param: number[]) => setSearchedUsers(param)}
+            // searchParamError={searchParamError}
+          />
         </TabPanel>
         <TabPanel value={tabIndex} index={1}>
           <Filters
             conferenceIdx={conferenceIdx as number}
-            handleSearchParam={(param: Filter) => setSearchParam(param)}
+            handleSearchParam={(param: Filter) => setSearchFilterParam(param)}
             searchParamError={searchParamError}
           />
         </TabPanel>
@@ -110,7 +116,9 @@ const SMSSend = () => {
         </TabPanel>
       </Box>
       <SMSForm
-        searchParam={searchParam}
+        searchParam={searchFilterParam}
+        searchedUsers={searchedUsers}
+        sendType={tabIndex === 0 ? 'filter' : 'user'}
         conferenceIdx={conferenceIdx as number}
         setSearchParamError={(value: boolean) => setSearchParamError(value)}
       />

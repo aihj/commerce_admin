@@ -32,6 +32,8 @@ interface SMSFormData {
 
 interface SMSFormProps {
   searchParam: Filter;
+  searchedUsers: number[];
+  sendType: string;
   conferenceIdx: number;
   setSearchParamError: (value: boolean) => void;
 }

@@ -96,3 +96,15 @@ export interface resendFailedUserRequest {
   type: string; // failedTotal | selected
   letterItemIdxListJson?: string;
 }
+
+export interface getUsersWithNameOrPhoneRequest {
+  conferenceIdx: number;
+  type: string; // 현재 고정 값 'nameAndPhone'
+  searchText: string;
+}
+
+export interface getUsersWithNameOrPhoneResponse {
+  wuserIdx: number;
+  phone: string;
+  name: string;
+}
