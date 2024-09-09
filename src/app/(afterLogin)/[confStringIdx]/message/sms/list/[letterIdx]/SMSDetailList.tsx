@@ -71,8 +71,10 @@ const SMSDetailList = <T extends object>({
 
   useEffect(() => {
     const arraySelected = Array.from(selected);
-    handleSelectedUser(arraySelected);
-  }, [selected, handleSelectedUser]);
+    if (arraySelected.length) {
+      handleSelectedUser(arraySelected);
+    }
+  }, [selected]);
 
   return (
     <Box sx={{ mt: 2 }}>

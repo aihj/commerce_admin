@@ -177,7 +177,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
   const handleSelectedFailedResend = () => {
     Swal.fire({
       title: '실패 문자 재발송',
-      text: `선택된 ${data?.failureCount}명에게 문자 내용을 재발송 하시겠습니까?`,
+      text: `선택된 ${selectedUser.length}명에게 문자 내용을 재발송 하시겠습니까?`,
       confirmButtonText: '발송',
       showCancelButton: true,
       cancelButtonText: '취소',
@@ -373,9 +373,10 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                 cSearchParams={cSearchParams as TableSearchParams}
                 setCSearchParamsFunc={setCSearchParamsFunc}
                 totalCount={data.count}
-                handleSelectedUser={(selectedUser: number[]) => {
-                  setSelectedUser(selectedUser);
-                }}
+                // handleSelectedUser={() => {}}
+                handleSelectedUser={(selectedUser: number[]) =>
+                  setSelectedUser(selectedUser)
+                }
               />
             </Card>
           </Stack>
