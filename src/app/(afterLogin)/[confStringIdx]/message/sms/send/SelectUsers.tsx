@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Box, Button, Stack, TextField } from '@mui/material';
+import { Box, Button, Divider, Stack, TextField } from '@mui/material';
 import { CHIP_COLOR, Chip } from '@/components/core/Chip';
 import { ColumnDef, DataTable } from '@/components/core/DataTable';
 import { Label } from '@/components/core/Label';
@@ -8,6 +8,7 @@ import { showPhoneWithHyphen } from '@/lib/showPhoneWithHyphen';
 import { useSelection } from '@/hooks/useSelection';
 import { getUsersWithNameOrPhone } from '@/api/messageApi';
 import { getUsersWithNameOrPhoneResponse } from '@/api/types/messageTypes';
+import Swal from 'sweetalert2';
 
 interface SMSSelectUserFormData {
   conferenceIdx: number;
@@ -15,53 +16,16 @@ interface SMSSelectUserFormData {
   searchText: string;
 }
 
-const dummyUsers = [
-  {
-    wuserIdx: 830,
-    phone: '01031237207',
-    name: '김민정',
-  },
-  {
-    wuserIdx: 842,
-    phone: '01031237207',
-    name: '김민정',
-  },
-  {
-    wuserIdx: 843,
-    phone: '01031237207',
-    name: '김민정',
-  },
-  {
-    wuserIdx: 857,
-    phone: '01031237207',
-    name: '김민정',
-  },
-  {
-    wuserIdx: 859,
-    phone: '01031237207',
-    name: '김민정',
-  },
-  {
-    wuserIdx: 866,
-    phone: '01031237207',
-    name: '김민정',
-  },
-  {
-    wuserIdx: 873,
-    phone: '01031237207',
-    name: '김민정',
-  },
-];
-
 interface SelectUsersProps {
   conferenceIdx: number;
   handleSearchedUsers: (data: number[]) => void;
-  // searchParamError: boolean;
+  searchParamError: boolean;
 }
 
 const SelectUsers = ({
   conferenceIdx,
   handleSearchedUsers,
+  searchParamError,
 }: SelectUsersProps) => {
   const {
     control,
@@ -109,42 +73,9 @@ const SelectUsers = ({
 
   const handleSearchUser = (data: SMSSelectUserFormData) => {
     getUsersWithNameOrPhone(data).then((result) => {
-      // setSearchedUserList(result.content as getUsersWithNameOrPhoneResponse[]);
-      setSearchedUserList(dummyUsers);
+      setSearchedUserList(result.content as getUsersWithNameOrPhoneResponse[]);
       return result.content;
     });
-
-    //   {
-    //     wuserIdx: 1,
-    //     name: '김민정',
-    //     phone: '01031237207',
-    //   },
-    //   {
-    //     wuserIdx: 2,
-    //     name: '김유정',
-    //     phone: '01031237206',
-    //   },
-    //   {
-    //     wuserIdx: 1,
-    //     name: '김혜정',
-    //     phone: '01031237205',
-    //   },
-    //   {
-    //     wuserIdx: 1,
-    //     name: '김수정',
-    //     phone: '01031237204',
-    //   },
-    //   {
-    //     wuserIdx: 1,
-    //     name: '김희정',
-    //     phone: '01031237203',
-    //   },
-    //   {
-    //     wuserIdx: 1,
-    //     name: '김선정',
-    //     phone: '01031237202',
-    //   },
-    // ] satisfies SearchedUser[];
   };
 
   const handleSelectedUser = () => {
@@ -153,6 +84,20 @@ const SelectUsers = ({
     );
 
     setSelectedUser(filteredItems);
+  };
+
+  const handleClearSelected = () => {
+    Swal.fire({
+      title: '전송 대상 모두 삭제',
+      text: '선택된 전송 대상을 모두 삭제하시겠습니까?',
+      confirmButtonText: '삭제',
+      showCancelButton: true,
+      cancelButtonText: '취소',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setSelectedUser([]);
+      }
+    });
   };
 
   useEffect(() => {
@@ -239,29 +184,46 @@ const SelectUsers = ({
             ) : null}
           </Box>
         </Box>
+        <Divider />
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Label label="전송 대상*" minWidth={100} />
           <Box>
             {selectedUser.length === 0 ? (
-              <span className={`text-14 leading-18 h-26 `}>
+              <span
+                className={`text-14 leading-18 h-26 ${searchParamError && 'text-error-main'}`}
+              >
                 회원을 선택하여 전송대상을 추가해 주세요.
               </span>
             ) : (
-              selectedUser.map((item) => (
-                <Chip
-                  key={item.wuserIdx}
-                  label={`${item.name} ${showPhoneWithHyphen(item.phone)}`}
-                  type="soft"
-                  color={CHIP_COLOR.secondary}
-                  onDelete={() =>
-                    setSelectedUser(() =>
-                      selectedUser.filter(
-                        ({ wuserIdx }) => item.wuserIdx !== wuserIdx
-                      )
-                    )
-                  }
-                />
-              ))
+              <Box>
+                <span className="text-14 font-bold">
+                  총 {selectedUser.length}명
+                </span>
+                <div className="flex flex-wrap gap-8 py-10">
+                  {selectedUser.map((item) => (
+                    <Chip
+                      key={item.wuserIdx}
+                      label={`${item.name} ${showPhoneWithHyphen(item.phone)}`}
+                      type="soft"
+                      color={CHIP_COLOR.secondary}
+                      onDelete={() =>
+                        setSelectedUser(() =>
+                          selectedUser.filter(
+                            ({ wuserIdx }) => item.wuserIdx !== wuserIdx
+                          )
+                        )
+                      }
+                    />
+                  ))}
+                </div>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleClearSelected()}
+                >
+                  모두 삭제
+                </Button>
+              </Box>
             )}
           </Box>
         </Box>

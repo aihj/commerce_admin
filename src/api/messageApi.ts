@@ -11,6 +11,7 @@ import {
   sendSMSTestRequest,
   getUsersWithNameOrPhoneRequest,
   getUsersWithNameOrPhoneResponse,
+  sendSMSSelectedUsersRequest,
 } from './types/messageTypes';
 import { SMSListFiltersType } from '@/app/(afterLogin)/[confStringIdx]/message/sms/list/SMSListFilters';
 
@@ -139,6 +140,25 @@ export const getUsersWithNameOrPhone = (
     })
     .then((response) => {
       logger.debug('<getUsersWithNameOrPhone> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 선택된 사용자에게 문자 발송
+ * @param sendSMSSelectedUsersRequest
+ * @returns
+ */
+export const sendSMSSelectedUsers = (
+  data: sendSMSSelectedUsersRequest
+): Promise<ResponseMessageVo<any>> => {
+  logger.debug('<sendSMSSelectedUsers> params ', data);
+  return adminAxiosInstance
+    .post(`/api/pco/admin/total/top/attendee/message/select`, {
+      ...data,
+    })
+    .then((response) => {
+      logger.debug('<sendSMSSelectedUsers> response.data : ', response.data);
       return response.data;
     });
 };

@@ -8,21 +8,25 @@ import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { Filter, Filters } from './Filters';
 import { SMSForm } from './SMSForm';
 import { SelectUsers } from './SelectUsers';
+import { SEND_TYPE } from '@/constants/sendTypes';
 
 const tabs = [
   {
     idx: 1,
     label: '회원에게 보내기',
+    type: SEND_TYPE.USER,
     value: 0,
   },
   {
     idx: 2,
     label: '그룹으로 보내기',
+    type: SEND_TYPE.FILTER,
     value: 1,
   },
   {
     idx: 3,
     label: '직접입력',
+    type: SEND_TYPE.DIRECT,
     value: 2,
   },
 ];
@@ -52,9 +56,11 @@ function TabPanel(props: TabPanelProps) {
 const SMSSend = () => {
   const conferenceIdx = useAppSelector(selectConferenceIdx);
   const [tabIndex, setTabIndex] = useState<number>(0);
+  const [sendType, setSendType] = useState<SEND_TYPE>(tabs[0].type);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
+    setSendType(tabs[newValue].type);
   };
 
   const [searchFilterParam, setSearchFilterParam] = useState<Filter>({
@@ -101,7 +107,7 @@ const SMSSend = () => {
           <SelectUsers
             conferenceIdx={conferenceIdx as number}
             handleSearchedUsers={(param: number[]) => setSearchedUsers(param)}
-            // searchParamError={searchParamError}
+            searchParamError={searchParamError}
           />
         </TabPanel>
         <TabPanel value={tabIndex} index={1}>
@@ -118,7 +124,7 @@ const SMSSend = () => {
       <SMSForm
         searchParam={searchFilterParam}
         searchedUsers={searchedUsers}
-        sendType={tabIndex === 0 ? 'filter' : 'user'}
+        sendType={sendType}
         conferenceIdx={conferenceIdx as number}
         setSearchParamError={(value: boolean) => setSearchParamError(value)}
       />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -13,11 +13,16 @@ import { Label } from '@/components/core/Label';
 import { Filter } from './Filters';
 import { SMSTemplateInfo } from './SMSTemplateInfo';
 import { toast } from '@/components/core/Toaster';
-import { sendSMSFilteredUsers, sendSMSTest } from '@/api/messageApi';
+import {
+  sendSMSFilteredUsers,
+  sendSMSSelectedUsers,
+  sendSMSTest,
+} from '@/api/messageApi';
 import Swal from 'sweetalert2';
 import { logger } from '@/lib/logger/defaultLogger';
 import { calculateByteLength } from '@/lib/calculateByteLength';
 import { DevTool } from '@hookform/devtools';
+import { SEND_TYPE } from '@/constants/sendTypes';
 
 interface SMSFormData {
   subject?: string;
@@ -33,7 +38,7 @@ interface SMSFormData {
 interface SMSFormProps {
   searchParam: Filter;
   searchedUsers: number[];
-  sendType: string;
+  sendType: SEND_TYPE;
   conferenceIdx: number;
   setSearchParamError: (value: boolean) => void;
 }
@@ -45,8 +50,10 @@ const dummySender = [
 
 const SMSForm = ({
   searchParam,
+  searchedUsers,
   conferenceIdx,
   setSearchParamError,
+  sendType,
 }: SMSFormProps) => {
   const {
     control,
@@ -61,6 +68,7 @@ const SMSForm = ({
 
   const [isSMSMode, setIsSMSMode] = useState<boolean>(true);
   const [testCompleted, setTestCompleted] = useState<boolean>(false);
+  const [messageType, setMessageType] = useState<string>('sms');
 
   const handleSMSMode = (value: string) => {
     if (!watch('subject')) {
@@ -75,42 +83,85 @@ const SMSForm = ({
     }
   };
 
-  const onSubmit = (data: SMSFormData) => {
-    if (Object.keys(searchParam).length === 0) {
-      Swal.fire({
-        title: '필수 정보 확인',
-        text: '문자 전송을 위한 필수 정보를 확인 후 다시 입력해 주세요.',
-      });
-      setSearchParamError(true);
-    } else {
-      setSearchParamError(false);
-      const messageType = isSMSMode ? 'sms' : 'mms';
-
-      if (touchedFields.subject && dirtyFields.subject) {
-        delete data['subject'];
-      }
-
-      const formData = {
-        searchParam,
-        messageType,
-        ...data,
-      };
-      sendSMSFilteredUsers(formData)
-        .then((result) => {
-          if (result.status === 200) {
-            Swal.fire({
-              title: '문자 전송 완료',
-              text: '문자 전송이 완료되었습니다.',
-            });
-          }
-        })
-        .catch((error) => {
-          logger.error('<sendSMSFilteredUsers> error', error);
-          Swal.fire({
-            title: '문자 전송 실패',
-            text: `${error.response.data.message}`,
-          });
+  const handleAlert = (type: string) => {
+    switch (type) {
+      case 'invalid':
+        Swal.fire({
+          title: '필수 정보 확인',
+          text: '문자 전송을 위한 필수 정보를 확인 후 다시 입력해 주세요.',
         });
+        return;
+      case 'success':
+        Swal.fire({
+          title: '문자 전송 완료',
+          text: '문자 전송이 완료되었습니다.',
+        });
+        return;
+    }
+  };
+
+  const onSubmit = (data: SMSFormData) => {
+    if (sendType === SEND_TYPE.FILTER) {
+      if (Object.keys(searchParam).length === 0) {
+        handleAlert('invalid');
+        setSearchParamError(true);
+      } else {
+        setSearchParamError(false);
+
+        if (touchedFields.subject && dirtyFields.subject) {
+          delete data['subject'];
+        }
+
+        const formData = {
+          searchParam,
+          messageType,
+          ...data,
+        };
+        sendSMSFilteredUsers(formData)
+          .then((result) => {
+            if (result.status === 200) {
+              handleAlert('success');
+            }
+          })
+          .catch((error) => {
+            logger.error('<sendSMSFilteredUsers> error', error);
+            Swal.fire({
+              title: '문자 전송 실패',
+              text: `${error.response.data.message}`,
+            });
+          });
+      }
+    } else if (sendType === SEND_TYPE.USER) {
+      if (searchedUsers.length === 0) {
+        handleAlert('invalid');
+        setSearchParamError(true);
+      } else {
+        setSearchParamError(false);
+        // api
+
+        if (touchedFields.subject && dirtyFields.subject) {
+          delete data['subject'];
+        }
+        const formData = {
+          conferenceIdx,
+          wuserListJson: JSON.stringify(searchedUsers),
+          messageType,
+          ...data,
+        };
+        sendSMSSelectedUsers(formData)
+          .then((result) => {
+            if (result.status === 200) {
+              handleAlert('success');
+            }
+          })
+          .catch((error) => {
+            logger.error('<sendSMSFilteredUsers> error', error);
+            Swal.fire({
+              title: '문자 전송 실패',
+              text: `${error.response.data.message}`,
+            });
+          });
+      }
     }
   };
 
@@ -134,6 +185,7 @@ const SMSForm = ({
       }
       const formData = {
         conferenceIdx,
+        messageType,
         ...data,
         type: 'test',
       };
@@ -156,6 +208,10 @@ const SMSForm = ({
         });
     }
   };
+
+  useEffect(() => {
+    setMessageType(isSMSMode ? 'sms' : 'mms');
+  }, [isSMSMode]);
 
   return (
     <Box
