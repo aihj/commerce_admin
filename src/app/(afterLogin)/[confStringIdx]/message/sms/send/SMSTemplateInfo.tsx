@@ -27,9 +27,9 @@ const SMSTemplateInfo = () => {
           메세지에 오른쪽과 같이 입력하면 자동 변환되어 정보가 표기됩니다.
         </span>
         <span>
-          {`회원명 : {[userName]}`}
+          {`회원명 : [|userName|]`}
           <CopyToClipboard
-            text={`{[userName]}`}
+            text={`[|userName|]`}
             onCopy={() => {
               toast.success(
                 '복사가 완료되었습니다. 메세지에 붙여넣기 하여 사용하세요.',
@@ -46,7 +46,7 @@ const SMSTemplateInfo = () => {
       <div className="flex flex-col mt-8 p-8 bg-primary-light leading-24 text-14">
         <span className="font-medium text-primary-dark ">{`예시)`}</span>
         <span>
-          <strong>{`{[userName]}`}</strong>님 안녕하세요!
+          <strong>{`[|userName|]`}</strong>님 안녕하세요!
         </span>
         <span>
           → <strong>김메디</strong>님 안녕하세요!
