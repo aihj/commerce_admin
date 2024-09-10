@@ -23,12 +23,12 @@ const tabs = [
     type: SEND_TYPE.FILTER,
     value: 1,
   },
-  {
-    idx: 3,
-    label: '직접입력',
-    type: SEND_TYPE.DIRECT,
-    value: 2,
-  },
+  // {
+  //   idx: 3,
+  //   label: '직접입력',
+  //   type: SEND_TYPE.DIRECT,
+  //   value: 2,
+  // },
 ];
 
 interface TabPanelProps {
