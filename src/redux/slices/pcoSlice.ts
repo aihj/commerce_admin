@@ -48,4 +48,7 @@ export const selectConferenceIdx = (state: RootState) =>
 export const selectConferenceStringIdx = (state: RootState) =>
   state.pco.conferenceStringIdx;
 
+export const selectConferenceName = (state: RootState) =>
+  state.pco.conferenceName;
+
 export default pcoSlice.reducer;

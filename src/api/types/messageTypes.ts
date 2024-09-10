@@ -88,6 +88,7 @@ export interface getSMSDetailResponse {
   senderWuserIdx: number;
   senderName: string;
   messageType: string;
+  receiverInfo: string;
   letterItemList: SMSDetailListDT[];
 }
 

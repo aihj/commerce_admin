@@ -116,12 +116,15 @@ export const layoutConfig = () => {
 };
 
 // TODO title 응답값으로 가져와야함
-export const eachPcoLayoutConfig = (confStringIdx: string) => {
+export const eachPcoLayoutConfig = (
+  confStringIdx: string,
+  conferenceName: string
+) => {
   return {
     navItems: [
       {
         key: 'EACH/PAYMENT',
-        title: '대한응급의학의사회',
+        title: conferenceName,
         items: [
           {
             key: 'EACH/USER/ATTENDEE',
@@ -157,7 +160,7 @@ export const eachPcoLayoutConfig = (confStringIdx: string) => {
               },
               {
                 key: 'EACH/MESSAGE/SMS/LIST',
-                title: '문자 리스트',
+                title: '문자 발송 목록',
                 href: PATH.EACH.MESSAGE.SMS.LIST(confStringIdx),
               },
             ],
@@ -168,13 +171,16 @@ export const eachPcoLayoutConfig = (confStringIdx: string) => {
   };
 };
 
-export const eachPcoLayoutConfig_ori = (confStringIdx: string) => {
+export const eachPcoLayoutConfig_ori = (
+  confStringIdx: string,
+  conferenceName: string
+) => {
   return {
     navItems: [
       // TODO : 이모티콘 뭘로 할지 정하는건 필요함
       {
         key: 'EACH/PAYMENT',
-        title: '대한미용학회',
+        title: { conferenceName },
         items: [
           {
             key: 'EACH/PAYMENT/B',
@@ -267,7 +273,7 @@ export const eachPcoLayoutConfig_ori = (confStringIdx: string) => {
                   },
                   {
                     key: 'EACH/MESSAGE/SMS/LIST',
-                    title: '문자 리스트',
+                    title: '문자 발송 목록',
                     href: PATH.EACH.MESSAGE.SMS.LIST(confStringIdx),
                   },
                 ],

@@ -10,7 +10,10 @@ import { SideNav } from './SideNav';
 import { User } from '@/types/user';
 import { useAppSelector } from '@/redux/hooks';
 import { useSelector } from 'react-redux';
-import { selectConferenceStringIdx } from '@/redux/slices/pcoSlice';
+import {
+  selectConferenceName,
+  selectConferenceStringIdx,
+} from '@/redux/slices/pcoSlice';
 
 export interface VerticalLayoutProps {
   children?: React.ReactNode;
@@ -21,11 +24,12 @@ export function VerticalLayout({
 }: VerticalLayoutProps): React.JSX.Element {
   const user: User = useAppSelector((state) => state.user);
   const conferenceStringIdx = useSelector(selectConferenceStringIdx);
+  const conferenceName = useSelector(selectConferenceName);
 
   // region ************* 메뉴 화면 정의 *************
   let navItem = undefined;
   if (conferenceStringIdx) {
-    navItem = eachPcoLayoutConfig(conferenceStringIdx).navItems;
+    navItem = eachPcoLayoutConfig(conferenceStringIdx, conferenceName).navItems;
     if (user.wroleName === 'pco_admin_all_top') {
       // 최고 관리자의 경우 모든 학회 정보까지 보여주기
       navItem = navItem.concat(layoutConfig().navItems as any);
