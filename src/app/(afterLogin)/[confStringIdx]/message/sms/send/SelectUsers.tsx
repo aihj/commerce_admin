@@ -34,8 +34,8 @@ const SelectUsers = ({
     formState: { errors },
   } = useForm<SMSSelectUserFormData>({
     defaultValues: { conferenceIdx, type: 'nameAndPhone' },
-    mode: 'onBlur',
-    reValidateMode: 'onBlur',
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
   });
 
   // 이름, 휴대폰번호로 검색 된 유저
@@ -79,11 +79,13 @@ const SelectUsers = ({
   };
 
   const handleSelectedUser = () => {
-    const filteredItems = searchedUserList.filter((item) =>
-      selected.has(item.wuserIdx)
+    const filteredItems = searchedUserList.filter(
+      (item) =>
+        selected.has(item.wuserIdx) &&
+        selectedUser.findIndex((user) => user.wuserIdx === item.wuserIdx) === -1
     );
 
-    setSelectedUser(filteredItems);
+    setSelectedUser(selectedUser.concat(filteredItems));
   };
 
   const handleClearSelected = () => {
