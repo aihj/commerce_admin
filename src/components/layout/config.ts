@@ -214,7 +214,7 @@ export const eachPcoLayoutConfig = (confStringIdx: string) => {
                   },
                   {
                     key: 'EACH/MESSAGE/SMS/LIST',
-                    title: '문자 리스트',
+                    title: '문자 발송 목록',
                     href: PATH.EACH.MESSAGE.SMS.LIST(confStringIdx),
                   },
                 ],

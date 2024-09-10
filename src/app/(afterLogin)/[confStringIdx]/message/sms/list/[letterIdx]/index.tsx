@@ -222,7 +222,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
         <>
           <div>
             {/* TODO breadcrumbs */}
-            <PageTitle title={`문자 발송 내역 상세 (${letterIdx})`} />
+            <PageTitle title={`문자 발송 내역 상세 (id:${letterIdx})`} />
           </div>
           <Stack spacing={2} direction="row" sx={{ flex: 1, mt: 4 }}>
             <Card
