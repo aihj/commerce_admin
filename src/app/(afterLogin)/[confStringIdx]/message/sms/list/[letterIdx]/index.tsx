@@ -243,7 +243,11 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                     sx={{ flexWrap: 'wrap' }}
                     gap={1}
                   >
-                    {data.filterJson && handleFilterChips(data.filterJson)}
+                    {data.filterJson ? (
+                      handleFilterChips(data.filterJson)
+                    ) : (
+                      <span className="text-14">{data.receiverInfo}</span>
+                    )}
                   </Stack>
                 </Box>
                 <Divider />
