@@ -191,11 +191,18 @@ const SMSList = () => {
             <span>
               <button
                 className="text-error-main underline font-bold"
-                onClick={() =>
+                onClick={() => {
                   // TODO 모달은 2차로
                   // setFailModalOpen(true)
-                  moveSMSSendDetail(info.row.original.letterIdx as number)
-                }
+                  if (info.row.original.taskStatus !== TASK_STATUS.complete) {
+                    // Toast UI 점검 및 변경
+                    toast.info('발송 완료 후 조회 가능 합니다.', {
+                      duration: 1000,
+                    });
+                  } else {
+                    moveSMSSendDetail(info.row.original.letterIdx as number);
+                  }
+                }}
               >
                 {info.row.original.failureCount}
               </button>{' '}

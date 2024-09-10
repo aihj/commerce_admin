@@ -1,26 +1,27 @@
 import { Filter } from '@/app/(afterLogin)/[confStringIdx]/message/sms/send/Filters';
 import { TableSearchParams } from './tableSearchParams';
 
-export interface sendSMSFilteredUsersRequest {
-  searchParam: Filter;
+interface sendSMSRequest {
   letterTemplateIdx: number | null; // 양식을 선택안했을때는 null로
   subject?: string;
   content: string;
   memo: string;
   type: string; // default value: 'custom'
-  senderPhoneNumber: string;
   messageType: string;
+  senderPhoneNumber: string;
+}
+export interface sendSMSFilteredUsersRequest extends sendSMSRequest {
+  searchParam: Filter;
 }
 
-export interface sendSMSTestRequest {
+export interface sendSMSTestRequest extends sendSMSRequest {
   conferenceIdx: number;
   testPhoneNumber?: string;
-  letterTemplateIdx: number | null; // 양식을 선택안했을때는 null로
-  subject?: string;
-  content: string;
-  memo: string;
-  type: string; // default value: 'custom'
-  senderPhoneNumber: string;
+}
+
+export interface sendSMSSelectedUsersRequest extends sendSMSRequest {
+  conferenceIdx: number;
+  wuserListJson: string;
 }
 
 export enum TASK_STATUS {
@@ -95,4 +96,16 @@ export interface resendFailedUserRequest {
   letterIdx: number;
   type: string; // failedTotal | selected
   letterItemIdxListJson?: string;
+}
+
+export interface getUsersWithNameOrPhoneRequest {
+  conferenceIdx: number;
+  type: string; // 현재 고정 값 'nameAndPhone'
+  searchText: string;
+}
+
+export interface getUsersWithNameOrPhoneResponse {
+  wuserIdx: number;
+  phone: string;
+  name: string;
 }

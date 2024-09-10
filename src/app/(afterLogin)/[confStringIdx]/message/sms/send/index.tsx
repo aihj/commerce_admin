@@ -8,24 +8,27 @@ import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { Filter, Filters } from './Filters';
 import { SMSForm } from './SMSForm';
 import { SelectUsers } from './SelectUsers';
+import { SEND_TYPE } from '@/constants/sendTypes';
 
 const tabs = [
   {
     idx: 1,
-    // label: '회원에게 보내기',
-    label: '그룹으로 보내기',
+    label: '회원에게 보내기',
+    type: SEND_TYPE.USER,
     value: 0,
   },
-  // {
-  //   idx: 2,
-  //   label: '그룹으로 보내기',
-  //   value: 1,
-  // },
-  // {
-  //   idx: 3,
-  //   label: '직접입력',
-  //   value: 2,
-  // },
+  {
+    idx: 2,
+    label: '그룹으로 보내기',
+    type: SEND_TYPE.FILTER,
+    value: 1,
+  },
+  {
+    idx: 3,
+    label: '직접입력',
+    type: SEND_TYPE.DIRECT,
+    value: 2,
+  },
 ];
 
 interface TabPanelProps {
@@ -53,14 +56,18 @@ function TabPanel(props: TabPanelProps) {
 const SMSSend = () => {
   const conferenceIdx = useAppSelector(selectConferenceIdx);
   const [tabIndex, setTabIndex] = useState<number>(0);
+  const [sendType, setSendType] = useState<SEND_TYPE>(tabs[0].type);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
+    setSendType(tabs[newValue].type);
   };
 
-  const [searchParam, setSearchParam] = useState<Filter>({
+  const [searchFilterParam, setSearchFilterParam] = useState<Filter>({
     conferenceIdx: conferenceIdx as number,
   });
+
+  const [searchedUsers, setSearchedUsers] = useState<number[]>([]);
 
   const [searchParamError, setSearchParamError] = useState<boolean>(false);
 
@@ -97,21 +104,27 @@ const SMSSend = () => {
       </Box>
       <Box>
         <TabPanel value={tabIndex} index={0}>
-          <Filters
+          <SelectUsers
             conferenceIdx={conferenceIdx as number}
-            handleSearchParam={(param: Filter) => setSearchParam(param)}
+            handleSearchedUsers={(param: number[]) => setSearchedUsers(param)}
             searchParamError={searchParamError}
           />
         </TabPanel>
         <TabPanel value={tabIndex} index={1}>
-          <SelectUsers />
+          <Filters
+            conferenceIdx={conferenceIdx as number}
+            handleSearchParam={(param: Filter) => setSearchFilterParam(param)}
+            searchParamError={searchParamError}
+          />
         </TabPanel>
         <TabPanel value={tabIndex} index={2}>
           직접 입력 Coming Soon
         </TabPanel>
       </Box>
       <SMSForm
-        searchParam={searchParam}
+        searchParam={searchFilterParam}
+        searchedUsers={searchedUsers}
+        sendType={sendType}
         conferenceIdx={conferenceIdx as number}
         setSearchParamError={(value: boolean) => setSearchParamError(value)}
       />
