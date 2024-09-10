@@ -249,7 +249,7 @@ const Filters = ({
   return (
     <Stack spacing={3} sx={{ mt: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Label label="그룹 선택*" minWidth={100} />
+        <Label label="그룹 선택*" minWidth={100} bold />
         <Box
           sx={{
             overflowX: 'auto',
@@ -469,7 +469,7 @@ const Filters = ({
         </Box>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Label label="전송 대상*" minWidth={100} />
+        <Label label="전송 대상*" minWidth={100} bold />
         <Box>
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             {filteredChips && filteredChips.length > 0 && !allUser ? (

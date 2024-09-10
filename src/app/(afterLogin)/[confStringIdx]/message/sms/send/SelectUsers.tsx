@@ -111,7 +111,7 @@ const SelectUsers = ({
     <form onSubmit={handleSubmit(handleSearchUser)} className="w-full">
       <Stack spacing={3} sx={{ mt: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Label label="회원 선택" minWidth={100} />
+          <Label label="회원 선택" minWidth={100} bold />
           <Box
             sx={{
               display: 'flex',
@@ -186,7 +186,7 @@ const SelectUsers = ({
         </Box>
         <Divider />
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Label label="전송 대상*" minWidth={100} />
+          <Label label="전송 대상*" minWidth={100} bold />
           <Box>
             {selectedUser.length === 0 ? (
               <span

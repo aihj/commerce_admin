@@ -238,11 +238,14 @@ const SMSForm = ({
             }}
             render={({ field }) => (
               <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
-                <Label label="메모*" minWidth={100} />
+                <Label label="메모*" minWidth={100} bold />
                 <TextField
                   sx={{ p: 0, width: 480, mb: '18px' }}
                   error={Boolean(errors.memo)}
                   placeholder="50자 이내"
+                  inputProps={{
+                    maxLength: 49,
+                  }}
                   helperText={
                     errors.memo
                       ? errors.memo?.message
@@ -281,7 +284,7 @@ const SMSForm = ({
           <Box
             sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
           >
-            <Label label="메시지 입력*" minWidth={100} />
+            <Label label="메시지 입력*" minWidth={100} bold />
             <Box>
               {isSMSMode ? (
                 <Chip label="SMS" sx={{ width: 72, margin: '0 0 4px 0' }} />
@@ -401,7 +404,7 @@ const SMSForm = ({
             disabled={testCompleted}
             render={({ field }) => (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Label label="테스트 발송" minWidth={100} />
+                <Label label="테스트 발송" minWidth={100} bold />
                 <TextField
                   sx={{ p: 0, height: 44, width: 480 }}
                   error={Boolean(errors.testPhoneNumber)}
@@ -434,7 +437,7 @@ const SMSForm = ({
             defaultValue={dummySender[0].value}
             render={({ field }) => (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Label label="발신 번호*" minWidth={100} />
+                <Label label="발신 번호*" minWidth={100} bold />
                 <TextField
                   sx={{ p: 0, height: 44, width: 240 }}
                   select
