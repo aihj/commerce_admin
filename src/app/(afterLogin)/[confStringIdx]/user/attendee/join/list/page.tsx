@@ -222,18 +222,22 @@ const JoinAttendeeList = () => {
         header: '등록상태',
         cell: (info) => (
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Chip
-              key={
-                registrationStatusLabels[info.row.original.registrationStatus]
-              }
-              label={
-                registrationStatusLabels[info.row.original.registrationStatus]
-              }
-              type="strong"
-              color={setRegistrationStatusChipColor(
-                info.row.original.registrationStatus
-              )}
-            />
+            {info.row.original.registrationStatus ? (
+              <Chip
+                key={
+                  registrationStatusLabels[info.row.original.registrationStatus]
+                }
+                label={
+                  registrationStatusLabels[info.row.original.registrationStatus]
+                }
+                type="strong"
+                color={setRegistrationStatusChipColor(
+                  info.row.original.registrationStatus
+                )}
+              />
+            ) : info.row.original.wuserStatus === 'delete' ? (
+              '-'
+            ) : null}
           </Box>
         ),
         size: 110,

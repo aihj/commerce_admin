@@ -1,8 +1,9 @@
 import React from 'react';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { InfoFilledIcon } from '@/components/icons/InfoFilledIcon';
 import { toast } from '@/components/core/Toaster';
+import { CopyIcon } from '@/components/icons/CopyIcon';
 
 const SMSTemplateInfo = () => {
   return (
@@ -37,9 +38,13 @@ const SMSTemplateInfo = () => {
               );
             }}
           >
-            <span className="underline hover:cursor-pointer pl-4 text-14">
-              [복사하기]
-            </span>
+            <Button
+              size="small"
+              sx={{ ml: 1 }}
+              startIcon={<CopyIcon className="fill-primary-main" />}
+            >
+              복사
+            </Button>
           </CopyToClipboard>
         </span>
       </div>

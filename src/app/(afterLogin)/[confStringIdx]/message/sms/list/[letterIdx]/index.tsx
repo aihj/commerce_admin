@@ -361,6 +361,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                   variant="contained"
                   color="secondary"
                   onClick={() => handleAllFailedResend()}
+                  disabled={data.failureCount === 0}
                 >
                   실패 일괄 재발송
                 </Button>
