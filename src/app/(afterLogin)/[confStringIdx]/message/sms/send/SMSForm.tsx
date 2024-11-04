@@ -246,6 +246,11 @@ const SMSForm = ({
                   inputProps={{
                     maxLength: 49,
                   }}
+                  InputProps={{
+                    sx: {
+                      height: 44,
+                    },
+                  }}
                   helperText={
                     errors.memo
                       ? errors.memo?.message
@@ -310,6 +315,11 @@ const SMSForm = ({
                       <TextField
                         label="제목"
                         sx={{ p: 0, width: 480 }}
+                        InputProps={{
+                          sx: {
+                            height: 44,
+                          },
+                        }}
                         error={Boolean(errors.subject)}
                         placeholder="(선택) 제목 입력 시 MMS로 자동 전환 됩니다."
                         helperText={errors.subject?.message}

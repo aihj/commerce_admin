@@ -9,6 +9,8 @@ import { Filter, Filters } from './Filters';
 import { SMSForm } from './SMSForm';
 import { SelectUsers } from './SelectUsers';
 import { SEND_TYPE } from '@/constants/sendTypes';
+import { AddUserDirectly } from './AddUserDirectly';
+import { DirectUser } from '@/types/user';
 
 const tabs = [
   {
@@ -69,6 +71,8 @@ const SMSSend = () => {
 
   const [searchedUsers, setSearchedUsers] = useState<number[]>([]);
 
+  const [addedUsers, setAddedUsers] = useState<DirectUser[]>([]);
+
   const [searchParamError, setSearchParamError] = useState<boolean>(false);
 
   return (
@@ -118,7 +122,12 @@ const SMSSend = () => {
           />
         </TabPanel>
         <TabPanel value={tabIndex} index={2}>
-          직접 입력 Coming Soon
+          <AddUserDirectly
+            addedUsers={addedUsers}
+            handleAddedUser={(user: DirectUser[]) => {
+              setAddedUsers(user);
+            }}
+          />
         </TabPanel>
       </Box>
       <SMSForm

@@ -25,3 +25,9 @@ export interface AttendeePaymentManualVo {
     | 'cancel-request'
     | 'cancel-completed';
 }
+
+// 직접 입력 문자보내기용 유저 인터페이스
+export interface DirectUser {
+  name: string;
+  phone: string;
+}
