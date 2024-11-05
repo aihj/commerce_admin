@@ -24,7 +24,7 @@ export const getTotalUserAmount = (
 ): Promise<ResponseMessageVo<any>> => {
   logger.debug('<getTotalUserAmount> params ', searchParam);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/attendee/filter-count`, {
+    .post(`/api/pco/admin/total/top/message/attendee/filter-count`, {
       searchParam,
     })
     .then((response) => {
@@ -43,7 +43,7 @@ export const sendSMSFilteredUsers = (
 ): Promise<ResponseMessageVo<any>> => {
   logger.debug('<sendSMSFilteredUsers> params ', data);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/attendee/message/filter`, {
+    .post(`/api/pco/admin/total/top/message/attendee/send-filtered`, {
       ...data,
     })
     .then((response) => {
@@ -62,7 +62,7 @@ export const sendSMSTest = (
 ): Promise<ResponseMessageVo<any>> => {
   logger.debug('<sendSMSTest> params ', data);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/message/test`, {
+    .post(`/api/pco/admin/total/top/message/attendee/send-test`, {
       ...data,
     })
     .then((response) => {
@@ -81,7 +81,7 @@ export const getSMSList = (
 ): Promise<ResponseMessageVo<LetterDtResponse[]>> => {
   logger.debug('<getSMSList> params ', data);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/letter-dt`, {
+    .post(`/api/pco/admin/total/middle/message/letters`, {
       ...data,
     })
     .then((response) => {
@@ -99,7 +99,7 @@ export const getSMSDetail = (
 ): Promise<ResponseMessageVo<getSMSDetailResponse>> => {
   logger.debug('<getSMSDetail> params ', searchParam);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/letter-item-dt`, {
+    .post(`/api/pco/admin/total/middle/message/letter-items`, {
       ...searchParam,
     })
     .then((response) => {
@@ -116,7 +116,7 @@ export const getSMSDetail = (
 export const resendFailedUser = (data: resendFailedUserRequest) => {
   logger.debug('<resendFailedUser> params ', data);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/letter-item-dt/resend`, {
+    .post(`/api/pco/admin/total/top/message/resend`, {
       ...data,
     })
     .then((response) => {
@@ -154,7 +154,7 @@ export const sendSMSSelectedUsers = (
 ): Promise<ResponseMessageVo<any>> => {
   logger.debug('<sendSMSSelectedUsers> params ', data);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/attendee/message/select`, {
+    .post(`/api/pco/admin/total/top/message/attendee/send-selected`, {
       ...data,
     })
     .then((response) => {

@@ -9,6 +9,7 @@ interface sendSMSRequest {
   type: string; // default value: 'custom'
   messageType: string;
   senderPhoneNumber: string;
+  scheduleType: number;
 }
 export interface sendSMSFilteredUsersRequest extends sendSMSRequest {
   searchParam: Filter;

@@ -4,9 +4,13 @@ import {
   Button,
   Chip,
   Divider,
+  FormControlLabel,
   MenuItem,
+  Radio,
+  RadioGroup,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { Label } from '@/components/core/Label';
@@ -23,12 +27,15 @@ import { logger } from '@/lib/logger/defaultLogger';
 import { calculateByteLength } from '@/lib/calculateByteLength';
 import { DevTool } from '@hookform/devtools';
 import { SEND_TYPE } from '@/constants/sendTypes';
+import { DateTimePicker } from '@mui/x-date-pickers';
+import { dayjs } from '@/lib/dayjs';
 
 interface SMSFormData {
   subject?: string;
   memo: string;
   content: string;
   message: string;
+  scheduleType?: string;
   testPhoneNumber?: string;
   senderPhoneNumber: string;
   type: string; // default value: 'custom'
@@ -69,6 +76,9 @@ const SMSForm = ({
   const [isSMSMode, setIsSMSMode] = useState<boolean>(true);
   const [testCompleted, setTestCompleted] = useState<boolean>(false);
   const [messageType, setMessageType] = useState<string>('sms');
+  const [scheduledDate, setScheduledDate] = useState<string | null>(null);
+  const [scheduledDateErrorMessage, setScheduledDateErrorMessage] =
+    useState<string>('');
 
   const handleSMSMode = (value: string) => {
     if (!watch('subject')) {
@@ -101,6 +111,12 @@ const SMSForm = ({
   };
 
   const onSubmit = (data: SMSFormData) => {
+    if (data.scheduleType === 'y') {
+      if (!scheduledDate) {
+        setScheduledDateErrorMessage('예약 전송 시간을 입력해주세요');
+        return;
+      }
+    }
     if (sendType === SEND_TYPE.FILTER) {
       if (Object.keys(searchParam).length === 0) {
         handleAlert('invalid');
@@ -116,6 +132,8 @@ const SMSForm = ({
           searchParam,
           messageType,
           ...data,
+          scheduleType: data.scheduleType === 'y' ? 1 : 0,
+          sendDate: data.scheduleType === 'y' ? scheduledDate : null,
         };
         sendSMSFilteredUsers(formData)
           .then((result) => {
@@ -147,6 +165,8 @@ const SMSForm = ({
           wuserListJson: JSON.stringify(searchedUsers),
           messageType,
           ...data,
+          scheduleType: data.scheduleType === 'y' ? 1 : 0,
+          sendDate: data.scheduleType === 'y' ? scheduledDate : null,
         };
         sendSMSSelectedUsers(formData)
           .then((result) => {
@@ -188,6 +208,7 @@ const SMSForm = ({
         messageType,
         ...data,
         type: 'test',
+        scheduleType: data.scheduleType === 'y' ? 1 : 0,
       };
       sendSMSTest(formData)
         .then((result) => {
@@ -401,6 +422,102 @@ const SMSForm = ({
               />
             </Box>
           </Box>
+          <Divider />
+          <Controller
+            control={control}
+            name="scheduleType"
+            render={({ field }) => (
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Label label="전송 시간" minWidth={100} bold />
+                <RadioGroup
+                  sx={{ height: 44 }}
+                  row
+                  defaultValue={'n'}
+                  {...field}
+                  value={field.value}
+                  onChange={(e) => {
+                    field.onChange(e.target.value);
+                    if (field.value === 'n') {
+                      setScheduledDateErrorMessage('');
+                      setScheduledDate(null);
+                    }
+                  }}
+                >
+                  <FormControlLabel
+                    control={<Radio />}
+                    label={
+                      <div>
+                        <Typography
+                          sx={{
+                            color: 'var(--mui-palette-text-primary)',
+                          }}
+                          variant="inherit"
+                        >
+                          즉시 전송
+                        </Typography>
+                      </div>
+                    }
+                    value={'n'}
+                  />
+                  <FormControlLabel
+                    control={<Radio />}
+                    label={
+                      <div>
+                        <Typography
+                          sx={{
+                            color: 'var(--mui-palette-text-primary)',
+                          }}
+                          variant="inherit"
+                        >
+                          예약 전송
+                        </Typography>
+                      </div>
+                    }
+                    value={'y'}
+                  />
+                </RadioGroup>
+                {field.value === 'y' && (
+                  <DateTimePicker
+                    sx={{ ml: 1, py: 0 }}
+                    disablePast
+                    ampm={false}
+                    maxDateTime={dayjs().add(7, 'day')}
+                    timeSteps={{ minutes: 10 }}
+                    yearsOrder="desc"
+                    slotProps={{
+                      textField: {
+                        InputProps: {
+                          sx: { height: '44px' },
+                        },
+                        helperText: scheduledDateErrorMessage,
+                        sx: {
+                          ml: 1,
+                          py: 0,
+                          '& .MuiFormHelperText-root': {
+                            color: 'var(--mui-palette-error-main)',
+                          },
+                        },
+                      },
+                    }}
+                    onChange={(value) => {
+                      setScheduledDate(
+                        dayjs(value).format('YYYY-MM-DDTHH:mm:ss')
+                      );
+                    }}
+                    onError={(error) => {
+                      if (error) {
+                        setScheduledDateErrorMessage(
+                          '예약 전송 시간을 확인해주세요'
+                        );
+                      } else {
+                        setScheduledDateErrorMessage('');
+                      }
+                    }}
+                  />
+                )}
+              </Box>
+            )}
+          />
           <Divider />
           <Controller
             control={control}
