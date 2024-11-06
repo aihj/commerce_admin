@@ -88,11 +88,6 @@ const SMSForm = ({
   const [files, setFiles] = React.useState<File[]>([]);
 
   const handleSMSMode = (value: string) => {
-    if (files.length !== 0) {
-      setIsSMSMode(false);
-      toast.info('MMS로 전환됩니다.', { duration: 1000 });
-      return;
-    }
     if (!watch('subject')) {
       if (isSMSMode && calculateByteLength(value) > 80) {
         setIsSMSMode(false);
@@ -141,11 +136,12 @@ const SMSForm = ({
         }
 
         const formData = {
-          searchParam,
+          searchParamJson: JSON.stringify(searchParam),
           messageType,
           ...data,
           scheduleType: data.scheduleType === 'y' ? 1 : 0,
           sendDate: data.scheduleType === 'y' ? scheduledDate : null,
+          messageFileList: files,
         };
         sendSMSFilteredUsers(formData)
           .then((result) => {
@@ -284,6 +280,14 @@ const SMSForm = ({
   };
 
   useEffect(() => {
+    if (files.length !== 0) {
+      if (isSMSMode) {
+        setIsSMSMode(false);
+        toast.info('MMS로 전환됩니다.', { duration: 1000 });
+        setMessageType('mms');
+        return;
+      }
+    }
     setMessageType(isSMSMode ? 'sms' : 'mms');
   }, [isSMSMode, files]);
 
@@ -476,11 +480,7 @@ const SMSForm = ({
                       />
                       <UploadImageFiles
                         files={files}
-                        handleFiles={(newFiles: File[]) =>
-                          setFiles((prevFiles) => {
-                            return [...prevFiles, ...newFiles];
-                          })
-                        }
+                        handleFiles={(newFiles: File[]) => setFiles(newFiles)}
                       />
                     </Box>
                   </Box>

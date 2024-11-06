@@ -1,4 +1,3 @@
-import { Filter } from '@/app/(afterLogin)/[confStringIdx]/message/sms/send/Filters';
 import { TableSearchParams } from './tableSearchParams';
 
 interface sendSMSRequest {
@@ -12,7 +11,8 @@ interface sendSMSRequest {
   scheduleType: number;
 }
 export interface sendSMSFilteredUsersRequest extends sendSMSRequest {
-  searchParam: Filter;
+  // searchParamJson: Filter;
+  searchParamJson: string;
 }
 
 export interface sendSMSTestRequest extends sendSMSRequest {

@@ -24,6 +24,7 @@ const UploadImageFiles = ({ files, handleFiles }: UploadImageFilesProps) => {
   const [thumbnails, setThumbnails] = useState<Map<string, FileWithThumbnail>>(
     new Map()
   );
+  const [totalSize, setTotalSize] = useState<string>('');
 
   const handleDrop = useCallback(
     (newFiles: File[]) => {
@@ -43,7 +44,7 @@ const UploadImageFiles = ({ files, handleFiles }: UploadImageFilesProps) => {
         };
       });
 
-      handleFiles(newFiles);
+      handleFiles([...files, ...newFiles]);
     },
     [thumbnails, handleFiles]
   );
@@ -57,8 +58,9 @@ const UploadImageFiles = ({ files, handleFiles }: UploadImageFilesProps) => {
   );
 
   useEffect(() => {
-    console.log('useEffect ==>', thumbnails);
-  }, [thumbnails]);
+    const size = files.reduce((acc, curr) => acc + curr.size, 0);
+    setTotalSize(bytesToKB(size));
+  }, [files]);
 
   return (
     <Box
@@ -102,7 +104,7 @@ const UploadImageFiles = ({ files, handleFiles }: UploadImageFilesProps) => {
           </ul>
         </Stack>
         <div className="text-14 text-gray-800">
-          총 {files.length}개의 파일 122.35KB
+          총 {files.length}개의 파일 {totalSize}KB
         </div>
         <Stack>
           {files.length !== 0 && <Divider sx={{ my: '4px' }} />}
