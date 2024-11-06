@@ -29,6 +29,7 @@ import { DevTool } from '@hookform/devtools';
 import { SEND_TYPE } from '@/constants/sendTypes';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { dayjs } from '@/lib/dayjs';
+import { UploadImageFiles } from './UploadImageFiles';
 
 interface SMSFormData {
   subject?: string;
@@ -80,7 +81,14 @@ const SMSForm = ({
   const [scheduledDateErrorMessage, setScheduledDateErrorMessage] =
     useState<string>('');
 
+  const [files, setFiles] = React.useState<File[]>([]);
+
   const handleSMSMode = (value: string) => {
+    if (files.length !== 0) {
+      setIsSMSMode(false);
+      toast.info('MMS로 전환됩니다.', { duration: 1000 });
+      return;
+    }
     if (!watch('subject')) {
       if (isSMSMode && calculateByteLength(value) > 80) {
         setIsSMSMode(false);
@@ -167,6 +175,7 @@ const SMSForm = ({
           ...data,
           scheduleType: data.scheduleType === 'y' ? 1 : 0,
           sendDate: data.scheduleType === 'y' ? scheduledDate : null,
+          messageFileList: files,
         };
         sendSMSSelectedUsers(formData)
           .then((result) => {
@@ -232,7 +241,7 @@ const SMSForm = ({
 
   useEffect(() => {
     setMessageType(isSMSMode ? 'sms' : 'mms');
-  }, [isSMSMode]);
+  }, [isSMSMode, files]);
 
   return (
     <Box
@@ -374,7 +383,8 @@ const SMSForm = ({
                 control={control}
                 name="content"
                 rules={{
-                  required: '보낼 메시지를 입력해 주세요.',
+                  required:
+                    files.length === 0 && '보낼 메시지를 입력해 주세요.',
                 }}
                 render={({ field }) => (
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -416,6 +426,18 @@ const SMSForm = ({
                         </span>
                       </Box>
                       <SMSTemplateInfo />
+                      <Divider
+                        orientation="vertical"
+                        sx={{ minHeight: '254px', ml: 2 }}
+                      />
+                      <UploadImageFiles
+                        files={files}
+                        handleFiles={(newFiles: File[]) =>
+                          setFiles((prevFiles) => {
+                            return [...prevFiles, ...newFiles];
+                          })
+                        }
+                      />
                     </Box>
                   </Box>
                 )}

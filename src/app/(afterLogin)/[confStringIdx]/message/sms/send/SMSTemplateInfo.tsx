@@ -10,9 +10,11 @@ const SMSTemplateInfo = () => {
     <Box
       sx={{
         ml: 2,
-        px: 3,
-        py: 5,
+        px: 2,
+        pt: 2,
         borderRadius: '12px',
+        maxWidth: '272px',
+        boxShadow: '0px 9px 46px 0px #00000014',
       }}
     >
       <div className="mb-16 leading-20 text-stone-600">
@@ -23,7 +25,7 @@ const SMSTemplateInfo = () => {
           자동 입력 지원
         </span>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col text-14">
         <span>
           메세지에 오른쪽과 같이 입력하면 자동 변환되어 정보가 표기됩니다.
         </span>

@@ -38,6 +38,8 @@ const SelectUsers = ({
     reValidateMode: 'onSubmit',
   });
 
+  const [hasSearched, setHasSearched] = useState<boolean>(false);
+
   // 이름, 휴대폰번호로 검색 된 유저
   const [searchedUserList, setSearchedUserList] = useState<
     getUsersWithNameOrPhoneResponse[]
@@ -72,6 +74,7 @@ const SelectUsers = ({
   // const [searchParamError, setSearchParamError] = useState<boolean>(false);
 
   const handleSearchUser = (data: SMSSelectUserFormData) => {
+    setHasSearched(true);
     getUsersWithNameOrPhone(data).then((result) => {
       setSearchedUserList(result.content as getUsersWithNameOrPhoneResponse[]);
       return result.content;
@@ -181,6 +184,12 @@ const SelectUsers = ({
                     {selected.size === 0 ? '' : `${selected.size}명 `}
                     선택 추가
                   </Button>
+                </div>
+              </Box>
+            ) : hasSearched ? (
+              <Box sx={{ width: '100%' }}>
+                <div className="text-14 leading-16 my-8">
+                  검색된 회원이 없습니다.
                 </div>
               </Box>
             ) : null}

@@ -24,7 +24,7 @@ export const getTotalUserAmount = (
 ): Promise<ResponseMessageVo<any>> => {
   logger.debug('<getTotalUserAmount> params ', searchParam);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/message/attendee/filter-count`, {
+    .post(`/api/pco/admin/total/top/message/attendee/filtered-count`, {
       searchParam,
     })
     .then((response) => {
@@ -41,11 +41,23 @@ export const getTotalUserAmount = (
 export const sendSMSFilteredUsers = (
   data: sendSMSFilteredUsersRequest
 ): Promise<ResponseMessageVo<any>> => {
-  logger.debug('<sendSMSFilteredUsers> params ', data);
+  logger.debug('<sendSMSFilteredUsers> params ', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/message/attendee/send-filtered`, {
-      ...data,
-    })
+    .post(
+      `/api/pco/admin/total/top/message/attendee/send-filtered`,
+      {
+        ...data,
+      },
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
     .then((response) => {
       logger.debug('<sendSMSFilteredUsers> response.data : ', response.data);
       return response.data;
@@ -154,9 +166,17 @@ export const sendSMSSelectedUsers = (
 ): Promise<ResponseMessageVo<any>> => {
   logger.debug('<sendSMSSelectedUsers> params ', data);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/message/attendee/send-selected`, {
-      ...data,
-    })
+    .post(
+      `/api/pco/admin/total/top/message/attendee/send-selected`,
+      {
+        ...data,
+      },
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
     .then((response) => {
       logger.debug('<sendSMSSelectedUsers> response.data : ', response.data);
       return response.data;
