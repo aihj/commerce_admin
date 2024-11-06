@@ -136,6 +136,7 @@ const SMSForm = ({
         }
 
         const formData = {
+          conferenceIdx,
           searchParamJson: JSON.stringify(searchParam),
           messageType,
           ...data,

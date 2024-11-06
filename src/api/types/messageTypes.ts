@@ -13,6 +13,7 @@ interface sendSMSRequest {
 export interface sendSMSFilteredUsersRequest extends sendSMSRequest {
   // searchParamJson: Filter;
   searchParamJson: string;
+  conferenceIdx: number;
 }
 
 export interface sendSMSTestRequest extends sendSMSRequest {
