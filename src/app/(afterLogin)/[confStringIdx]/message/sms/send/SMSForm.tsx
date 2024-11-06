@@ -18,6 +18,7 @@ import { Filter } from './Filters';
 import { SMSTemplateInfo } from './SMSTemplateInfo';
 import { toast } from '@/components/core/Toaster';
 import {
+  sendSMSDirectlyAddedUsers,
   sendSMSFilteredUsers,
   sendSMSSelectedUsers,
   sendSMSTest,
@@ -30,6 +31,7 @@ import { SEND_TYPE } from '@/constants/sendTypes';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { dayjs } from '@/lib/dayjs';
 import { UploadImageFiles } from './UploadImageFiles';
+import { DirectUser } from '@/types/user';
 
 interface SMSFormData {
   subject?: string;
@@ -46,6 +48,7 @@ interface SMSFormData {
 interface SMSFormProps {
   searchParam: Filter;
   searchedUsers: number[];
+  addedUsers: DirectUser[];
   sendType: SEND_TYPE;
   conferenceIdx: number;
   setSearchParamError: (value: boolean) => void;
@@ -59,6 +62,7 @@ const dummySender = [
 const SMSForm = ({
   searchParam,
   searchedUsers,
+  addedUsers,
   conferenceIdx,
   setSearchParamError,
   sendType,
@@ -178,6 +182,46 @@ const SMSForm = ({
           messageFileList: files,
         };
         sendSMSSelectedUsers(formData)
+          .then((result) => {
+            if (result.status === 200) {
+              handleAlert('success');
+            }
+          })
+          .catch((error) => {
+            logger.error('<sendSMSFilteredUsers> error', error);
+            Swal.fire({
+              title: '문자 전송 실패',
+              text: `${error.response.data.message}`,
+            });
+          });
+      }
+    } else if (sendType === SEND_TYPE.DIRECT) {
+      if (addedUsers.length === 0) {
+        handleAlert('invalid');
+        setSearchParamError(true);
+      } else {
+        const userList = addedUsers.map((user) => {
+          return {
+            name: user.name === '-' ? '익명' : user.name,
+            phone: user.phone.replace(/[^0-9-]/g, ''),
+          };
+        });
+        setSearchParamError(false);
+        // api
+
+        if (touchedFields.subject && dirtyFields.subject) {
+          delete data['subject'];
+        }
+        const formData = {
+          conferenceIdx,
+          userListJson: JSON.stringify(userList),
+          messageType,
+          ...data,
+          scheduleType: data.scheduleType === 'y' ? 1 : 0,
+          sendDate: data.scheduleType === 'y' ? scheduledDate : null,
+          messageFileList: files,
+        };
+        sendSMSDirectlyAddedUsers(formData)
           .then((result) => {
             if (result.status === 200) {
               handleAlert('success');

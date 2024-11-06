@@ -133,6 +133,7 @@ const SMSSend = () => {
       <SMSForm
         searchParam={searchFilterParam}
         searchedUsers={searchedUsers}
+        addedUsers={addedUsers}
         sendType={sendType}
         conferenceIdx={conferenceIdx as number}
         setSearchParamError={(value: boolean) => setSearchParamError(value)}

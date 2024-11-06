@@ -12,6 +12,7 @@ import {
   getUsersWithNameOrPhoneRequest,
   getUsersWithNameOrPhoneResponse,
   sendSMSSelectedUsersRequest,
+  sendSMSDirectlyAddedUsersRequest,
 } from './types/messageTypes';
 import { SMSListFiltersType } from '@/app/(afterLogin)/[confStringIdx]/message/sms/list/SMSListFilters';
 
@@ -179,6 +180,36 @@ export const sendSMSSelectedUsers = (
     )
     .then((response) => {
       logger.debug('<sendSMSSelectedUsers> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 직접 추가한 대상에게 문자 전송
+ * @param sendSMSDirectlyAddedUsersRequest
+ * @returns
+ */
+export const sendSMSDirectlyAddedUsers = (
+  data: sendSMSDirectlyAddedUsersRequest
+): Promise<ResponseMessageVo<any>> => {
+  logger.debug('<sendSMSDirectlyAddedUsers> params ', data);
+  return adminAxiosInstance
+    .post(
+      `/api/pco/admin/total/top/message/send-manual`,
+      {
+        ...data,
+      },
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
+    .then((response) => {
+      logger.debug(
+        '<sendSMSDirectlyAddedUsers> response.data : ',
+        response.data
+      );
       return response.data;
     });
 };

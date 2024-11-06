@@ -74,9 +74,9 @@ const SelectUsers = ({
   // const [searchParamError, setSearchParamError] = useState<boolean>(false);
 
   const handleSearchUser = (data: SMSSelectUserFormData) => {
-    setHasSearched(true);
     getUsersWithNameOrPhone(data).then((result) => {
       setSearchedUserList(result.content as getUsersWithNameOrPhoneResponse[]);
+      setHasSearched(true);
       return result.content;
     });
   };

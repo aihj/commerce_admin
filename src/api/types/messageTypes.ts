@@ -25,6 +25,11 @@ export interface sendSMSSelectedUsersRequest extends sendSMSRequest {
   wuserListJson: string;
 }
 
+export interface sendSMSDirectlyAddedUsersRequest extends sendSMSRequest {
+  conferenceIdx: number;
+  userListJson: string;
+}
+
 export enum TASK_STATUS {
   inInProgress = 'in_progress',
   inInComplete = 'interior_complete',
