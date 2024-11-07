@@ -214,6 +214,11 @@ export const sendSMSDirectlyAddedUsers = (
     });
 };
 
+/**
+ * 문자 발송 내역 상세페이지에서 전송결과 엑셀다운로드
+ * @param letterIdx
+ * @returns
+ */
 export const downloadSendedUsers = (
   letterIdx: string
 ): Promise<ResponseMessageVo<null>> => {
@@ -226,6 +231,11 @@ export const downloadSendedUsers = (
     });
 };
 
+/**
+ * 문자 발송 중일때, 즉시 발동 중단
+ * @param letterIdx
+ * @returns
+ */
 export const stopSendingMessage = (
   letterIdx: string
 ): Promise<ResponseMessageVo<null>> => {
