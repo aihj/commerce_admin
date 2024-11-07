@@ -213,3 +213,27 @@ export const sendSMSDirectlyAddedUsers = (
       return response.data;
     });
 };
+
+export const downloadSendedUsers = (
+  letterIdx: string
+): Promise<ResponseMessageVo<null>> => {
+  logger.debug('<downloadSendedUsers>');
+  return adminAxiosInstance
+    .get(`/api/pco/admin/total/middle/message/${letterIdx}/excel-download`)
+    .then((response) => {
+      logger.debug('<downloadSendedUsers> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+export const stopSendingMessage = (
+  letterIdx: string
+): Promise<ResponseMessageVo<null>> => {
+  logger.debug('<stopSendingMessage> params ', letterIdx);
+  return adminAxiosInstance
+    .get(`/api/pco/admin/total/top/message/stop/${letterIdx}`)
+    .then((response) => {
+      logger.debug('<stopSendingMessage> response.data : ', response.data);
+      return response.data;
+    });
+};

@@ -72,10 +72,17 @@ export interface SMSDetailListDT {
   smsMsgId?: number | null;
   mmsMsgId?: number | null;
   receiverWuserIdx: number;
-  phone: string;
-  name: string;
+  receiverPhoneNumber: string;
+  receiverName: string;
   resultCode: string;
   resultDescription?: string;
+}
+
+export interface SMSUploadedImages {
+  fileOriginName: string;
+  fileSize: number;
+  fileStatus: string;
+  fileTotalPath: string;
 }
 
 export interface getSMSDetailRequest extends TableSearchParams {
@@ -100,6 +107,8 @@ export interface getSMSDetailResponse {
   messageType: string;
   receiverInfo: string;
   letterItemList: SMSDetailListDT[];
+  letterFileList: SMSUploadedImages[];
+  taskStatus: string;
 }
 
 export interface resendFailedUserRequest {

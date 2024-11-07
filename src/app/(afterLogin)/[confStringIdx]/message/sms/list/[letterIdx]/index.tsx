@@ -6,10 +6,15 @@ import { Box, Button, Card, Divider, Stack, TextField } from '@mui/material';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { PageTitle } from '@/components/core/PageTitle';
-import { getSMSDetailResponse } from '@/api/types/messageTypes';
+import { TASK_STATUS, getSMSDetailResponse } from '@/api/types/messageTypes';
 import { Label } from '@/components/core/Label';
 import { numberWithComma } from '@/lib/numberWithComma';
-import { getSMSDetail, resendFailedUser } from '@/api/messageApi';
+import {
+  downloadSendedUsers,
+  getSMSDetail,
+  resendFailedUser,
+  stopSendingMessage,
+} from '@/api/messageApi';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
@@ -203,9 +208,46 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
     });
   };
 
+  const handleExcelDownload = () => {
+    downloadSendedUsers(letterIdx);
+  };
+
+  const handleStopSend = () => {
+    Swal.fire({
+      title: '문자 발송 취소',
+      html: `<div style=text-align:left;margin:auto;width:400px;>
+    <div style=word-break:keep-all;>
+      전송중이던 문자 중 아직 발송되지 않은 문자의 발송을 취소합니다.
+    </div>
+    <ul style=list-style:disc;list-style-position:inside;padding-left:8px;padding-top:10px;>
+      <li>이미 발송된 문자는 취소할 수 없습니다.</li>
+      <li>문자 발송 내역을 참조해 주세요.</li>
+    </ul>
+  </div>`,
+      confirmButtonText: '발송 취소하기',
+      showCancelButton: true,
+      cancelButtonText: '닫기',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setIsPending(true);
+        stopSendingMessage(letterIdx)
+          .then((result) => {
+            return result;
+          })
+          .catch((error) => {
+            logger.error(error);
+          })
+          .finally(() => {
+            setIsPending(false);
+          });
+      }
+    });
+  };
+
   if (error) {
     logger.error(error);
-    return <div>Error</div>;
+    return <div>Error: {error.message}</div>;
   }
 
   return (
@@ -277,7 +319,16 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                 <Divider />
                 <Box sx={{ display: 'flex', flex: 1 }}>
                   <Label label="발송 완료 일시" minWidth={100} bold />
-                  <span className="text-14">{data.completeDate}</span>
+                  <span className="text-14">
+                    {data.completeDate
+                      ? data.completeDate
+                      : data.taskStatus ===
+                          (TASK_STATUS.apiInProgress ||
+                            TASK_STATUS.inInComplete ||
+                            TASK_STATUS.inInProgress)
+                        ? '발송중'
+                        : '-'}
+                  </span>
                 </Box>
                 <Divider />
                 <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
@@ -352,28 +403,69 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
             </Card>
             <Divider />
             <Card sx={{ flex: 3 }}>
-              <Stack
-                spacing={2}
-                direction="row"
-                sx={{ m: 2, justifyContent: 'flex-end' }}
-              >
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => handleAllFailedResend()}
-                  disabled={data.failureCount === 0}
+              {data.taskStatus === 'api_complete' ? (
+                <Stack
+                  spacing={2}
+                  direction="row"
+                  sx={{ m: 2, justifyContent: 'flex-end' }}
                 >
-                  실패 일괄 재발송
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={() => handleSelectedFailedResend()}
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => handleExcelDownload()}
+                    // disabled={data.failureCount === 0}
+                  >
+                    엑셀 다운로드
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => handleAllFailedResend()}
+                    disabled={data.failureCount === 0}
+                  >
+                    실패 일괄 재발송
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => handleSelectedFailedResend()}
+                  >
+                    선택 재발송
+                    {selectedUser.length !== 0 && `(${selectedUser.length})`}
+                  </Button>
+                </Stack>
+              ) : (
+                <Stack
+                  spacing={2}
+                  direction="row"
+                  sx={{ m: 2, justifyContent: 'flex-end' }}
                 >
-                  선택 재발송
-                  {selectedUser.length !== 0 && `(${selectedUser.length})`}
-                </Button>
-              </Stack>
+                  {data.taskStatus === 'schedule' ? null : (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => handleStopSend()}
+                      disabled={data.failureCount === 0}
+                    >
+                      즉시 발송 취소
+                    </Button>
+                  )}
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() =>
+                      getSMSDetail({ ...cSearchParams, letterIdx }).then(
+                        (result) => {
+                          return result.content as getSMSDetailResponse;
+                        }
+                      )
+                    }
+                  >
+                    새로고침
+                    {selectedUser.length !== 0 && `(${selectedUser.length})`}
+                  </Button>
+                </Stack>
+              )}
               <SMSDetailList
                 data={data.letterItemList}
                 cSearchParams={cSearchParams as TableSearchParams}

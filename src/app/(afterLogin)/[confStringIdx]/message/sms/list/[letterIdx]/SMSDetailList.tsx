@@ -33,10 +33,15 @@ const SMSDetailList = <T extends object>({
     useSelection(smsDetailIds);
 
   const columns = [
-    { formatter: (row): JSX.Element => <Box>{row.name}</Box>, name: '이름' },
+    {
+      formatter: (row): JSX.Element => <Box>{row.receiverName}</Box>,
+      name: '이름',
+    },
     {
       formatter: (row): JSX.Element => (
-        <Box>{showPhoneWithHyphen(row.phone.toString())}</Box>
+        <Box>
+          {showPhoneWithHyphen(row.receiverPhoneNumber?.toString() || '')}
+        </Box>
       ),
       name: '휴대폰 번호',
     },
