@@ -8,7 +8,7 @@ pipelines:
   #       script:
   #         - echo 'Medistaff Admin'
 
-  branches:
+  custom:
     develop:
       - step:
           name: Development Deploy

@@ -37,6 +37,7 @@ export enum TASK_STATUS {
   apiInProgress = 'api_in_progress',
   complete = 'api_complete',
   failure = 'interior_fail',
+  schedule = 'schedule',
 }
 
 export const taskStatusLabels = {
@@ -45,6 +46,7 @@ export const taskStatusLabels = {
   [TASK_STATUS.apiInProgress]: '발송중',
   [TASK_STATUS.complete]: '발송완료',
   [TASK_STATUS.failure]: '발송실패',
+  [TASK_STATUS.schedule]: '예약',
 };
 
 export interface LetterDtResponse {
@@ -61,6 +63,7 @@ export interface LetterDtResponse {
   taskStatus: TASK_STATUS;
   senderWuserIdx?: number;
   messageType: string;
+  hasFile: boolean;
 }
 
 export interface SMSDetailListDT {
