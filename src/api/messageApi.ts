@@ -219,27 +219,15 @@ export const sendSMSDirectlyAddedUsers = (
  * @param letterIdx
  * @returns
  */
-export const downloadSendedUsers = (letterIdx: string) => {
+export const downloadSendedUsers = (
+  letterIdx: string
+): Promise<ResponseMessageVo<null>> => {
   logger.debug('<downloadSendedUsers>');
   return adminAxiosInstance
-    .get(`/api/pco/admin/total/middle/message/${letterIdx}/excel-download`, {
-      headers: {
-        Accept:
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      },
-      responseType: 'blob',
-    })
+    .get(`/api/pco/admin/total/middle/message/${letterIdx}/excel-download`)
     .then((response) => {
+      logger.debug('<downloadSendedUsers> response.data : ', response.data);
       return response.data;
-    }) // Receive the file as a Blob
-    .then((blob) => {
-      // Create a download link
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob); // Create an object URL for the Blob
-      link.click(); // Trigger the download
-    })
-    .catch((error) => {
-      console.error('Error downloading file:', error);
     });
 };
 
