@@ -36,6 +36,7 @@ import { toast } from '@/components/core/Toaster';
 import { CustomTooltip } from '@/components/CustomTooltip';
 import { CHIP_COLOR, Chip } from '@/components/core/Chip';
 import { setTaskStatusChipColor } from '@/lib/chipColors';
+import { ImageIcon } from '@/components/icons/ImageIcon';
 
 const SMSList = () => {
   const [failModalOpen, setFailModalOpen] = useState<boolean>(false);
@@ -163,6 +164,13 @@ const SMSList = () => {
               label={info.row.original.messageType?.toUpperCase()}
             />
           </DTCellBox>
+        ),
+        size: 80,
+      }),
+      columnHelper.accessor('hasFile', {
+        header: '첨부파일',
+        cell: (info) => (
+          <DTCellBox>{info.getValue() ? <ImageIcon /> : <></>}</DTCellBox>
         ),
         size: 80,
       }),
