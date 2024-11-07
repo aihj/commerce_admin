@@ -2,12 +2,6 @@ image:
   name: atlassian/default-image:2
 
 pipelines:
-  # default:
-  #   - step:
-  #       name: Medistaff Admin
-  #       script:
-  #         - echo 'Medistaff Admin'
-
   custom:
     develop:
       - step:
@@ -30,9 +24,7 @@ pipelines:
             - IMAGE=$AWS_ECR_REGISTRY/$ECR_REPOSITORY
             - TAG=$BITBUCKET_COMMIT
 
-            - docker build --build-arg APP_ENV=$APP_ENV --build-arg IMAGE=$IMAGE --build-arg TAG=$TAG \
---no-cache --progress=plain -t $IMAGE:latest -t $IMAGE:$TAG .
-
+            - docker build --build-arg APP_ENV=$APP_ENV --build-arg IMAGE=$IMAGE --build-arg TAG=$TAG --no-cache --progress=plain -t $IMAGE:latest -t $IMAGE:$TAG .
 
             - docker push $AWS_ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
