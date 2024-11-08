@@ -87,6 +87,15 @@ const SMSForm = ({
 
   const [files, setFiles] = React.useState<File[]>([]);
 
+  const [checkPossibleToSend, setCheckPossibleToSend] = useState<boolean>(true);
+
+  const handlePossibleToSend = () => {
+    setCheckPossibleToSend(false);
+    setTimeout(() => {
+      setCheckPossibleToSend(true);
+    }, 60000);
+  };
+
   const handleSMSMode = (value: string) => {
     if (!watch('subject')) {
       if (isSMSMode && calculateByteLength(value) > 80) {
@@ -148,6 +157,7 @@ const SMSForm = ({
           .then((result) => {
             if (result.status === 200) {
               handleAlert('success');
+              handlePossibleToSend();
             }
           })
           .catch((error) => {
@@ -182,6 +192,7 @@ const SMSForm = ({
           .then((result) => {
             if (result.status === 200) {
               handleAlert('success');
+              handlePossibleToSend();
             }
           })
           .catch((error) => {
@@ -222,6 +233,7 @@ const SMSForm = ({
           .then((result) => {
             if (result.status === 200) {
               handleAlert('success');
+              handlePossibleToSend();
             }
           })
           .catch((error) => {
@@ -662,6 +674,7 @@ const SMSForm = ({
               variant="contained"
               color="primary"
               type="submit"
+              disabled={!checkPossibleToSend}
             >
               문자 전송하기
             </Button>
