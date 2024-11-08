@@ -89,13 +89,6 @@ const SMSForm = ({
 
   const [checkPossibleToSend, setCheckPossibleToSend] = useState<boolean>(true);
 
-  const handlePossibleToSend = () => {
-    setCheckPossibleToSend(false);
-    setTimeout(() => {
-      setCheckPossibleToSend(true);
-    }, 60000);
-  };
-
   const handleSMSMode = (value: string) => {
     if (!watch('subject')) {
       if (isSMSMode && calculateByteLength(value) > 80) {
@@ -133,6 +126,7 @@ const SMSForm = ({
         return;
       }
     }
+    setCheckPossibleToSend(false);
     if (sendType === SEND_TYPE.FILTER) {
       if (Object.keys(searchParam).length === 0) {
         handleAlert('invalid');
@@ -157,7 +151,6 @@ const SMSForm = ({
           .then((result) => {
             if (result.status === 200) {
               handleAlert('success');
-              handlePossibleToSend();
             }
           })
           .catch((error) => {
@@ -166,6 +159,9 @@ const SMSForm = ({
               title: '문자 전송 실패',
               text: `${error.response.data.message}`,
             });
+          })
+          .finally(() => {
+            setCheckPossibleToSend(true);
           });
       }
     } else if (sendType === SEND_TYPE.USER) {
@@ -192,7 +188,6 @@ const SMSForm = ({
           .then((result) => {
             if (result.status === 200) {
               handleAlert('success');
-              handlePossibleToSend();
             }
           })
           .catch((error) => {
@@ -201,6 +196,9 @@ const SMSForm = ({
               title: '문자 전송 실패',
               text: `${error.response.data.message}`,
             });
+          })
+          .finally(() => {
+            setCheckPossibleToSend(true);
           });
       }
     } else if (sendType === SEND_TYPE.DIRECT) {
@@ -233,7 +231,6 @@ const SMSForm = ({
           .then((result) => {
             if (result.status === 200) {
               handleAlert('success');
-              handlePossibleToSend();
             }
           })
           .catch((error) => {
@@ -242,6 +239,9 @@ const SMSForm = ({
               title: '문자 전송 실패',
               text: `${error.response.data.message}`,
             });
+          })
+          .finally(() => {
+            setCheckPossibleToSend(true);
           });
       }
     }
