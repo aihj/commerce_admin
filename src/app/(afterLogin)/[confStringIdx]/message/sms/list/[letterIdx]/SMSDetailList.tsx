@@ -52,9 +52,17 @@ const SMSDetailList = <T extends object>({
             color={
               row.resultCode === 'success'
                 ? CHIP_COLOR.primary
-                : CHIP_COLOR.error
+                : row.resultCode === 'schedule'
+                  ? CHIP_COLOR.neutral
+                  : CHIP_COLOR.error
             }
-            label={row.resultCode === 'success' ? '성공' : '실패'}
+            label={
+              row.resultCode === 'success'
+                ? '성공'
+                : row.resultCode === 'schedule'
+                  ? '예약'
+                  : '실패'
+            }
           />
         </Box>
       ),
@@ -65,7 +73,9 @@ const SMSDetailList = <T extends object>({
         <Box>
           <CustomTooltip title={row.resultCode} placement="bottom">
             <button style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {row.resultCode === 'success' ? '-' : row.resultDescription}
+              {row.resultCode === ('success' || 'schedule')
+                ? '-'
+                : row.resultDescription}
             </button>
           </CustomTooltip>
         </Box>

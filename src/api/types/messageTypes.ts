@@ -109,6 +109,7 @@ export interface getSMSDetailResponse {
   letterItemList: SMSDetailListDT[];
   letterFileList: SMSUploadedImages[];
   taskStatus: string;
+  scheduleType: number;
 }
 
 export interface resendFailedUserRequest {

@@ -5,14 +5,11 @@ import { FileDropzone } from '@/components/core/FileUploader/FileDropzone';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import Swal from 'sweetalert2';
 import Image from 'next/image';
+import { bytesToKB } from '@/lib/byteToKB';
 
 type FileWithThumbnail = {
   fileName: string;
   thumbnail: string;
-};
-
-const bytesToKB = (bytes: number) => {
-  return (bytes / 1024).toFixed(2); // 소수점 둘째 자리까지 반올림
 };
 
 interface UploadImageFilesProps {

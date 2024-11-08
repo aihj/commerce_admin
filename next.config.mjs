@@ -6,6 +6,15 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'appfile.medistaff.co.kr',
+        port: '',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

@@ -112,7 +112,7 @@ const SMSList = () => {
         header: '발송완료일시',
         cell: (info) => (
           <DTCellBox>
-            <span>{info.getValue()}</span>
+            <span>{info.getValue() ? info.getValue() : '-'}</span>
           </DTCellBox>
         ),
       }),

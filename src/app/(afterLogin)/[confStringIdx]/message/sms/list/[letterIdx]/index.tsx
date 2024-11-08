@@ -2,9 +2,18 @@
 
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Box, Button, Card, Divider, Stack, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  Divider,
+  IconButton,
+  Stack,
+  TextField,
+} from '@mui/material';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
+import Image from 'next/image';
 import { PageTitle } from '@/components/core/PageTitle';
 import { TASK_STATUS, getSMSDetailResponse } from '@/api/types/messageTypes';
 import { Label } from '@/components/core/Label';
@@ -29,6 +38,8 @@ import {
 } from '@/constants/filterSelectOptions';
 import { Loading } from '@/components/core/Loading';
 import { SMSDetailList } from './SMSDetailList';
+import { bytesToKB } from '@/lib/byteToKB';
+import { DownloadIcon } from '@/components/icons/DownloadIcon';
 
 interface SMSSendDetailProps {
   letterIdx: string;
@@ -260,7 +271,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
       }}
     >
       <Loading open={isPending} />
-      {data?.content ? (
+      {data ? (
         <>
           <div>
             {/* TODO breadcrumbs */}
@@ -307,13 +318,20 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                   >
                     <Label label="실패 건수" minWidth={100} bold />
                     <span className="text-14">
-                      {numberWithComma(data.failureCount)}
+                      {data.failureCount
+                        ? numberWithComma(data.failureCount)
+                        : '-'}
                     </span>
                   </Box>
                 </Box>
                 <Divider />
-                <Box sx={{ display: 'flex', flex: 1 }}>
+                <Box sx={{ display: 'flex', flex: 1, alignItems: 'center' }}>
                   <Label label="발송 요청 일시" minWidth={100} bold />
+                  {data.scheduleType === 1 && (
+                    <span className="mr-4">
+                      <Chip label="예약" color={CHIP_COLOR.neutral} />
+                    </span>
+                  )}
                   <span className="text-14">{data.sendDate}</span>
                 </Box>
                 <Divider />
@@ -397,6 +415,52 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                         / {data.messageType === 'sms' ? '80byte' : '4000byte'}
                       </span>
                     </div>
+                    {data.letterFileList.length !== 0 && (
+                      <>
+                        <Label label="이미지 첨부" minWidth={100} />
+                        {data.letterFileList.map((file) => (
+                          <>
+                            <div
+                              key={file.fileOriginName}
+                              className="flex justify-between px-8 items-center"
+                            >
+                              <div className="flex gap-8">
+                                <div className="w-50 h-50">
+                                  <Image
+                                    src={file.fileTotalPath}
+                                    width={50}
+                                    height={50}
+                                    style={{ maxHeight: '100%' }}
+                                    alt={`thumbnail-${file.fileOriginName}`}
+                                  />
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-14">
+                                    {file.fileOriginName}
+                                  </span>
+                                  <span className="text-12 text-gray-700">
+                                    {bytesToKB(file.fileSize)}KB
+                                  </span>
+                                </div>
+                              </div>
+                              <IconButton
+                                onClick={() => {
+                                  window.location.href = file.fileTotalPath;
+                                }}
+                                sx={{
+                                  padding: '4px',
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: 24,
+                                }}
+                              >
+                                <DownloadIcon size={16} />
+                              </IconButton>
+                            </div>
+                          </>
+                        ))}
+                      </>
+                    )}
                   </Box>
                 </Box>
               </Stack>
