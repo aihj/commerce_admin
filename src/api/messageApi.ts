@@ -252,7 +252,7 @@ export const stopSendingMessage = (
 ): Promise<ResponseMessageVo<null>> => {
   logger.debug('<stopSendingMessage> params ', letterIdx);
   return adminAxiosInstance
-    .get(`/api/pco/admin/total/top/message/stop/${letterIdx}`)
+    .get(`/api/pco/admin/total/top/message/${letterIdx}/stop`)
     .then((response) => {
       logger.debug('<stopSendingMessage> response.data : ', response.data);
       return response.data;

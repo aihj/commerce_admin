@@ -162,7 +162,7 @@ const SMSListFilters = ({
       {hasFilters(cSearchParams) ? (
         <Button
           sx={{ px: 2, py: 1 }}
-          startIcon={<ResetIcon />}
+          startIcon={<ResetIcon className="fill-white" />}
           onClick={() => deleteSearchParams()}
           variant="contained"
           color="secondary"

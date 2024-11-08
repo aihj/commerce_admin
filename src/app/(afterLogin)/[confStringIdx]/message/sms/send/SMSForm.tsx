@@ -292,6 +292,12 @@ const SMSForm = ({
     setMessageType(isSMSMode ? 'sms' : 'mms');
   }, [isSMSMode, files]);
 
+  useEffect(() => {
+    if (errors.memo) {
+      window.scrollTo(0, 100);
+    }
+  }, [errors]);
+
   return (
     <Box
       sx={{

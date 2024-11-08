@@ -40,6 +40,8 @@ import { Loading } from '@/components/core/Loading';
 import { SMSDetailList } from './SMSDetailList';
 import { bytesToKB } from '@/lib/byteToKB';
 import { DownloadIcon } from '@/components/icons/DownloadIcon';
+import { ResetIcon } from '@/components/icons/ResetIcon';
+import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 
 interface SMSSendDetailProps {
   letterIdx: string;
@@ -154,12 +156,16 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
 
   const [selectedUser, setSelectedUser] = useState<number[]>([]);
 
-  const { error, data } = useQuery({
+  const { error, data, refetch } = useQuery({
     queryKey: ['getSMSDetail', letterIdx],
     queryFn: () =>
-      getSMSDetail({ ...cSearchParams, letterIdx }).then((result) => {
-        return result.content as getSMSDetailResponse;
-      }),
+      getSMSDetail({ ...cSearchParams, letterIdx })
+        .then((result) => {
+          return result.content as getSMSDetailResponse;
+        })
+        .finally(() => {
+          setIsPending(false);
+        }),
   });
 
   const handleAllFailedResend = () => {
@@ -247,6 +253,10 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
             return result;
           })
           .catch((error) => {
+            Swal.fire({
+              title: '문자 발송 중지 실패',
+              html: '문자 발송 중지를 실패했습니다.<br/>관리자에게 문의해주세요.',
+            });
             logger.error(error);
           })
           .finally(() => {
@@ -477,6 +487,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                     variant="contained"
                     color="secondary"
                     onClick={() => handleExcelDownload()}
+                    startIcon={<DownloadIcon fill="white" />}
                     // disabled={data.failureCount === 0}
                   >
                     엑셀 다운로드
@@ -509,21 +520,19 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                       variant="contained"
                       color="secondary"
                       onClick={() => handleStopSend()}
-                      disabled={data.failureCount === 0}
+                      startIcon={<XIcon />}
                     >
                       즉시 발송 취소
                     </Button>
                   )}
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     color="primary"
-                    onClick={() =>
-                      getSMSDetail({ ...cSearchParams, letterIdx }).then(
-                        (result) => {
-                          return result.content as getSMSDetailResponse;
-                        }
-                      )
-                    }
+                    startIcon={<ResetIcon className="fill-white" />}
+                    onClick={() => {
+                      setIsPending(true);
+                      refetch();
+                    }}
                   >
                     새로고침
                     {selectedUser.length !== 0 && `(${selectedUser.length})`}
