@@ -19,11 +19,13 @@ import React, { useState } from 'react';
 interface AddUserDirectlyProps {
   addedUsers: DirectUser[];
   handleAddedUser: (user: DirectUser[]) => void;
+  searchParamError: boolean;
 }
 
 const AddUserDirectly = ({
   addedUsers,
   handleAddedUser,
+  searchParamError,
 }: AddUserDirectlyProps) => {
   const [phone, setPhone] = useState<string>('');
   const [isPhoneError, setIsPhoneError] = useState<boolean>(false);
@@ -150,38 +152,34 @@ const AddUserDirectly = ({
       <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
         <Label label="전송 대상*" minWidth={100} bold />
         <Box>
-          <span className="text-14 font-bold">총 {addedUsers.length}명</span>
-          <div
-            className="flex flex-col gap-8 py-10 overflow-y-auto text-14 font-medium"
-            style={{ maxHeight: 250, width: 240 }}
-          >
-            {addedUsers.map((item, index) => (
-              <div className="flex items-center" key={item.phone}>
-                <IconButton onClick={() => handleRemoveUser(index)}>
-                  <CheckBoxMinusIcon />
-                </IconButton>
-                <span>
-                  {item.phone}, {item.name}
-                </span>
+          {addedUsers.length > 0 ? (
+            <span
+              className={`text-14 leading-18 h-26 ${searchParamError && 'text-error-main'}`}
+            >
+              회원을 선택하여 전송대상을 추가해 주세요.
+            </span>
+          ) : (
+            <>
+              <span className="text-14 font-bold">
+                총 {addedUsers.length}명
+              </span>
+              <div
+                className="flex flex-col gap-8 py-10 overflow-y-auto text-14 font-medium"
+                style={{ maxHeight: 250, width: 240 }}
+              >
+                {addedUsers.map((item, index) => (
+                  <div className="flex items-center" key={item.phone}>
+                    <IconButton onClick={() => handleRemoveUser(index)}>
+                      <CheckBoxMinusIcon />
+                    </IconButton>
+                    <span>
+                      {item.phone}, {item.name}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
-
-            {/* {selectedUser.map((item) => (
-              <Chip
-                key={item.wuserIdx}
-                label={`${item.name} ${showPhoneWithHyphen(item.phone)}`}
-                type="soft"
-                color={CHIP_COLOR.secondary}
-                onDelete={() =>
-                  setSelectedUser(() =>
-                    selectedUser.filter(
-                      ({ wuserIdx }) => item.wuserIdx !== wuserIdx
-                    )
-                  )
-                }
-              />
-            ))} */}
-          </div>
+            </>
+          )}
         </Box>
       </Box>
     </Stack>

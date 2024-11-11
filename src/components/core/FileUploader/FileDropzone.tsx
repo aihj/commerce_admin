@@ -32,6 +32,7 @@ export function FileDropzone({
           flexWrap: 'wrap',
           justifyContent: 'center',
           outline: 'none',
+          borderRadius: '20px',
           ...(isDragActive && {
             bgcolor: 'var(--mui-palette-action-selected)',
             opacity: 0.5,
@@ -39,6 +40,7 @@ export function FileDropzone({
           '&:hover': {
             ...(!isDragActive && {
               bgcolor: 'var(--mui-palette-action-hover)',
+              borderRadius: '20px',
             }),
           },
         }}

@@ -19,6 +19,7 @@ import { SMSTemplateInfo } from './SMSTemplateInfo';
 import { toast } from '@/components/core/Toaster';
 import {
   sendSMSDirectlyAddedUsers,
+  sendSMSExcelUploadedUsers,
   sendSMSFilteredUsers,
   sendSMSSelectedUsers,
   sendSMSTest,
@@ -31,7 +32,8 @@ import { SEND_TYPE } from '@/constants/sendTypes';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { dayjs } from '@/lib/dayjs';
 import { UploadImageFiles } from './UploadImageFiles';
-import { DirectUser } from '@/types/user';
+import { DirectUser, ExcelUploadedUser } from '@/types/user';
+import { sendSMSDirectlyAddedUsersRequest } from '@/api/types/messageTypes';
 
 interface SMSFormData {
   subject?: string;
@@ -49,6 +51,7 @@ interface SMSFormProps {
   searchParam: Filter;
   searchedUsers: number[];
   addedUsers: DirectUser[];
+  excelUploadedUser: ExcelUploadedUser[];
   sendType: SEND_TYPE;
   conferenceIdx: number;
   setSearchParamError: (value: boolean) => void;
@@ -63,6 +66,7 @@ const SMSForm = ({
   searchParam,
   searchedUsers,
   addedUsers,
+  excelUploadedUser,
   conferenceIdx,
   setSearchParamError,
   sendType,
@@ -102,6 +106,22 @@ const SMSForm = ({
     }
   };
 
+  const sendSMSExcelType = (data: sendSMSDirectlyAddedUsersRequest) => {
+    sendSMSExcelUploadedUsers(data)
+      .then((result) => {
+        if (result.status === 200) {
+          handleAlert('success');
+        }
+      })
+      .catch((error) => {
+        logger.error('<sendSMSFilteredUsers> error', error);
+        handleAlert('fail');
+      })
+      .finally(() => {
+        setCheckPossibleToSend(true);
+      });
+  };
+
   const handleAlert = (type: string) => {
     switch (type) {
       case 'invalid':
@@ -112,8 +132,14 @@ const SMSForm = ({
         return;
       case 'success':
         Swal.fire({
-          title: '문자 전송 완료',
-          text: '문자 전송이 완료되었습니다.',
+          title: '문자 전송 요청 완료',
+          html: `<div>문자 발송을 요청했습니다.<br/>요청된 개수에 따라 문자 발송 완료까지 시간이 걸릴 수 있으며, 자세한 내용은 문자 발송 상세내역을 참조해 주세요.<br/>(닫기 선택 시, 작성중이던 페이지로 다시 돌아갑니다.)</div>`,
+        });
+        return;
+      case 'fail':
+        Swal.fire({
+          title: '문자 보내기 실패',
+          html: `문자 발송 요청 완료되었습니다.`,
         });
         return;
     }
@@ -155,10 +181,7 @@ const SMSForm = ({
           })
           .catch((error) => {
             logger.error('<sendSMSFilteredUsers> error', error);
-            Swal.fire({
-              title: '문자 전송 실패',
-              text: `${error.response.data.message}`,
-            });
+            handleAlert('fail');
           })
           .finally(() => {
             setCheckPossibleToSend(true);
@@ -192,10 +215,7 @@ const SMSForm = ({
           })
           .catch((error) => {
             logger.error('<sendSMSFilteredUsers> error', error);
-            Swal.fire({
-              title: '문자 전송 실패',
-              text: `${error.response.data.message}`,
-            });
+            handleAlert('fail');
           })
           .finally(() => {
             setCheckPossibleToSend(true);
@@ -235,14 +255,58 @@ const SMSForm = ({
           })
           .catch((error) => {
             logger.error('<sendSMSFilteredUsers> error', error);
-            Swal.fire({
-              title: '문자 전송 실패',
-              text: `${error.response.data.message}`,
-            });
+            handleAlert('fail');
           })
           .finally(() => {
             setCheckPossibleToSend(true);
           });
+      }
+    } else if (sendType === SEND_TYPE.EXCEL) {
+      if (excelUploadedUser.length === 0) {
+        handleAlert('invalid');
+        setSearchParamError(true);
+      } else {
+        const userList = excelUploadedUser.map((user) => {
+          return {
+            name: user.name === '-' ? '익명' : user.name,
+            phone: user.phone,
+          };
+        });
+        setSearchParamError(false);
+        // api
+
+        if (touchedFields.subject && dirtyFields.subject) {
+          delete data['subject'];
+        }
+        const formData = {
+          conferenceIdx,
+          userListJson: JSON.stringify(userList),
+          messageType,
+          ...data,
+          scheduleType: data.scheduleType === 'y' ? 1 : 0,
+          sendDate: data.scheduleType === 'y' ? scheduledDate : null,
+          messageFileList: files,
+        };
+        const hasErrorData = excelUploadedUser.filter(
+          (item) => item.isValid
+        ).length;
+        if (hasErrorData) {
+          Swal.fire({
+            title: '주소록 오류 확인',
+            html: `<div style=word-break:keep-all;>요청하신 ${excelUploadedUser.length}개 중 ${hasErrorData}건의 오류를 포함하여 전송 요청 하시겠습니까?<br/>
+            오류 데이터는 문자 전송이 되지 않으므로, 삭제 후 전송요청 하시기를 권합니다.</div>`,
+            showCancelButton: true,
+            cancelButtonText: '닫기',
+            confirmButtonText: '전송하기',
+            reverseButtons: true,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              sendSMSExcelType(formData);
+            }
+          });
+        } else {
+          sendSMSExcelType(formData);
+        }
       }
     }
   };

@@ -1,9 +1,13 @@
 import { SvgIcon } from '@mui/material';
 import { IconProps } from './IconProps';
 
-const DownloadIcon = ({ size = 24, fill = '#6C737F' }: IconProps) => {
+const DownloadIcon = ({
+  size = 24,
+  fill = '#6C737F',
+  className,
+}: IconProps) => {
   return (
-    <SvgIcon>
+    <SvgIcon className={className}>
       <svg
         width={size}
         height={size}

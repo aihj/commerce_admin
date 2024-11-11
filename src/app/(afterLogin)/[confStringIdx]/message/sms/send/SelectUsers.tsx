@@ -71,8 +71,6 @@ const SelectUsers = ({
     },
   ] satisfies ColumnDef<getUsersWithNameOrPhoneResponse>[];
 
-  // const [searchParamError, setSearchParamError] = useState<boolean>(false);
-
   const handleSearchUser = (data: SMSSelectUserFormData) => {
     getUsersWithNameOrPhone(data).then((result) => {
       setSearchedUserList(result.content as getUsersWithNameOrPhoneResponse[]);

@@ -10,7 +10,8 @@ import { SMSForm } from './SMSForm';
 import { SelectUsers } from './SelectUsers';
 import { SEND_TYPE } from '@/constants/sendTypes';
 import { AddUserDirectly } from './AddUserDirectly';
-import { DirectUser } from '@/types/user';
+import { DirectUser, ExcelUploadedUser } from '@/types/user';
+import { ExcelUpload } from './ExcelUpload';
 
 const tabs = [
   {
@@ -30,6 +31,12 @@ const tabs = [
     label: '직접입력',
     type: SEND_TYPE.DIRECT,
     value: 2,
+  },
+  {
+    idx: 4,
+    label: '엑셀파일로 보내기',
+    type: SEND_TYPE.EXCEL,
+    value: 3,
   },
 ];
 
@@ -69,11 +76,19 @@ const SMSSend = () => {
     conferenceIdx: conferenceIdx as number,
   });
 
+  // 회원 검색 개별 발송
   const [searchedUsers, setSearchedUsers] = useState<number[]>([]);
 
+  // 직접 입력 발송
   const [addedUsers, setAddedUsers] = useState<DirectUser[]>([]);
 
+  // 필터 발송
   const [searchParamError, setSearchParamError] = useState<boolean>(false);
+
+  // 엑셀 업로드 발송
+  const [excelUploadedUser, setExcelUploadedUser] = useState<
+    ExcelUploadedUser[]
+  >([]);
 
   return (
     <Box
@@ -127,6 +142,15 @@ const SMSSend = () => {
             handleAddedUser={(user: DirectUser[]) => {
               setAddedUsers(user);
             }}
+            searchParamError={searchParamError}
+          />
+        </TabPanel>
+        <TabPanel value={tabIndex} index={3}>
+          <ExcelUpload
+            handleExcelUploadedUser={(user: ExcelUploadedUser[]) => {
+              setExcelUploadedUser(user);
+            }}
+            searchParamError={searchParamError}
           />
         </TabPanel>
       </Box>
@@ -134,6 +158,7 @@ const SMSSend = () => {
         searchParam={searchFilterParam}
         searchedUsers={searchedUsers}
         addedUsers={addedUsers}
+        excelUploadedUser={excelUploadedUser}
         sendType={sendType}
         conferenceIdx={conferenceIdx as number}
         setSearchParamError={(value: boolean) => setSearchParamError(value)}

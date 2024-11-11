@@ -258,3 +258,33 @@ export const stopSendingMessage = (
       return response.data;
     });
 };
+
+/**
+ * 엑셀 업로드 대상에게 문자 전송
+ * @param sendSMSDirectlyAddedUsersRequest
+ * @returns
+ */
+export const sendSMSExcelUploadedUsers = (
+  data: sendSMSDirectlyAddedUsersRequest
+): Promise<ResponseMessageVo<any>> => {
+  logger.debug('<sendSMSExcelUploadedUsers> params ', data);
+  return adminAxiosInstance
+    .post(
+      `/api/pco/admin/total/top/message/send-excel`,
+      {
+        ...data,
+      },
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
+    .then((response) => {
+      logger.debug(
+        '<sendSMSExcelUploadedUsers> response.data : ',
+        response.data
+      );
+      return response.data;
+    });
+};
