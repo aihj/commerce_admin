@@ -4,7 +4,10 @@ import { useState } from 'react';
 import { Box, Divider, Tab, Tabs } from '@mui/material';
 import { PageTitle } from '@/components/core/PageTitle';
 import { useAppSelector } from '@/redux/hooks';
-import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
+import {
+  selectConferenceIdx,
+  selectConferenceStringIdx,
+} from '@/redux/slices/pcoSlice';
 import { Filter, Filters } from './Filters';
 import { SMSForm } from './SMSForm';
 import { SelectUsers } from './SelectUsers';
@@ -64,6 +67,7 @@ function TabPanel(props: TabPanelProps) {
 
 const SMSSend = () => {
   const conferenceIdx = useAppSelector(selectConferenceIdx);
+  const conferenceStringIdx = useAppSelector(selectConferenceStringIdx);
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [sendType, setSendType] = useState<SEND_TYPE>(tabs[0].type);
 
@@ -162,6 +166,7 @@ const SMSSend = () => {
         sendType={sendType}
         conferenceIdx={conferenceIdx as number}
         setSearchParamError={(value: boolean) => setSearchParamError(value)}
+        conferenceStringIdx={conferenceStringIdx}
       />
     </Box>
   );

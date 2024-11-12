@@ -34,6 +34,8 @@ import { dayjs } from '@/lib/dayjs';
 import { UploadImageFiles } from './UploadImageFiles';
 import { DirectUser, ExcelUploadedUser } from '@/types/user';
 import { sendSMSDirectlyAddedUsersRequest } from '@/api/types/messageTypes';
+import { useRouter } from 'next/navigation';
+import { PATH } from '@/paths';
 
 interface SMSFormData {
   subject?: string;
@@ -55,6 +57,7 @@ interface SMSFormProps {
   sendType: SEND_TYPE;
   conferenceIdx: number;
   setSearchParamError: (value: boolean) => void;
+  conferenceStringIdx: string;
 }
 
 const dummySender = [
@@ -70,6 +73,7 @@ const SMSForm = ({
   conferenceIdx,
   setSearchParamError,
   sendType,
+  conferenceStringIdx,
 }: SMSFormProps) => {
   const {
     control,
@@ -81,6 +85,8 @@ const SMSForm = ({
     mode: 'onBlur',
     reValidateMode: 'onBlur',
   });
+
+  const router = useRouter();
 
   const [isSMSMode, setIsSMSMode] = useState<boolean>(true);
   const [testCompleted, setTestCompleted] = useState<boolean>(false);
@@ -110,7 +116,7 @@ const SMSForm = ({
     sendSMSExcelUploadedUsers(data)
       .then((result) => {
         if (result.status === 200) {
-          handleAlert('success');
+          handleAlert('success', result.content);
         }
       })
       .catch((error) => {
@@ -122,7 +128,7 @@ const SMSForm = ({
       });
   };
 
-  const handleAlert = (type: string) => {
+  const handleAlert = (type: string, letterIdx?: number) => {
     switch (type) {
       case 'invalid':
         Swal.fire({
@@ -134,6 +140,19 @@ const SMSForm = ({
         Swal.fire({
           title: '문자 전송 요청 완료',
           html: `<div>문자 발송을 요청했습니다.<br/>요청된 개수에 따라 문자 발송 완료까지 시간이 걸릴 수 있으며, 자세한 내용은 문자 발송 상세내역을 참조해 주세요.<br/>(닫기 선택 시, 작성중이던 페이지로 다시 돌아갑니다.)</div>`,
+          showCancelButton: true,
+          cancelButtonText: '닫기',
+          confirmButtonText: '상세 보기',
+          reverseButtons: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            router.push(
+              PATH.EACH.MESSAGE.SMS.DETAIL(
+                conferenceStringIdx,
+                letterIdx as number
+              )
+            );
+          }
         });
         return;
       case 'fail':
@@ -176,7 +195,7 @@ const SMSForm = ({
         sendSMSFilteredUsers(formData)
           .then((result) => {
             if (result.status === 200) {
-              handleAlert('success');
+              handleAlert('success', result.content);
             }
           })
           .catch((error) => {
@@ -210,7 +229,7 @@ const SMSForm = ({
         sendSMSSelectedUsers(formData)
           .then((result) => {
             if (result.status === 200) {
-              handleAlert('success');
+              handleAlert('success', result.content);
             }
           })
           .catch((error) => {
@@ -250,7 +269,7 @@ const SMSForm = ({
         sendSMSDirectlyAddedUsers(formData)
           .then((result) => {
             if (result.status === 200) {
-              handleAlert('success');
+              handleAlert('success', result.content);
             }
           })
           .catch((error) => {
