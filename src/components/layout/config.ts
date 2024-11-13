@@ -147,11 +147,11 @@ export const eachPcoLayoutConfig = (
             title: '문자 관리',
             icon: 'tent',
             items: [
-              {
-                key: 'EACH/MESSAGE/SMS/TEMPLATE',
-                title: '문자 양식 확인',
-                href: PATH.EACH.MESSAGE.SMS.TEMPLATE(confStringIdx),
-              },
+              // {
+              //   key: 'EACH/MESSAGE/SMS/TEMPLATE',
+              //   title: '문자 양식 확인',
+              //   href: PATH.EACH.MESSAGE.SMS.TEMPLATE(confStringIdx),
+              // },
               {
                 key: 'EACH/MESSAGE/SMS/SEND',
                 title: '문자 보내기',

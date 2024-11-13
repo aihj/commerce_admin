@@ -75,9 +75,17 @@ export const sendSMSTest = (
 ): Promise<ResponseMessageVo<any>> => {
   logger.debug('<sendSMSTest> params ', data);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/message/attendee/send-test`, {
-      ...data,
-    })
+    .post(
+      `/api/pco/admin/total/top/message/attendee/send-test`,
+      {
+        ...data,
+      },
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
     .then((response) => {
       logger.debug('<sendSMSTest> response.data : ', response.data);
       return response.data;

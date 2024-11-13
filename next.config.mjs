@@ -13,6 +13,11 @@ const nextConfig = {
         hostname: 'appfile.medistaff.co.kr',
         port: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'testappfile.medistaff.co.kr',
+        port: '',
+      },
     ],
   },
 };

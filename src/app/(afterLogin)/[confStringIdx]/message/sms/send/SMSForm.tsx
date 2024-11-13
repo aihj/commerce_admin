@@ -123,6 +123,7 @@ const SMSForm = ({
     fn: (data: T) => Promise<ResponseMessageVo<any>>,
     data: T
   ): void {
+    setCheckPossibleToSend(false);
     fn(data)
       .then((result) => {
         if (result.status === 200) {
@@ -181,7 +182,6 @@ const SMSForm = ({
         return;
       }
     }
-    setCheckPossibleToSend(false);
     if (sendType === SEND_TYPE.FILTER) {
       if (Object.keys(searchParam).length === 0) {
         handleAlert('invalid');
@@ -443,7 +443,7 @@ const SMSForm = ({
         text: '테스트 전송을 위한 휴대폰 번호를 확인 후 다시 입력해 주세요.',
       });
       return;
-    } else if (errors.content || !data.content) {
+    } else if (errors.content && files.length === 0) {
       Swal.fire({
         title: '필수 정보 확인',
         text: '문자 전송을 위한 필수 정보를 확인 후 다시 입력해 주세요.',
@@ -458,6 +458,7 @@ const SMSForm = ({
         ...data,
         type: 'test',
         scheduleType: data.scheduleType === 'y' ? 1 : 0,
+        messageFileList: files,
       };
       sendSMSTest(formData)
         .then((result) => {
@@ -538,7 +539,7 @@ const SMSForm = ({
                   helperText={
                     errors.memo
                       ? errors.memo?.message
-                      : '제목은 문자 발송 내역에 저장되는 내용이며, 문자 발송시 제목으로 표기되지 않습니다.'
+                      : '메모는 문자 발송 내역에 저장되는 내용이며, 문자 발송시 제목으로 표기되지 않습니다.'
                   }
                   fullWidth
                   {...field}

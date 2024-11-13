@@ -114,7 +114,7 @@ const UploadImageFiles = ({ files, handleFiles }: UploadImageFilesProps) => {
                 <div className="flex gap-8">
                   <div className="w-50 h-50">
                     <Image
-                      src={thumbnails.get(file.name)?.thumbnail || ''}
+                      src={thumbnails.get(file.name)?.thumbnail as string}
                       width={50}
                       height={50}
                       style={{ maxHeight: '100%' }}
