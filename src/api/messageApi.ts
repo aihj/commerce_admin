@@ -288,3 +288,19 @@ export const sendSMSExcelUploadedUsers = (
       return response.data;
     });
 };
+
+/**
+ * 학회 별 10분이내 이미 발송한 문자건이 있는지 확인
+ * @param conferenceIdx
+ * @returns
+ */
+export const getSMSLastSendedTime = (
+  conferenceIdx: number
+): Promise<ResponseMessageVo<any>> => {
+  return adminAxiosInstance
+    .get(`/api/pco/admin/total/top/${conferenceIdx}/message/last-send-time`)
+    .then((response) => {
+      logger.debug('<getSMSLastSendedTime> response.data : ', response.data);
+      return response.data;
+    });
+};

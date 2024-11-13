@@ -18,6 +18,7 @@ import { Filter } from './Filters';
 import { SMSTemplateInfo } from './SMSTemplateInfo';
 import { toast } from '@/components/core/Toaster';
 import {
+  getSMSLastSendedTime,
   sendSMSDirectlyAddedUsers,
   sendSMSExcelUploadedUsers,
   sendSMSFilteredUsers,
@@ -33,9 +34,14 @@ import { DateTimePicker } from '@mui/x-date-pickers';
 import { dayjs } from '@/lib/dayjs';
 import { UploadImageFiles } from './UploadImageFiles';
 import { DirectUser, ExcelUploadedUser } from '@/types/user';
-import { sendSMSDirectlyAddedUsersRequest } from '@/api/types/messageTypes';
+import {
+  sendSMSDirectlyAddedUsersRequest,
+  sendSMSFilteredUsersRequest,
+  sendSMSSelectedUsersRequest,
+} from '@/api/types/messageTypes';
 import { useRouter } from 'next/navigation';
 import { PATH } from '@/paths';
+import { ResponseMessageVo } from '@/api/types/responseMessageVo';
 
 interface SMSFormData {
   subject?: string;
@@ -112,21 +118,25 @@ const SMSForm = ({
     }
   };
 
-  const sendSMSExcelType = (data: sendSMSDirectlyAddedUsersRequest) => {
-    sendSMSExcelUploadedUsers(data)
+  // tsx 화살표 함수로 제네릭을 사용하면 제네릭을 jsx태그로 인식하는 이슈때문에 function키워드 사용
+  function sendSMS<T>(
+    fn: (data: T) => Promise<ResponseMessageVo<any>>,
+    data: T
+  ): void {
+    fn(data)
       .then((result) => {
         if (result.status === 200) {
           handleAlert('success', result.content);
         }
       })
       .catch((error) => {
-        logger.error('<sendSMSFilteredUsers> error', error);
+        logger.error(`<${fn} error`, error);
         handleAlert('fail');
       })
       .finally(() => {
         setCheckPossibleToSend(true);
       });
-  };
+  }
 
   const handleAlert = (type: string, letterIdx?: number) => {
     switch (type) {
@@ -192,19 +202,33 @@ const SMSForm = ({
           sendDate: data.scheduleType === 'y' ? scheduledDate : null,
           messageFileList: files,
         };
-        sendSMSFilteredUsers(formData)
-          .then((result) => {
-            if (result.status === 200) {
-              handleAlert('success', result.content);
-            }
-          })
-          .catch((error) => {
-            logger.error('<sendSMSFilteredUsers> error', error);
-            handleAlert('fail');
-          })
-          .finally(() => {
-            setCheckPossibleToSend(true);
-          });
+        getSMSLastSendedTime(conferenceIdx).then((result) => {
+          if (result.content) {
+            Swal.fire({
+              title: '문자 연속 전송',
+              html: result.message,
+              showCancelButton: true,
+              cancelButtonText: '닫기',
+              confirmButtonText: '문자 전송하기',
+              reverseButtons: true,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                sendSMS<sendSMSFilteredUsersRequest>(
+                  sendSMSFilteredUsers,
+                  formData
+                );
+                return;
+              } else if (result.isDismissed) {
+                setCheckPossibleToSend(true);
+              }
+            });
+          } else {
+            sendSMS<sendSMSFilteredUsersRequest>(
+              sendSMSFilteredUsers,
+              formData
+            );
+          }
+        });
       }
     } else if (sendType === SEND_TYPE.USER) {
       if (searchedUsers.length === 0) {
@@ -226,19 +250,33 @@ const SMSForm = ({
           sendDate: data.scheduleType === 'y' ? scheduledDate : null,
           messageFileList: files,
         };
-        sendSMSSelectedUsers(formData)
-          .then((result) => {
-            if (result.status === 200) {
-              handleAlert('success', result.content);
-            }
-          })
-          .catch((error) => {
-            logger.error('<sendSMSFilteredUsers> error', error);
-            handleAlert('fail');
-          })
-          .finally(() => {
-            setCheckPossibleToSend(true);
-          });
+        getSMSLastSendedTime(conferenceIdx).then((result) => {
+          if (result.content) {
+            Swal.fire({
+              title: '문자 연속 전송',
+              html: result.message,
+              showCancelButton: true,
+              cancelButtonText: '닫기',
+              confirmButtonText: '문자 전송하기',
+              reverseButtons: true,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                sendSMS<sendSMSSelectedUsersRequest>(
+                  sendSMSSelectedUsers,
+                  formData
+                );
+                return;
+              } else if (result.isDismissed) {
+                setCheckPossibleToSend(true);
+              }
+            });
+          } else {
+            sendSMS<sendSMSSelectedUsersRequest>(
+              sendSMSSelectedUsers,
+              formData
+            );
+          }
+        });
       }
     } else if (sendType === SEND_TYPE.DIRECT) {
       if (addedUsers.length === 0) {
@@ -266,19 +304,33 @@ const SMSForm = ({
           sendDate: data.scheduleType === 'y' ? scheduledDate : null,
           messageFileList: files,
         };
-        sendSMSDirectlyAddedUsers(formData)
-          .then((result) => {
-            if (result.status === 200) {
-              handleAlert('success', result.content);
-            }
-          })
-          .catch((error) => {
-            logger.error('<sendSMSFilteredUsers> error', error);
-            handleAlert('fail');
-          })
-          .finally(() => {
-            setCheckPossibleToSend(true);
-          });
+        getSMSLastSendedTime(conferenceIdx).then((result) => {
+          if (result.content) {
+            Swal.fire({
+              title: '문자 연속 전송',
+              html: result.message,
+              showCancelButton: true,
+              cancelButtonText: '닫기',
+              confirmButtonText: '문자 전송하기',
+              reverseButtons: true,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                sendSMS<sendSMSDirectlyAddedUsersRequest>(
+                  sendSMSDirectlyAddedUsers,
+                  formData
+                );
+                return;
+              } else if (result.isDismissed) {
+                setCheckPossibleToSend(true);
+              }
+            });
+          } else {
+            sendSMS<sendSMSDirectlyAddedUsersRequest>(
+              sendSMSDirectlyAddedUsers,
+              formData
+            );
+          }
+        });
       }
     } else if (sendType === SEND_TYPE.EXCEL) {
       if (excelUploadedUser.length === 0) {
@@ -320,11 +372,63 @@ const SMSForm = ({
             reverseButtons: true,
           }).then((result) => {
             if (result.isConfirmed) {
-              sendSMSExcelType(formData);
+              getSMSLastSendedTime(conferenceIdx).then((result) => {
+                if (result.content) {
+                  Swal.fire({
+                    title: '문자 연속 전송',
+                    html: result.message,
+                    showCancelButton: true,
+                    cancelButtonText: '닫기',
+                    confirmButtonText: '문자 전송하기',
+                    reverseButtons: true,
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      sendSMS<sendSMSDirectlyAddedUsersRequest>(
+                        sendSMSExcelUploadedUsers,
+                        formData
+                      );
+                      return;
+                    } else if (result.isDismissed) {
+                      setCheckPossibleToSend(true);
+                    }
+                  });
+                } else {
+                  sendSMS<sendSMSDirectlyAddedUsersRequest>(
+                    sendSMSExcelUploadedUsers,
+                    formData
+                  );
+                }
+              });
             }
           });
         } else {
-          sendSMSExcelType(formData);
+          getSMSLastSendedTime(conferenceIdx).then((result) => {
+            if (result.content) {
+              Swal.fire({
+                title: '문자 연속 전송',
+                html: result.message,
+                showCancelButton: true,
+                cancelButtonText: '닫기',
+                confirmButtonText: '문자 전송하기',
+                reverseButtons: true,
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  sendSMS<sendSMSDirectlyAddedUsersRequest>(
+                    sendSMSExcelUploadedUsers,
+                    formData
+                  );
+                  return;
+                } else if (result.isDismissed) {
+                  setCheckPossibleToSend(true);
+                }
+              });
+            } else {
+              sendSMS<sendSMSDirectlyAddedUsersRequest>(
+                sendSMSExcelUploadedUsers,
+                formData
+              );
+            }
+          });
         }
       }
     }
