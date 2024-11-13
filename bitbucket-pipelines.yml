@@ -14,7 +14,7 @@ pipelines:
           services:
             - docker
           image: atlassian/pipelines-awscli
-            size: 2x
+          size: 2x
           caches:
             - node
           script:
