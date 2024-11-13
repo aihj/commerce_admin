@@ -14,6 +14,9 @@ pipelines:
           services:
             - docker
           image: atlassian/pipelines-awscli
+            size: 2x
+          caches:
+            - node
           script:
             # variables
             - export ECR_REPOSITORY="pco-dev-admin-front-ecr"
