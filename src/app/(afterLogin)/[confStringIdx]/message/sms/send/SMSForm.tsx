@@ -458,6 +458,7 @@ const SMSForm = ({
         ...data,
         type: 'test',
         scheduleType: data.scheduleType === 'y' ? 1 : 0,
+        sendDate: data.scheduleType === 'y' ? scheduledDate : null,
         messageFileList: files,
       };
       sendSMSTest(formData)

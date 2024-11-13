@@ -14,7 +14,7 @@ pipelines:
           services:
             - docker
           image: atlassian/pipelines-awscli
-          size: 2x
+          size: 4x
           caches:
             - node
           script:
@@ -27,7 +27,7 @@ pipelines:
             - IMAGE=$AWS_ECR_REGISTRY/$ECR_REPOSITORY
             - TAG=$BITBUCKET_COMMIT
 
-            - docker build --memory=4g --build-arg APP_ENV=$APP_ENV --build-arg IMAGE=$IMAGE --build-arg TAG=$TAG --no-cache --progress=plain -t $IMAGE:latest -t $IMAGE:$TAG .
+            - docker build --memory=8g --build-arg APP_ENV=$APP_ENV --build-arg IMAGE=$IMAGE --build-arg TAG=$TAG --no-cache --progress=plain -t $IMAGE:latest -t $IMAGE:$TAG .
 
             - docker push $AWS_ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
