@@ -38,6 +38,7 @@ import { CustomTooltip } from '@/components/CustomTooltip';
 import { CHIP_COLOR, Chip } from '@/components/core/Chip';
 import { setTaskStatusChipColor } from '@/lib/chipColors';
 import { ImageIcon } from '@/components/icons/ImageIcon';
+import { InitSearchParam } from '@/lib/InitSearchParams';
 
 const SMSList = () => {
   const [failModalOpen, setFailModalOpen] = useState<boolean>(false);
@@ -230,17 +231,12 @@ const SMSList = () => {
   );
 
   const conferenceIdx = useSelector(selectConferenceIdx);
-  // TODO 공통으로 빼기
-  const initSearchParam = useMemo((): TableSearchParams => {
-    return {
-      conferenceIdx: conferenceIdx as number,
-      currentPage: 0,
-      rowsPerPage: 10,
 
-      sortType: 'tbl_letter.letter_idx',
-      sortDir: 'desc',
-    };
-  }, [conferenceIdx]);
+  const initSearchParam = InitSearchParam(
+    conferenceIdx as number,
+    'tbl_letter.letter_idx'
+  );
+
   const { cSearchParams, setCSearchParamsFunc, deleteCSearchParams } =
     useCustomSearchParams<TableSearchParams>(initSearchParam);
 

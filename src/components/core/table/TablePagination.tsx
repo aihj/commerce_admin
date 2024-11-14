@@ -1,11 +1,13 @@
+// @ts-nocheck
 'use client';
 
 import * as React from 'react';
 import { useCallback } from 'react';
 import { TablePagination as TablePaginationMui } from '@mui/material';
 import { logger } from '@/lib/logger/defaultLogger';
+import { rowsPerPageOptions } from '@/lib/InitSearchParams';
 
-interface ProductsPaginationProps<T> {
+interface PaginationProps<T> {
   cSearchParams: T;
   setCSearchParamsFunc: (parma: any) => any;
   totalCount: number;
@@ -15,7 +17,7 @@ const TablePagination = <T extends object>({
   totalCount,
   cSearchParams,
   setCSearchParamsFunc,
-}: ProductsPaginationProps<T>) => {
+}: PaginationProps<T>) => {
   // window.cSearchParams = cSearchParams;
 
   const onRowsPerPageChange = useCallback(
@@ -51,7 +53,7 @@ const TablePagination = <T extends object>({
       onRowsPerPageChange={onRowsPerPageChange}
       page={cSearchParams.currentPage}
       rowsPerPage={cSearchParams.rowsPerPage}
-      rowsPerPageOptions={[5, 10, 25, 50, 100]}
+      rowsPerPageOptions={rowsPerPageOptions}
     />
   );
 };

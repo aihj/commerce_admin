@@ -33,6 +33,7 @@ import {
   setRegistrationStatusChipColor,
 } from '@/lib/chipColors';
 import { logger } from '@/lib/logger/defaultLogger';
+import { InitSearchParam } from '@/lib/InitSearchParams';
 
 type RegisterAttendeeListTypeTossTypes = NonNullable<unknown>;
 
@@ -62,16 +63,12 @@ const RegisterAttendeeListTypeToss =
         label: string;
       }[]
     >([]);
-    // region ***************** params 동기화 *****************
-    const initSearchParam = useMemo((): TableSearchParams => {
-      return {
-        conferenceIdx: conferenceIdx as number,
-        currentPage: 0,
-        rowsPerPage: 10,
-        sortType: 'tbl_conference_attendee.attendee_idx',
-        sortDir: 'desc',
-      };
-    }, [conferenceIdx]);
+
+    const initSearchParam = InitSearchParam(
+      conferenceIdx as number,
+      'tbl_conference_attendee.attendee_idx'
+    );
+
     const { cSearchParams, setCSearchParamsFunc, deleteCSearchParams } =
       useCustomSearchParams<TableSearchParams>(initSearchParam);
     // window.cSearchParams = cSearchParams;

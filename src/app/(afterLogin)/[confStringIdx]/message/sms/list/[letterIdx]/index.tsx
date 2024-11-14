@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   Box,
@@ -42,6 +42,7 @@ import { bytesToKB } from '@/lib/byteToKB';
 import { DownloadIcon } from '@/components/icons/DownloadIcon';
 import { ResetIcon } from '@/components/icons/ResetIcon';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
+import { InitSearchParam } from '@/lib/InitSearchParams';
 
 interface SMSSendDetailProps {
   letterIdx: string;
@@ -49,17 +50,12 @@ interface SMSSendDetailProps {
 
 const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
   const conferenceIdx = useSelector(selectConferenceIdx);
-  // TODO 공통으로 빼기
-  const initSearchParam = useMemo((): TableSearchParams => {
-    return {
-      conferenceIdx: conferenceIdx as number,
-      currentPage: 0,
-      rowsPerPage: 10,
 
-      sortType: 'tbl_letter_item.letter_item_idx',
-      sortDir: 'desc',
-    };
-  }, [conferenceIdx]);
+  const initSearchParam = InitSearchParam(
+    conferenceIdx as number,
+    'tbl_letter_item.letter_item_idx'
+  );
+
   const { cSearchParams, setCSearchParamsFunc } =
     useCustomSearchParams<TableSearchParams>(initSearchParam);
 
