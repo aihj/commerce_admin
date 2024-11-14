@@ -9,16 +9,13 @@ import {
 
 import { useEffect, useState } from 'react';
 import { dateFormat, dayjs } from '@/lib/dayjs';
+import { Dayjs } from 'dayjs';
 
 interface TableTextFilterPopoverProps {
   title?: string;
-  format?: string;
 }
 
-function TableDateFilterPopover({
-  title,
-  format = 'YYYY-MM-DD',
-}: TableTextFilterPopoverProps) {
+function TableDateFilterPopover({ title }: TableTextFilterPopoverProps) {
   const {
     anchorEl,
     onApply,
@@ -26,9 +23,9 @@ function TableDateFilterPopover({
     open,
     value: initialValue,
   } = useFilterContext();
-  const [value, setValue] = useState<string | null>(null);
+  const [value, setValue] = useState<Dayjs | null>(null);
   useEffect(() => {
-    setValue(initialValue ? dateFormat(initialValue) : null);
+    setValue(initialValue ? dayjs(initialValue) : null);
   }, [initialValue]);
 
   return (
@@ -44,14 +41,14 @@ function TableDateFilterPopover({
           label=""
           onChange={(date) => {
             logger.debug('date', date);
-            setValue(date ? dayjs(date).format(format) : null);
+            setValue(date ? dayjs(date) : null);
           }}
           value={value ? value : null}
         />
       </FormControl>
       <Button
         onClick={() => {
-          onApply(value);
+          onApply(value && dateFormat(value));
         }}
         variant="contained"
       >

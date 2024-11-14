@@ -31,8 +31,8 @@ export const PAYMENT_STATUS = [
 ];
 
 export const HAS_MEMO = [
-  { value: 'y', label: '메모 있음' },
-  { value: 'n', label: '메모 없음' },
+  { value: true, label: '메모 있음' },
+  { value: false, label: '메모 없음' },
 ];
 
 export const SEND_STATUS_OPTIONS = [
@@ -48,9 +48,17 @@ export const SEND_STATUS_OPTIONS = [
     value: TASK_STATUS.failure,
     label: taskStatusLabels[TASK_STATUS.failure],
   },
+  {
+    value: TASK_STATUS.schedule,
+    label: taskStatusLabels[TASK_STATUS.schedule],
+  },
+  {
+    value: TASK_STATUS.stop,
+    label: taskStatusLabels[TASK_STATUS.stop],
+  },
 ];
 
-export const HAS_FAIL = [
-  { value: 'true', label: '실패 건 있음' },
-  { value: 'false', label: '실패 건 없음' },
+export const IS_FAIL = [
+  { value: true, label: '실패 건 있음' },
+  { value: false, label: '실패 건 없음' },
 ];

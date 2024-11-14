@@ -352,8 +352,8 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                       ? data.completeDate
                       : data.taskStatus ===
                           (TASK_STATUS.apiInProgress ||
-                            TASK_STATUS.inInComplete ||
-                            TASK_STATUS.inInProgress)
+                            TASK_STATUS.inComplete ||
+                            TASK_STATUS.inProgress)
                         ? '발송중'
                         : '-'}
                   </span>
@@ -428,6 +428,21 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                     {data.letterFileList.length !== 0 && (
                       <>
                         <Label label="이미지 첨부" minWidth={100} />
+                        <div className="text-11 text-gray-800 my-4">
+                          <span>
+                            총 {data.letterFileList.length}개의 파일{' '}
+                            {bytesToKB(
+                              data.letterFileList.reduce(
+                                (acc, curr) => acc + curr.fileSize,
+                                0
+                              )
+                            )}
+                            KB
+                          </span>
+                          <br />
+                          <span>(30일 이내에만 재 다운로드가 가능합니다.)</span>
+                        </div>
+                        <Divider sx={{ my: '8px' }} />
                         {data.letterFileList.map((file) => (
                           <>
                             <div
@@ -463,10 +478,12 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                                   height: 24,
                                   borderRadius: 24,
                                 }}
+                                disabled={file.fileStatus === 'delete'}
                               >
                                 <DownloadIcon size={16} />
                               </IconButton>
                             </div>
+                            <Divider sx={{ my: '8px' }} />
                           </>
                         ))}
                       </>
