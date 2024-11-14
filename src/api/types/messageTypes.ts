@@ -32,13 +32,13 @@ export interface sendSMSDirectlyAddedUsersRequest extends sendSMSRequest {
 }
 
 export enum TASK_STATUS {
-  inProgress = 'in_progress',
+  inProgress = 'interior_in_progress',
   inComplete = 'interior_complete',
   apiInProgress = 'api_in_progress',
   complete = 'api_complete',
   failure = 'interior_fail',
   schedule = 'schedule',
-  stop = 'stop',
+  stop = 'interior_stop',
 }
 
 export const taskStatusLabels = {

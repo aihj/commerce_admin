@@ -83,6 +83,7 @@ const AddUserDirectly = ({
     const newUsers = addedUsers.filter((_, idx) => idx !== index);
     handleAddedUser(newUsers);
   };
+
   return (
     <Stack spacing={3} sx={{ mt: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -141,7 +142,6 @@ const AddUserDirectly = ({
               variant="contained"
               color="secondary"
               onClick={() => handleAddUser()}
-              // disabled={testCompleted}
             >
               추가
             </Button>
@@ -152,7 +152,7 @@ const AddUserDirectly = ({
       <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
         <Label label="전송 대상*" minWidth={100} bold />
         <Box>
-          {addedUsers.length > 0 ? (
+          {addedUsers.length === 0 ? (
             <span
               className={`text-14 leading-18 h-26 ${searchParamError && 'text-error-main'}`}
             >

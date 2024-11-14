@@ -42,7 +42,7 @@ const parseCSV = (data: string) => {
     .split('\n')
     .filter((line) => {
       const [name, phone] = line.split(',');
-      return name && phone && !isNaN(Number(phone.replace(/"/g, '').trim()));
+      return name && phone;
     });
 
   const result: ExcelUploadedUser[] = lines.map((line, index) => {
@@ -139,7 +139,7 @@ const ExcelUpload = ({
               endIcon={<DownloadIcon fill="var(--color-primary-main)" />}
               onClick={() =>
                 (window.location.href =
-                  'https://appfile.medistaff.co.kr/common/bulk_message_request_template.csv')
+                  'https://appfile.medistaff.co.kr/pco/admin/bulk_message_request_template.csv')
               }
             >
               샘플 파일 다운받기
@@ -222,6 +222,10 @@ const ExcelUpload = ({
               불러옵니다.
             </span>
             <span>*최대 500개까지 동시에 발송할 수 있습니다.</span>
+            <span>
+              *숫자, 영문, 한글이 아닌 특수문자 등의 문자는 자동으로 부분
+              삭제처리 됩니다.
+            </span>
           </div>
         </Box>
       </Box>

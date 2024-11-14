@@ -21,7 +21,7 @@ import { numberWithComma } from '@/lib/numberWithComma';
 import {
   downloadSendedUsers,
   getSMSDetail,
-  resendFailedUser,
+  // resendFailedUser,
   stopSendingMessage,
 } from '@/api/messageApi';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
@@ -168,62 +168,64 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
         }),
   });
 
-  const handleAllFailedResend = () => {
-    Swal.fire({
-      title: '실패 문자 재발송',
-      text: `문자 발송 실패한 ${data?.failureCount}명에게 문자 내용을 재발송 하시겠습니까?`,
-      confirmButtonText: '발송',
-      showCancelButton: true,
-      cancelButtonText: '취소',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setIsPending(true);
-        resendFailedUser({
-          conferenceIdx: conferenceIdx as number,
-          letterIdx: data?.letterIdx as number,
-          type: 'failedTotal',
-        })
-          .then((result) => {
-            return result;
-          })
-          .catch((error) => {
-            logger.error(error);
-          })
-          .finally(() => {
-            setIsPending(false);
-          });
-      }
-    });
-  };
+  // 재발송
+  // const handleAllFailedResend = () => {
+  //   Swal.fire({
+  //     title: '실패 문자 재발송',
+  //     text: `문자 발송 실패한 ${data?.failureCount}명에게 문자 내용을 재발송 하시겠습니까?`,
+  //     confirmButtonText: '발송',
+  //     showCancelButton: true,
+  //     cancelButtonText: '취소',
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       setIsPending(true);
+  //       resendFailedUser({
+  //         conferenceIdx: conferenceIdx as number,
+  //         letterIdx: data?.letterIdx as number,
+  //         type: 'failedTotal',
+  //       })
+  //         .then((result) => {
+  //           return result;
+  //         })
+  //         .catch((error) => {
+  //           logger.error(error);
+  //         })
+  //         .finally(() => {
+  //           setIsPending(false);
+  //         });
+  //     }
+  //   });
+  // };
 
-  const handleSelectedFailedResend = () => {
-    Swal.fire({
-      title: '선택 문자 재발송',
-      text: `선택된 ${selectedUser.length}명에게 문자 내용을 재발송 하시겠습니까?`,
-      confirmButtonText: '발송',
-      showCancelButton: true,
-      cancelButtonText: '취소',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setIsPending(true);
-        resendFailedUser({
-          conferenceIdx: conferenceIdx as number,
-          letterIdx: data?.letterIdx as number,
-          type: 'selected',
-          letterItemIdxListJson: JSON.stringify(selectedUser),
-        })
-          .then((result) => {
-            return result;
-          })
-          .catch((error) => {
-            logger.error(error);
-          })
-          .finally(() => {
-            setIsPending(false);
-          });
-      }
-    });
-  };
+  // 재발송
+  // const handleSelectedFailedResend = () => {
+  //   Swal.fire({
+  //     title: '선택 문자 재발송',
+  //     text: `선택된 ${selectedUser.length}명에게 문자 내용을 재발송 하시겠습니까?`,
+  //     confirmButtonText: '발송',
+  //     showCancelButton: true,
+  //     cancelButtonText: '취소',
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       setIsPending(true);
+  //       resendFailedUser({
+  //         conferenceIdx: conferenceIdx as number,
+  //         letterIdx: data?.letterIdx as number,
+  //         type: 'selected',
+  //         letterItemIdxListJson: JSON.stringify(selectedUser),
+  //       })
+  //         .then((result) => {
+  //           return result;
+  //         })
+  //         .catch((error) => {
+  //           logger.error(error);
+  //         })
+  //         .finally(() => {
+  //           setIsPending(false);
+  //         });
+  //     }
+  //   });
+  // };
 
   const handleExcelDownload = () => {
     downloadSendedUsers(letterIdx);
@@ -494,45 +496,43 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
             </Card>
             <Divider />
             <Card sx={{ flex: 3 }}>
-              {data.taskStatus === 'api_complete' ? (
-                <Stack
-                  spacing={2}
-                  direction="row"
-                  sx={{ m: 2, justifyContent: 'flex-end' }}
-                >
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => handleExcelDownload()}
-                    startIcon={<DownloadIcon fill="white" />}
-                    // disabled={data.failureCount === 0}
-                  >
-                    엑셀 다운로드
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => handleAllFailedResend()}
-                    disabled={data.failureCount === 0}
-                  >
-                    실패 일괄 재발송
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => handleSelectedFailedResend()}
-                  >
-                    선택 재발송
-                    {selectedUser.length !== 0 && `(${selectedUser.length})`}
-                  </Button>
-                </Stack>
-              ) : (
-                <Stack
-                  spacing={2}
-                  direction="row"
-                  sx={{ m: 2, justifyContent: 'flex-end' }}
-                >
-                  {data.taskStatus === 'schedule' ? null : (
+              <Stack
+                spacing={2}
+                direction="row"
+                sx={{ m: 2, justifyContent: 'flex-end' }}
+              >
+                {data.taskStatus === 'api_complete' ? (
+                  <>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => handleExcelDownload()}
+                      startIcon={<DownloadIcon fill="white" />}
+                      // disabled={data.failureCount === 0}
+                    >
+                      엑셀 다운로드
+                    </Button>
+                    {/* 
+                    다음 스프린트로 기능 이전
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => handleAllFailedResend()}
+                      disabled={data.failureCount === 0}
+                    >
+                      실패 일괄 재발송
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => handleSelectedFailedResend()}
+                    >
+                      선택 재발송
+                      {selectedUser.length !== 0 && `(${selectedUser.length})`}
+                    </Button> */}
+                  </>
+                ) : data.taskStatus === 'interior_in_progress' ? (
+                  <>
                     <Button
                       variant="contained"
                       color="secondary"
@@ -541,7 +541,20 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                     >
                       즉시 발송 취소
                     </Button>
-                  )}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<ResetIcon className="fill-white" />}
+                      onClick={() => {
+                        setIsPending(true);
+                        refetch();
+                      }}
+                    >
+                      새로고침
+                      {selectedUser.length !== 0 && `(${selectedUser.length})`}
+                    </Button>
+                  </>
+                ) : (
                   <Button
                     variant="contained"
                     color="primary"
@@ -554,8 +567,9 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                     새로고침
                     {selectedUser.length !== 0 && `(${selectedUser.length})`}
                   </Button>
-                </Stack>
-              )}
+                )}
+              </Stack>
+
               <SMSDetailList
                 data={data.letterItemList}
                 cSearchParams={cSearchParams as TableSearchParams}

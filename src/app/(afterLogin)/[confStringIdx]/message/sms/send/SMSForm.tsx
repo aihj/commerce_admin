@@ -359,7 +359,7 @@ const SMSForm = ({
           messageFileList: files,
         };
         const hasErrorData = excelUploadedUser.filter(
-          (item) => item.isValid
+          (item) => !item.isValid
         ).length;
         if (hasErrorData) {
           Swal.fire({

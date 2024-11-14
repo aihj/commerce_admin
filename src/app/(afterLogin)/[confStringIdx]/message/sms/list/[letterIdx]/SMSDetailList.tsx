@@ -54,14 +54,22 @@ const SMSDetailList = <T extends object>({
                 ? CHIP_COLOR.primary
                 : row.resultCode === 'schedule'
                   ? CHIP_COLOR.neutral
-                  : CHIP_COLOR.error
+                  : row.resultCode === 'cancel'
+                    ? CHIP_COLOR.info
+                    : row.resultCode === 'server_in_progress'
+                      ? CHIP_COLOR.pink
+                      : CHIP_COLOR.error
             }
             label={
               row.resultCode === 'success'
                 ? '성공'
                 : row.resultCode === 'schedule'
                   ? '예약'
-                  : '실패'
+                  : row.resultCode === 'cancel'
+                    ? '발송 취소'
+                    : row.resultCode === 'server_in_progress'
+                      ? '서버 발송중'
+                      : '실패'
             }
           />
         </Box>
@@ -89,7 +97,7 @@ const SMSDetailList = <T extends object>({
     if (arraySelected.length) {
       handleSelectedUser(arraySelected);
     }
-  }, [selected]);
+  }, [selected, handleSelectedUser]);
 
   return (
     <Box sx={{ mt: 2 }}>
