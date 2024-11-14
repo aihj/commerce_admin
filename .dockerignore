@@ -4,9 +4,7 @@ build
 out
 *.log
 *.map
-.env.local
-.env.development
-.env.test
+
 .git
 .gitignore
 Dockerfile
