@@ -33,7 +33,7 @@ import {
   setRegistrationStatusChipColor,
   setUserStatusChipColor,
 } from '@/lib/chipColors';
-import { useInitSearchParam } from '@/lib/InitSearchParams';
+import { InitSearchParam } from '@/lib/InitSearchParams';
 
 export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
   birthDateStartT?: string;
@@ -48,7 +48,7 @@ const JoinAttendeeList = () => {
   const conferenceIdx: number = useSelector(selectConferenceIdx) as number;
   const router = useRouter();
 
-  const initSearchParam = useInitSearchParam(
+  const initSearchParam = InitSearchParam(
     conferenceIdx as number,
     'tbl_conference_attendee.attendee_idx'
   );
