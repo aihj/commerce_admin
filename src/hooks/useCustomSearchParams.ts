@@ -17,7 +17,7 @@ const useCustomSearchParams = <T>(initialParams: T) => {
   };
 
   useEffect(() => {
-    router.push(
+    router.replace(
       `${pathname}?${new URLSearchParams(cSearchParams as string).toString()}`
     );
   }, [cSearchParams, router, pathname]);
