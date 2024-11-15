@@ -139,7 +139,7 @@ const ExcelUpload = ({
               endIcon={<DownloadIcon fill="var(--color-primary-main)" />}
               onClick={() =>
                 (window.location.href =
-                  'https://appfile.medistaff.co.kr/pco/admin/bulk_message_request_template.csv')
+                  'https://appfile.medistaff.co.kr/pco/admin/문자 대량발송 csv 양식.csv')
               }
             >
               샘플 파일 다운받기

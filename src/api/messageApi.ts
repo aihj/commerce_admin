@@ -15,6 +15,7 @@ import {
   sendSMSDirectlyAddedUsersRequest,
 } from './types/messageTypes';
 import { SMSListFiltersType } from '@/app/(afterLogin)/[confStringIdx]/message/sms/list/SMSListFilters';
+import { dateFormat } from '@/lib/dayjs';
 
 /**
  * 문자 필터 선택 시 해당 총 회원수
@@ -227,7 +228,10 @@ export const sendSMSDirectlyAddedUsers = (
  * @param letterIdx
  * @returns
  */
-export const downloadSendedUsers = (letterIdx: string) => {
+export const downloadSendedUsers = (
+  letterIdx: string,
+  completeDate: string
+) => {
   return adminAxiosInstance
     .get(`/api/pco/admin/total/middle/message/${letterIdx}/excel-download`, {
       headers: {
@@ -243,6 +247,7 @@ export const downloadSendedUsers = (letterIdx: string) => {
       // Create a download link
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob); // Create an object URL for the Blob
+      link.download = `문자전송결과_${letterIdx}_${dateFormat(completeDate, 'YYMMDD')}`;
       link.click(); // Trigger the download
     })
     .catch((error) => {

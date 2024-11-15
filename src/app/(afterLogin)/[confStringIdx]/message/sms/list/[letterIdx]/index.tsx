@@ -224,7 +224,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
   // };
 
   const handleExcelDownload = () => {
-    downloadSendedUsers(letterIdx);
+    downloadSendedUsers(letterIdx, data?.completeDate as string);
   };
 
   const handleStopSend = () => {
@@ -479,7 +479,14 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                                 }}
                                 disabled={file.fileStatus === 'delete'}
                               >
-                                <DownloadIcon size={16} />
+                                <DownloadIcon
+                                  size={16}
+                                  fill={
+                                    file.fileStatus === 'delete'
+                                      ? '#C4C7CB'
+                                      : '#6C737F'
+                                  }
+                                />
                               </IconButton>
                             </div>
                             <Divider sx={{ my: '8px' }} />
