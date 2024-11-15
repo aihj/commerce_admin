@@ -448,12 +448,16 @@ const SMSForm = ({
       };
       sendSMSTest(formData)
         .then((result) => {
+          setTestCompleted(true);
+
           if (result.status === 200) {
             Swal.fire({
               title: '테스트 전송 완료',
               text: `요청하신 ${data.testPhoneNumber} 번호로 테스트 문자가 전송되었습니다.`,
             });
-            setTestCompleted(true);
+            setTimeout(() => {
+              setTestCompleted(false);
+            }, 3000);
           }
         })
         .catch((error) => {
@@ -795,7 +799,6 @@ const SMSForm = ({
                 message: '테스트 전 올바르게 입력해 주세요.',
               },
             }}
-            disabled={testCompleted}
             render={({ field }) => (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Label label="테스트 발송" minWidth={100} bold />
@@ -812,7 +815,7 @@ const SMSForm = ({
                   variant="contained"
                   color="secondary"
                   onClick={() => handleSendTest()}
-                  // disabled={testCompleted}
+                  disabled={testCompleted}
                 >
                   테스트 전송
                 </Button>
