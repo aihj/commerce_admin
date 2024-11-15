@@ -172,16 +172,17 @@ const SMSForm = ({
         return;
       }
     }
+
+    if (data.subject === '' && touchedFields.subject && dirtyFields.subject) {
+      delete data['subject'];
+    }
+
     if (sendType === SEND_TYPE.FILTER) {
       if (Object.keys(searchParam).length === 0) {
         handleAlert('invalid');
         setSearchParamError(true);
       } else {
         setSearchParamError(false);
-
-        if (touchedFields.subject && dirtyFields.subject) {
-          delete data['subject'];
-        }
 
         const formData = {
           conferenceIdx,
@@ -228,9 +229,6 @@ const SMSForm = ({
         setSearchParamError(false);
         // api
 
-        if (touchedFields.subject && dirtyFields.subject) {
-          delete data['subject'];
-        }
         const formData = {
           conferenceIdx,
           wuserListJson: JSON.stringify(searchedUsers),
@@ -282,9 +280,6 @@ const SMSForm = ({
         setSearchParamError(false);
         // api
 
-        if (touchedFields.subject && dirtyFields.subject) {
-          delete data['subject'];
-        }
         const formData = {
           conferenceIdx,
           userListJson: JSON.stringify(userList),
@@ -336,9 +331,6 @@ const SMSForm = ({
         setSearchParamError(false);
         // api
 
-        if (touchedFields.subject && dirtyFields.subject) {
-          delete data['subject'];
-        }
         const formData = {
           conferenceIdx,
           userListJson: JSON.stringify(userList),
