@@ -8,11 +8,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import {
-  LetterDtResponse,
-  TASK_STATUS,
-  taskStatusLabels,
-} from '@/api/types/messageTypes';
+import { LetterDtResponse, taskStatusLabels } from '@/api/types/messageTypes';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
@@ -33,7 +29,6 @@ import { getAdministrators } from '@/api/mediAdminApi';
 import { logger } from '@/lib/logger/defaultLogger';
 import { getSMSList } from '@/api/messageApi';
 import { Loading } from '@/components/core/Loading';
-import { toast } from '@/components/core/Toaster';
 import { CustomTooltip } from '@/components/CustomTooltip';
 import { CHIP_COLOR, Chip } from '@/components/core/Chip';
 import { setTaskStatusChipColor } from '@/lib/chipColors';
@@ -198,15 +193,7 @@ const SMSList = () => {
                 className="text-error-main underline font-bold"
                 onClick={() => {
                   // TODO 모달은 2차로
-                  // setFailModalOpen(true)
-                  if (info.row.original.taskStatus !== TASK_STATUS.complete) {
-                    // Toast UI 점검 및 변경
-                    toast.info('발송 완료 후 조회 가능 합니다.', {
-                      duration: 1000,
-                    });
-                  } else {
-                    moveSMSSendDetail(info.row.original.letterIdx as number);
-                  }
+                  moveSMSSendDetail(info.row.original.letterIdx as number);
                 }}
               >
                 {info.row.original.failureCount}
