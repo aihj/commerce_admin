@@ -5,13 +5,14 @@ import TableTextFilterPopover from '@/components/core/table/filter/TableTextFilt
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import { ResetIcon } from '@/components/icons/ResetIcon';
 import {
-  HAS_FAIL,
+  IS_FAIL,
   HAS_MEMO,
   SEND_STATUS_OPTIONS,
 } from '@/constants/filterSelectOptions';
 import { hasFilters } from '@/lib/hasFilters';
 import { Button, Stack } from '@mui/material';
 import { useCallback } from 'react';
+import { dateFormat } from '@/lib/dayjs';
 
 export interface SMSListFiltersType extends TableSearchParams {
   sendDateStartT?: string;
@@ -19,7 +20,7 @@ export interface SMSListFiltersType extends TableSearchParams {
   isFail?: boolean;
   senderWuserIdx?: number;
   searchText?: string;
-  hasMemo?: 'y' | 'n';
+  hasMemo?: boolean;
 }
 interface SMSListFiltersProps {
   cSearchParams: SMSListFiltersType;
@@ -59,7 +60,10 @@ const SMSListFilters = ({
           onChangeSelect({ name: 'sendDateStartT', value: null });
         }}
         popover={<TableDateFilterPopover title="발송 일시 검색" />}
-        value={cSearchParams?.sendDateStartT}
+        value={
+          cSearchParams?.sendDateStartT &&
+          dateFormat(cSearchParams?.sendDateStartT)
+        }
       />
       <FilterButton
         displayValue={
@@ -104,9 +108,7 @@ const SMSListFilters = ({
       <FilterButton
         displayValue={
           cSearchParams?.isFail &&
-          HAS_FAIL.filter(
-            (item) => item.value === cSearchParams.isFail?.toString()
-          )[0].label
+          IS_FAIL.filter((item) => item.value === cSearchParams.isFail)[0].label
         }
         label="실패 건 여부"
         onFilterApply={(value) => {
@@ -118,7 +120,7 @@ const SMSListFilters = ({
         popover={
           <TableOneSelectFilterPopover
             title="실패 건 존재 여부 선택"
-            data={HAS_FAIL}
+            data={IS_FAIL}
           />
         }
         value={cSearchParams?.isFail}
@@ -162,7 +164,7 @@ const SMSListFilters = ({
       {hasFilters(cSearchParams) ? (
         <Button
           sx={{ px: 2, py: 1 }}
-          startIcon={<ResetIcon />}
+          startIcon={<ResetIcon className="fill-white" />}
           onClick={() => deleteSearchParams()}
           variant="contained"
           color="secondary"

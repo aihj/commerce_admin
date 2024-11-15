@@ -33,10 +33,15 @@ const SMSDetailList = <T extends object>({
     useSelection(smsDetailIds);
 
   const columns = [
-    { formatter: (row): JSX.Element => <Box>{row.name}</Box>, name: '이름' },
+    {
+      formatter: (row): JSX.Element => <Box>{row.receiverName}</Box>,
+      name: '이름',
+    },
     {
       formatter: (row): JSX.Element => (
-        <Box>{showPhoneWithHyphen(row.phone.toString())}</Box>
+        <Box>
+          {showPhoneWithHyphen(row.receiverPhoneNumber?.toString() || '')}
+        </Box>
       ),
       name: '휴대폰 번호',
     },
@@ -47,9 +52,25 @@ const SMSDetailList = <T extends object>({
             color={
               row.resultCode === 'success'
                 ? CHIP_COLOR.primary
-                : CHIP_COLOR.error
+                : row.resultCode === 'schedule'
+                  ? CHIP_COLOR.neutral
+                  : row.resultCode === 'cancel'
+                    ? CHIP_COLOR.info
+                    : row.resultCode === 'server_in_progress'
+                      ? CHIP_COLOR.pink
+                      : CHIP_COLOR.error
             }
-            label={row.resultCode === 'success' ? '성공' : '실패'}
+            label={
+              row.resultCode === 'success'
+                ? '성공'
+                : row.resultCode === 'schedule'
+                  ? '예약'
+                  : row.resultCode === 'cancel'
+                    ? '발송 취소'
+                    : row.resultCode === 'server_in_progress'
+                      ? '서버 발송중'
+                      : '실패'
+            }
           />
         </Box>
       ),
@@ -60,7 +81,9 @@ const SMSDetailList = <T extends object>({
         <Box>
           <CustomTooltip title={row.resultCode} placement="bottom">
             <button style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {row.resultCode === 'success' ? '-' : row.resultDescription}
+              {row.resultCode === ('success' || 'schedule')
+                ? '-'
+                : row.resultDescription}
             </button>
           </CustomTooltip>
         </Box>
@@ -74,7 +97,7 @@ const SMSDetailList = <T extends object>({
     if (arraySelected.length) {
       handleSelectedUser(arraySelected);
     }
-  }, [selected]);
+  }, [selected, handleSelectedUser]);
 
   return (
     <Box sx={{ mt: 2 }}>

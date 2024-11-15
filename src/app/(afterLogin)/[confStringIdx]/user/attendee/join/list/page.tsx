@@ -33,6 +33,7 @@ import {
   setRegistrationStatusChipColor,
   setUserStatusChipColor,
 } from '@/lib/chipColors';
+import { InitSearchParam } from '@/lib/InitSearchParams';
 
 export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
   birthDateStartT?: string;
@@ -47,17 +48,11 @@ const JoinAttendeeList = () => {
   const conferenceIdx: number = useSelector(selectConferenceIdx) as number;
   const router = useRouter();
 
-  // region ***************** params 동기화 *****************
-  const initSearchParam = useMemo((): JoinAttendeeListSearchParamsType => {
-    return {
-      conferenceIdx,
-      currentPage: 0,
-      rowsPerPage: 10,
+  const initSearchParam = InitSearchParam(
+    conferenceIdx as number,
+    'tbl_conference_attendee.attendee_idx'
+  );
 
-      sortType: 'tbl_conference_attendee.attendee_idx',
-      sortDir: 'desc',
-    };
-  }, [conferenceIdx]);
   const { cSearchParams, setCSearchParamsFunc, deleteCSearchParams } =
     useCustomSearchParams<JoinAttendeeListSearchParamsType>(initSearchParam);
   // window.cSearchParams = cSearchParams;
@@ -222,18 +217,22 @@ const JoinAttendeeList = () => {
         header: '등록상태',
         cell: (info) => (
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Chip
-              key={
-                registrationStatusLabels[info.row.original.registrationStatus]
-              }
-              label={
-                registrationStatusLabels[info.row.original.registrationStatus]
-              }
-              type="strong"
-              color={setRegistrationStatusChipColor(
-                info.row.original.registrationStatus
-              )}
-            />
+            {info.row.original.registrationStatus ? (
+              <Chip
+                key={
+                  registrationStatusLabels[info.row.original.registrationStatus]
+                }
+                label={
+                  registrationStatusLabels[info.row.original.registrationStatus]
+                }
+                type="strong"
+                color={setRegistrationStatusChipColor(
+                  info.row.original.registrationStatus
+                )}
+              />
+            ) : info.row.original.wuserStatus === 'delete' ? (
+              '-'
+            ) : null}
           </Box>
         ),
         size: 110,

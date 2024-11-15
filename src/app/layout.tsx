@@ -7,10 +7,18 @@ import { LocalizationProvider } from '@/components/core/LocalizationProvider';
 import { Toaster } from '@/components/core/Toaster';
 import { UserProvider } from '@/contexts/auth/user-context';
 import Providers from '@/components/Providers';
+import { Metadata } from 'next';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
+
+export const metadata: Metadata = {
+  title: 'PCO Admin',
+  icons: {
+    icon: 'https://appfile.medistaff.co.kr/pco/home/pco-medistaff-favicon.ico',
+  },
+};
 
 export default async function Layout({
   children,

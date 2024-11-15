@@ -1,15 +1,29 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Box, Button, Card, Divider, Stack, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  Divider,
+  IconButton,
+  Stack,
+  TextField,
+} from '@mui/material';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
+import Image from 'next/image';
 import { PageTitle } from '@/components/core/PageTitle';
-import { getSMSDetailResponse } from '@/api/types/messageTypes';
+import { TASK_STATUS, getSMSDetailResponse } from '@/api/types/messageTypes';
 import { Label } from '@/components/core/Label';
 import { numberWithComma } from '@/lib/numberWithComma';
-import { getSMSDetail, resendFailedUser } from '@/api/messageApi';
+import {
+  downloadSendedUsers,
+  getSMSDetail,
+  // resendFailedUser,
+  stopSendingMessage,
+} from '@/api/messageApi';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
@@ -24,6 +38,11 @@ import {
 } from '@/constants/filterSelectOptions';
 import { Loading } from '@/components/core/Loading';
 import { SMSDetailList } from './SMSDetailList';
+import { bytesToKB } from '@/lib/byteToKB';
+import { DownloadIcon } from '@/components/icons/DownloadIcon';
+import { ResetIcon } from '@/components/icons/ResetIcon';
+import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
+import { InitSearchParam } from '@/lib/InitSearchParams';
 
 interface SMSSendDetailProps {
   letterIdx: string;
@@ -31,17 +50,12 @@ interface SMSSendDetailProps {
 
 const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
   const conferenceIdx = useSelector(selectConferenceIdx);
-  // TODO 공통으로 빼기
-  const initSearchParam = useMemo((): TableSearchParams => {
-    return {
-      conferenceIdx: conferenceIdx as number,
-      currentPage: 0,
-      rowsPerPage: 10,
 
-      sortType: 'tbl_letter_item.letter_item_idx',
-      sortDir: 'desc',
-    };
-  }, [conferenceIdx]);
+  const initSearchParam = InitSearchParam(
+    conferenceIdx as number,
+    'tbl_letter_item.letter_item_idx'
+  );
+
   const { cSearchParams, setCSearchParamsFunc } =
     useCustomSearchParams<TableSearchParams>(initSearchParam);
 
@@ -138,66 +152,114 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
 
   const [selectedUser, setSelectedUser] = useState<number[]>([]);
 
-  const { error, data } = useQuery({
+  const { error, data, refetch } = useQuery({
     queryKey: ['getSMSDetail', letterIdx],
     queryFn: () =>
-      getSMSDetail({ ...cSearchParams, letterIdx }).then((result) => {
-        return result.content as getSMSDetailResponse;
-      }),
+      getSMSDetail({ ...cSearchParams, letterIdx })
+        .then((result) => {
+          return result.content as getSMSDetailResponse;
+        })
+        .finally(() => {
+          setIsPending(false);
+        }),
   });
 
-  const handleAllFailedResend = () => {
-    Swal.fire({
-      title: '실패 문자 재발송',
-      text: `문자 발송 실패한 ${data?.failureCount}명에게 문자 내용을 재발송 하시겠습니까?`,
-      confirmButtonText: '발송',
-      showCancelButton: true,
-      cancelButtonText: '취소',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setIsPending(true);
-        resendFailedUser({
-          conferenceIdx: conferenceIdx as number,
-          letterIdx: data?.letterIdx as number,
-          type: 'failedTotal',
-        })
-          .then((result) => {
-            return result;
-          })
-          .catch((error) => {
-            logger.error(error);
-          })
-          .finally(() => {
-            setIsPending(false);
-          });
-      }
-    });
+  // 재발송
+  // const handleAllFailedResend = () => {
+  //   Swal.fire({
+  //     title: '실패 문자 재발송',
+  //     text: `문자 발송 실패한 ${data?.failureCount}명에게 문자 내용을 재발송 하시겠습니까?`,
+  //     confirmButtonText: '발송',
+  //     showCancelButton: true,
+  //     cancelButtonText: '취소',
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       setIsPending(true);
+  //       resendFailedUser({
+  //         conferenceIdx: conferenceIdx as number,
+  //         letterIdx: data?.letterIdx as number,
+  //         type: 'failedTotal',
+  //       })
+  //         .then((result) => {
+  //           return result;
+  //         })
+  //         .catch((error) => {
+  //           logger.error(error);
+  //         })
+  //         .finally(() => {
+  //           setIsPending(false);
+  //         });
+  //     }
+  //   });
+  // };
+
+  // 재발송
+  // const handleSelectedFailedResend = () => {
+  //   Swal.fire({
+  //     title: '선택 문자 재발송',
+  //     text: `선택된 ${selectedUser.length}명에게 문자 내용을 재발송 하시겠습니까?`,
+  //     confirmButtonText: '발송',
+  //     showCancelButton: true,
+  //     cancelButtonText: '취소',
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       setIsPending(true);
+  //       resendFailedUser({
+  //         conferenceIdx: conferenceIdx as number,
+  //         letterIdx: data?.letterIdx as number,
+  //         type: 'selected',
+  //         letterItemIdxListJson: JSON.stringify(selectedUser),
+  //       })
+  //         .then((result) => {
+  //           return result;
+  //         })
+  //         .catch((error) => {
+  //           logger.error(error);
+  //         })
+  //         .finally(() => {
+  //           setIsPending(false);
+  //         });
+  //     }
+  //   });
+  // };
+
+  const handleExcelDownload = () => {
+    downloadSendedUsers(letterIdx);
   };
 
-  const handleSelectedFailedResend = () => {
+  const handleStopSend = () => {
     Swal.fire({
-      title: '선택 문자 재발송',
-      text: `선택된 ${selectedUser.length}명에게 문자 내용을 재발송 하시겠습니까?`,
-      confirmButtonText: '발송',
+      title: '문자 발송 취소',
+      html: `<div style=text-align:left;margin:auto;width:400px;>
+    <div style=word-break:keep-all;>
+      전송중이던 문자 중 아직 발송되지 않은 문자의 발송을 취소합니다.
+    </div>
+    <ul style=list-style:disc;list-style-position:inside;padding-left:8px;padding-top:10px;>
+      <li>이미 발송된 문자는 취소할 수 없습니다.</li>
+      <li>문자 발송 내역을 참조해 주세요.</li>
+    </ul>
+  </div>`,
+      confirmButtonText: '발송 취소하기',
       showCancelButton: true,
-      cancelButtonText: '취소',
+      cancelButtonText: '닫기',
+      reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
         setIsPending(true);
-        resendFailedUser({
-          conferenceIdx: conferenceIdx as number,
-          letterIdx: data?.letterIdx as number,
-          type: 'selected',
-          letterItemIdxListJson: JSON.stringify(selectedUser),
-        })
+        stopSendingMessage(letterIdx)
           .then((result) => {
             return result;
           })
           .catch((error) => {
+            Swal.fire({
+              title: '문자 발송 중지 실패',
+              html: '문자 발송 중지를 실패했습니다.<br/>관리자에게 문의해주세요.',
+            });
             logger.error(error);
           })
           .finally(() => {
             setIsPending(false);
+            refetch();
           });
       }
     });
@@ -205,7 +267,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
 
   if (error) {
     logger.error(error);
-    return <div>Error</div>;
+    return <div>Error: {error.message}</div>;
   }
 
   return (
@@ -218,7 +280,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
       }}
     >
       <Loading open={isPending} />
-      {data?.content ? (
+      {data ? (
         <>
           <div>
             {/* TODO breadcrumbs */}
@@ -265,19 +327,35 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                   >
                     <Label label="실패 건수" minWidth={100} bold />
                     <span className="text-14">
-                      {numberWithComma(data.failureCount)}
+                      {data.failureCount
+                        ? numberWithComma(data.failureCount)
+                        : '-'}
                     </span>
                   </Box>
                 </Box>
                 <Divider />
-                <Box sx={{ display: 'flex', flex: 1 }}>
+                <Box sx={{ display: 'flex', flex: 1, alignItems: 'center' }}>
                   <Label label="발송 요청 일시" minWidth={100} bold />
+                  {data.scheduleType === 1 && (
+                    <span className="mr-4">
+                      <Chip label="예약" color={CHIP_COLOR.neutral} />
+                    </span>
+                  )}
                   <span className="text-14">{data.sendDate}</span>
                 </Box>
                 <Divider />
                 <Box sx={{ display: 'flex', flex: 1 }}>
                   <Label label="발송 완료 일시" minWidth={100} bold />
-                  <span className="text-14">{data.completeDate}</span>
+                  <span className="text-14">
+                    {data.completeDate
+                      ? data.completeDate
+                      : data.taskStatus ===
+                          (TASK_STATUS.apiInProgress ||
+                            TASK_STATUS.inComplete ||
+                            TASK_STATUS.inProgress)
+                        ? '발송중'
+                        : '-'}
+                  </span>
                 </Box>
                 <Divider />
                 <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
@@ -346,6 +424,69 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                         / {data.messageType === 'sms' ? '80byte' : '4000byte'}
                       </span>
                     </div>
+                    {data.letterFileList.length !== 0 && (
+                      <>
+                        <Label label="이미지 첨부" minWidth={100} />
+                        <div className="text-11 text-gray-800 my-4">
+                          <span>
+                            총 {data.letterFileList.length}개의 파일{' '}
+                            {bytesToKB(
+                              data.letterFileList.reduce(
+                                (acc, curr) => acc + curr.fileSize,
+                                0
+                              )
+                            )}
+                            KB
+                          </span>
+                          <br />
+                          <span>(30일 이내에만 재 다운로드가 가능합니다.)</span>
+                        </div>
+                        <Divider sx={{ my: '8px' }} />
+                        {data.letterFileList.map((file) => (
+                          <>
+                            <div
+                              key={file.fileOriginName}
+                              className="flex justify-between px-8 items-center"
+                            >
+                              <div className="flex gap-8">
+                                <div className="w-50 h-50">
+                                  <Image
+                                    src={file.fileTotalPath}
+                                    width={50}
+                                    height={50}
+                                    style={{ maxHeight: '100%' }}
+                                    alt={`thumbnail-${file.fileOriginName}`}
+                                  />
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-14">
+                                    {file.fileOriginName}
+                                  </span>
+                                  <span className="text-12 text-gray-700">
+                                    {bytesToKB(file.fileSize)}KB
+                                  </span>
+                                </div>
+                              </div>
+                              <IconButton
+                                onClick={() => {
+                                  window.location.href = file.fileTotalPath;
+                                }}
+                                sx={{
+                                  padding: '4px',
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: 24,
+                                }}
+                                disabled={file.fileStatus === 'delete'}
+                              >
+                                <DownloadIcon size={16} />
+                              </IconButton>
+                            </div>
+                            <Divider sx={{ my: '8px' }} />
+                          </>
+                        ))}
+                      </>
+                    )}
                   </Box>
                 </Box>
               </Stack>
@@ -357,22 +498,77 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                 direction="row"
                 sx={{ m: 2, justifyContent: 'flex-end' }}
               >
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => handleAllFailedResend()}
-                >
-                  실패 일괄 재발송
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={() => handleSelectedFailedResend()}
-                >
-                  선택 재발송
-                  {selectedUser.length !== 0 && `(${selectedUser.length})`}
-                </Button>
+                {data.taskStatus === 'api_complete' ? (
+                  <>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => handleExcelDownload()}
+                      startIcon={<DownloadIcon fill="white" />}
+                      // disabled={data.failureCount === 0}
+                    >
+                      엑셀 다운로드
+                    </Button>
+                    {/* 
+                    다음 스프린트로 기능 이전
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => handleAllFailedResend()}
+                      disabled={data.failureCount === 0}
+                    >
+                      실패 일괄 재발송
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => handleSelectedFailedResend()}
+                    >
+                      선택 재발송
+                      {selectedUser.length !== 0 && `(${selectedUser.length})`}
+                    </Button> */}
+                  </>
+                ) : data.taskStatus === 'interior_in_progress' ? (
+                  <>
+                    {data.cancelDate ? null : (
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => handleStopSend()}
+                        startIcon={<XIcon />}
+                      >
+                        즉시 발송 취소
+                      </Button>
+                    )}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<ResetIcon className="fill-white" />}
+                      onClick={() => {
+                        setIsPending(true);
+                        refetch();
+                      }}
+                    >
+                      새로고침
+                      {selectedUser.length !== 0 && `(${selectedUser.length})`}
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<ResetIcon className="fill-white" />}
+                    onClick={() => {
+                      setIsPending(true);
+                      refetch();
+                    }}
+                  >
+                    새로고침
+                    {selectedUser.length !== 0 && `(${selectedUser.length})`}
+                  </Button>
+                )}
               </Stack>
+
               <SMSDetailList
                 data={data.letterItemList}
                 cSearchParams={cSearchParams as TableSearchParams}

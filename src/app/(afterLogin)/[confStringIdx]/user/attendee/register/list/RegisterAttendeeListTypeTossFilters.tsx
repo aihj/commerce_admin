@@ -258,7 +258,7 @@ const RegisterAttendeeListTypeTossFilters = ({
           {hasFilters(cSearchParams) ? (
             <Button
               sx={{ px: 2, py: 1 }}
-              startIcon={<ResetIcon />}
+              startIcon={<ResetIcon className="fill-white" />}
               onClick={() => handleClearFilters()}
               variant="contained"
               color="secondary"

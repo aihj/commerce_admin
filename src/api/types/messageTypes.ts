@@ -1,4 +1,3 @@
-import { Filter } from '@/app/(afterLogin)/[confStringIdx]/message/sms/send/Filters';
 import { TableSearchParams } from './tableSearchParams';
 
 interface sendSMSRequest {
@@ -9,9 +8,12 @@ interface sendSMSRequest {
   type: string; // default value: 'custom'
   messageType: string;
   senderPhoneNumber: string;
+  scheduleType: number;
 }
 export interface sendSMSFilteredUsersRequest extends sendSMSRequest {
-  searchParam: Filter;
+  // searchParamJson: Filter;
+  searchParamJson: string;
+  conferenceIdx: number;
 }
 
 export interface sendSMSTestRequest extends sendSMSRequest {
@@ -24,20 +26,29 @@ export interface sendSMSSelectedUsersRequest extends sendSMSRequest {
   wuserListJson: string;
 }
 
+export interface sendSMSDirectlyAddedUsersRequest extends sendSMSRequest {
+  conferenceIdx: number;
+  userListJson: string;
+}
+
 export enum TASK_STATUS {
-  inInProgress = 'in_progress',
-  inInComplete = 'interior_complete',
+  inProgress = 'interior_in_progress',
+  inComplete = 'interior_complete',
   apiInProgress = 'api_in_progress',
   complete = 'api_complete',
   failure = 'interior_fail',
+  schedule = 'schedule',
+  stop = 'interior_stop',
 }
 
 export const taskStatusLabels = {
-  [TASK_STATUS.inInProgress]: '발송중',
-  [TASK_STATUS.inInComplete]: '발송중',
+  [TASK_STATUS.inProgress]: '발송중',
+  [TASK_STATUS.inComplete]: '발송중',
   [TASK_STATUS.apiInProgress]: '발송중',
   [TASK_STATUS.complete]: '발송완료',
   [TASK_STATUS.failure]: '발송실패',
+  [TASK_STATUS.schedule]: '예약',
+  [TASK_STATUS.stop]: '중단',
 };
 
 export interface LetterDtResponse {
@@ -54,6 +65,7 @@ export interface LetterDtResponse {
   taskStatus: TASK_STATUS;
   senderWuserIdx?: number;
   messageType: string;
+  hasFile: boolean;
 }
 
 export interface SMSDetailListDT {
@@ -62,10 +74,17 @@ export interface SMSDetailListDT {
   smsMsgId?: number | null;
   mmsMsgId?: number | null;
   receiverWuserIdx: number;
-  phone: string;
-  name: string;
+  receiverPhoneNumber: string;
+  receiverName: string;
   resultCode: string;
   resultDescription?: string;
+}
+
+export interface SMSUploadedImages {
+  fileOriginName: string;
+  fileSize: number;
+  fileStatus: string;
+  fileTotalPath: string;
 }
 
 export interface getSMSDetailRequest extends TableSearchParams {
@@ -84,12 +103,16 @@ export interface getSMSDetailResponse {
   memo: string;
   sendDate: string;
   completeDate: string | null;
+  cancelDate: string | null;
   senderPhoneNumber: string;
   senderWuserIdx: number;
   senderName: string;
   messageType: string;
   receiverInfo: string;
   letterItemList: SMSDetailListDT[];
+  letterFileList: SMSUploadedImages[];
+  taskStatus: string;
+  scheduleType: number;
 }
 
 export interface resendFailedUserRequest {

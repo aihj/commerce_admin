@@ -450,7 +450,7 @@ const Filters = ({
             </FormControl> */}
             <Button
               sx={{ px: 2, py: 1, minWidth: 94 }}
-              startIcon={<ResetIcon />}
+              startIcon={<ResetIcon className="fill-white" />}
               onClick={() => handleClearFilters()}
               variant="contained"
               color="secondary"

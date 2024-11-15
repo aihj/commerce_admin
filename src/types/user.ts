@@ -25,3 +25,17 @@ export interface AttendeePaymentManualVo {
     | 'cancel-request'
     | 'cancel-completed';
 }
+
+// 직접 입력 문자보내기용 유저 인터페이스
+export interface DirectUser {
+  name: string;
+  phone: string;
+}
+
+// 엑셀 업로드 문자보내기용 유저 인터페이스
+export interface ExcelUploadedUser {
+  index: number;
+  name: string;
+  phone: string;
+  isValid: boolean;
+}

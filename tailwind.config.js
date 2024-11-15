@@ -67,6 +67,17 @@ const config = {
         pink: {
           main: '#F8648C',
         },
+        gray: {
+          900: '#292B30',
+          800: '#44474D',
+          700: '#5D5F66',
+          600: '#7E8085',
+          500: '#A7AAAF',
+          400: '#C4C7CB',
+          300: '#ECEEF0',
+          200: '#F4F5F6',
+          100: '#FAFAFA',
+        },
       },
       spacing: px0_100,
       fontSize: px0_100,

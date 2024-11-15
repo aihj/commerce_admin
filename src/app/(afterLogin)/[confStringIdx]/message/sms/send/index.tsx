@@ -4,11 +4,17 @@ import { useState } from 'react';
 import { Box, Divider, Tab, Tabs } from '@mui/material';
 import { PageTitle } from '@/components/core/PageTitle';
 import { useAppSelector } from '@/redux/hooks';
-import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
+import {
+  selectConferenceIdx,
+  selectConferenceStringIdx,
+} from '@/redux/slices/pcoSlice';
 import { Filter, Filters } from './Filters';
 import { SMSForm } from './SMSForm';
 import { SelectUsers } from './SelectUsers';
 import { SEND_TYPE } from '@/constants/sendTypes';
+import { AddUserDirectly } from './AddUserDirectly';
+import { DirectUser, ExcelUploadedUser } from '@/types/user';
+import { ExcelUpload } from './ExcelUpload';
 
 const tabs = [
   {
@@ -23,12 +29,18 @@ const tabs = [
     type: SEND_TYPE.FILTER,
     value: 1,
   },
-  // {
-  //   idx: 3,
-  //   label: '직접입력',
-  //   type: SEND_TYPE.DIRECT,
-  //   value: 2,
-  // },
+  {
+    idx: 3,
+    label: '직접입력',
+    type: SEND_TYPE.DIRECT,
+    value: 2,
+  },
+  {
+    idx: 4,
+    label: '엑셀파일로 보내기',
+    type: SEND_TYPE.EXCEL,
+    value: 3,
+  },
 ];
 
 interface TabPanelProps {
@@ -55,6 +67,7 @@ function TabPanel(props: TabPanelProps) {
 
 const SMSSend = () => {
   const conferenceIdx = useAppSelector(selectConferenceIdx);
+  const conferenceStringIdx = useAppSelector(selectConferenceStringIdx);
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [sendType, setSendType] = useState<SEND_TYPE>(tabs[0].type);
 
@@ -67,9 +80,19 @@ const SMSSend = () => {
     conferenceIdx: conferenceIdx as number,
   });
 
+  // 회원 검색 개별 발송
   const [searchedUsers, setSearchedUsers] = useState<number[]>([]);
 
+  // 직접 입력 발송
+  const [addedUsers, setAddedUsers] = useState<DirectUser[]>([]);
+
+  // 필터 발송
   const [searchParamError, setSearchParamError] = useState<boolean>(false);
+
+  // 엑셀 업로드 발송
+  const [excelUploadedUser, setExcelUploadedUser] = useState<
+    ExcelUploadedUser[]
+  >([]);
 
   return (
     <Box
@@ -118,15 +141,32 @@ const SMSSend = () => {
           />
         </TabPanel>
         <TabPanel value={tabIndex} index={2}>
-          직접 입력 Coming Soon
+          <AddUserDirectly
+            addedUsers={addedUsers}
+            handleAddedUser={(user: DirectUser[]) => {
+              setAddedUsers(user);
+            }}
+            searchParamError={searchParamError}
+          />
+        </TabPanel>
+        <TabPanel value={tabIndex} index={3}>
+          <ExcelUpload
+            handleExcelUploadedUser={(user: ExcelUploadedUser[]) => {
+              setExcelUploadedUser(user);
+            }}
+            searchParamError={searchParamError}
+          />
         </TabPanel>
       </Box>
       <SMSForm
         searchParam={searchFilterParam}
         searchedUsers={searchedUsers}
+        addedUsers={addedUsers}
+        excelUploadedUser={excelUploadedUser}
         sendType={sendType}
         conferenceIdx={conferenceIdx as number}
         setSearchParamError={(value: boolean) => setSearchParamError(value)}
+        conferenceStringIdx={conferenceStringIdx}
       />
     </Box>
   );

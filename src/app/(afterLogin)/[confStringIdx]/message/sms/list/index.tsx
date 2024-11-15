@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Card,
-  Chip,
   IconButton,
   Stack,
   Typography,
@@ -23,7 +22,8 @@ import { DTCellBox } from '@/components/DTCellBox';
 import { FailCaseModal } from './FailCaseModal';
 import { useParams, useRouter } from 'next/navigation';
 import { PATH } from '@/paths';
-import { SMSListFilters, SMSListFiltersType } from './SMSListFilters';
+import { SMSListFiltersType } from './SMSListFilters';
+import { SMSListFilters } from './SMSListFilters';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import { useSelector } from 'react-redux';
@@ -35,6 +35,10 @@ import { getSMSList } from '@/api/messageApi';
 import { Loading } from '@/components/core/Loading';
 import { toast } from '@/components/core/Toaster';
 import { CustomTooltip } from '@/components/CustomTooltip';
+import { CHIP_COLOR, Chip } from '@/components/core/Chip';
+import { setTaskStatusChipColor } from '@/lib/chipColors';
+import { ImageIcon } from '@/components/icons/ImageIcon';
+import { InitSearchParam } from '@/lib/InitSearchParams';
 
 const SMSList = () => {
   const [failModalOpen, setFailModalOpen] = useState<boolean>(false);
@@ -88,14 +92,7 @@ const SMSList = () => {
                   textUnderlinePosition: 'under',
                 }}
                 onClick={() => {
-                  if (info.row.original.taskStatus !== TASK_STATUS.complete) {
-                    // Toast UI 점검 및 변경
-                    toast.info('발송 완료 후 조회 가능 합니다.', {
-                      duration: 1000,
-                    });
-                  } else {
-                    moveSMSSendDetail(info.row.original.letterIdx as number);
-                  }
+                  moveSMSSendDetail(info.row.original.letterIdx as number);
                 }}
                 title={`${info.row.original.letterIdx}`}
               >
@@ -117,7 +114,7 @@ const SMSList = () => {
         header: '발송완료일시',
         cell: (info) => (
           <DTCellBox>
-            <span>{info.getValue()}</span>
+            <span>{info.getValue() ? info.getValue() : '-'}</span>
           </DTCellBox>
         ),
       }),
@@ -163,12 +160,19 @@ const SMSList = () => {
             <Chip
               color={
                 info.row.original.messageType === 'mms'
-                  ? 'success'
-                  : 'secondary'
+                  ? CHIP_COLOR.success
+                  : CHIP_COLOR.secondary
               }
               label={info.row.original.messageType?.toUpperCase()}
             />
           </DTCellBox>
+        ),
+        size: 80,
+      }),
+      columnHelper.accessor('hasFile', {
+        header: '첨부파일',
+        cell: (info) => (
+          <DTCellBox>{info.getValue() ? <ImageIcon /> : <></>}</DTCellBox>
         ),
         size: 80,
       }),
@@ -177,7 +181,8 @@ const SMSList = () => {
         cell: (info) => (
           <DTCellBox>
             <Chip
-              variant="outlined"
+              type="soft"
+              color={setTaskStatusChipColor(info.row.original.taskStatus)}
               label={taskStatusLabels[info.row.original.taskStatus]}
             />
           </DTCellBox>
@@ -226,17 +231,12 @@ const SMSList = () => {
   );
 
   const conferenceIdx = useSelector(selectConferenceIdx);
-  // TODO 공통으로 빼기
-  const initSearchParam = useMemo((): TableSearchParams => {
-    return {
-      conferenceIdx: conferenceIdx as number,
-      currentPage: 0,
-      rowsPerPage: 10,
 
-      sortType: 'tbl_letter.letter_idx',
-      sortDir: 'desc',
-    };
-  }, [conferenceIdx]);
+  const initSearchParam = InitSearchParam(
+    conferenceIdx as number,
+    'tbl_letter.letter_idx'
+  );
+
   const { cSearchParams, setCSearchParamsFunc, deleteCSearchParams } =
     useCustomSearchParams<TableSearchParams>(initSearchParam);
 

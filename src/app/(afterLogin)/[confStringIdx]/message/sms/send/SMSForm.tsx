@@ -4,9 +4,13 @@ import {
   Button,
   Chip,
   Divider,
+  FormControlLabel,
   MenuItem,
+  Radio,
+  RadioGroup,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { Label } from '@/components/core/Label';
@@ -14,6 +18,9 @@ import { Filter } from './Filters';
 import { SMSTemplateInfo } from './SMSTemplateInfo';
 import { toast } from '@/components/core/Toaster';
 import {
+  getSMSLastSendedTime,
+  sendSMSDirectlyAddedUsers,
+  sendSMSExcelUploadedUsers,
   sendSMSFilteredUsers,
   sendSMSSelectedUsers,
   sendSMSTest,
@@ -23,12 +30,25 @@ import { logger } from '@/lib/logger/defaultLogger';
 import { calculateByteLength } from '@/lib/calculateByteLength';
 import { DevTool } from '@hookform/devtools';
 import { SEND_TYPE } from '@/constants/sendTypes';
+import { DateTimePicker } from '@mui/x-date-pickers';
+import { dayjs } from '@/lib/dayjs';
+import { UploadImageFiles } from './UploadImageFiles';
+import { DirectUser, ExcelUploadedUser } from '@/types/user';
+import {
+  sendSMSDirectlyAddedUsersRequest,
+  sendSMSFilteredUsersRequest,
+  sendSMSSelectedUsersRequest,
+} from '@/api/types/messageTypes';
+import { useRouter } from 'next/navigation';
+import { PATH } from '@/paths';
+import { ResponseMessageVo } from '@/api/types/responseMessageVo';
 
 interface SMSFormData {
   subject?: string;
   memo: string;
   content: string;
   message: string;
+  scheduleType?: string;
   testPhoneNumber?: string;
   senderPhoneNumber: string;
   type: string; // default value: 'custom'
@@ -38,9 +58,12 @@ interface SMSFormData {
 interface SMSFormProps {
   searchParam: Filter;
   searchedUsers: number[];
+  addedUsers: DirectUser[];
+  excelUploadedUser: ExcelUploadedUser[];
   sendType: SEND_TYPE;
   conferenceIdx: number;
   setSearchParamError: (value: boolean) => void;
+  conferenceStringIdx: string;
 }
 
 const dummySender = [
@@ -51,9 +74,12 @@ const dummySender = [
 const SMSForm = ({
   searchParam,
   searchedUsers,
+  addedUsers,
+  excelUploadedUser,
   conferenceIdx,
   setSearchParamError,
   sendType,
+  conferenceStringIdx,
 }: SMSFormProps) => {
   const {
     control,
@@ -66,24 +92,41 @@ const SMSForm = ({
     reValidateMode: 'onBlur',
   });
 
+  const router = useRouter();
+
   const [isSMSMode, setIsSMSMode] = useState<boolean>(true);
   const [testCompleted, setTestCompleted] = useState<boolean>(false);
   const [messageType, setMessageType] = useState<string>('sms');
+  const [scheduledDate, setScheduledDate] = useState<string | null>(null);
+  const [scheduledDateErrorMessage, setScheduledDateErrorMessage] =
+    useState<string>('');
 
-  const handleSMSMode = (value: string) => {
-    if (!watch('subject')) {
-      if (isSMSMode && calculateByteLength(value) > 80) {
-        setIsSMSMode(false);
-        toast.info('MMS로 전환됩니다.', { duration: 1000 });
-      }
-      if (!isSMSMode && calculateByteLength(value) <= 80) {
-        setIsSMSMode(true);
-        toast.info('SMS로 전환됩니다.', { duration: 1000 });
-      }
-    }
-  };
+  const [files, setFiles] = React.useState<File[]>([]);
 
-  const handleAlert = (type: string) => {
+  const [checkPossibleToSend, setCheckPossibleToSend] = useState<boolean>(true);
+
+  // tsx 화살표 함수로 제네릭을 사용하면 제네릭을 jsx태그로 인식하는 이슈때문에 function키워드 사용
+  function sendSMS<T>(
+    fn: (data: T) => Promise<ResponseMessageVo<any>>,
+    data: T
+  ): void {
+    setCheckPossibleToSend(false);
+    fn(data)
+      .then((result) => {
+        if (result.status === 200) {
+          handleAlert('success', result.content);
+        }
+      })
+      .catch((error) => {
+        logger.error(`<${fn} error`, error);
+        handleAlert('fail');
+      })
+      .finally(() => {
+        setCheckPossibleToSend(true);
+      });
+  }
+
+  const handleAlert = (type: string, letterIdx?: number) => {
     switch (type) {
       case 'invalid':
         Swal.fire({
@@ -93,14 +136,42 @@ const SMSForm = ({
         return;
       case 'success':
         Swal.fire({
-          title: '문자 전송 완료',
-          text: '문자 전송이 완료되었습니다.',
+          title: '문자 전송 요청 완료',
+          html: `<div>문자 발송을 요청했습니다.<br/>요청된 개수에 따라 문자 발송 완료까지 시간이 걸릴 수 있으며, 자세한 내용은 문자 발송 상세내역을 참조해 주세요.<br/>(닫기 선택 시, 작성중이던 페이지로 다시 돌아갑니다.)</div>`,
+          showCancelButton: true,
+          cancelButtonText: '닫기',
+          confirmButtonText: '상세 보기',
+          reverseButtons: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            router.push(
+              PATH.EACH.MESSAGE.SMS.DETAIL(
+                conferenceStringIdx,
+                letterIdx as number
+              )
+            );
+          }
+        });
+        return;
+      case 'fail':
+        Swal.fire({
+          title: '문자 보내기 실패',
+          html: `문자 발송 요청 완료되었습니다.`,
         });
         return;
     }
   };
 
   const onSubmit = (data: SMSFormData) => {
+    if (data.scheduleType === 'y') {
+      if (!scheduledDate) {
+        setScheduledDateErrorMessage('예약 전송 시간을 입력해주세요');
+        return;
+      }
+      if (scheduledDateErrorMessage !== '') {
+        return;
+      }
+    }
     if (sendType === SEND_TYPE.FILTER) {
       if (Object.keys(searchParam).length === 0) {
         handleAlert('invalid');
@@ -113,23 +184,41 @@ const SMSForm = ({
         }
 
         const formData = {
-          searchParam,
+          conferenceIdx,
+          searchParamJson: JSON.stringify(searchParam),
           messageType,
           ...data,
+          scheduleType: data.scheduleType === 'y' ? 1 : 0,
+          sendDate: data.scheduleType === 'y' ? scheduledDate : null,
+          messageFileList: files,
         };
-        sendSMSFilteredUsers(formData)
-          .then((result) => {
-            if (result.status === 200) {
-              handleAlert('success');
-            }
-          })
-          .catch((error) => {
-            logger.error('<sendSMSFilteredUsers> error', error);
+        getSMSLastSendedTime(conferenceIdx).then((result) => {
+          if (result.content) {
             Swal.fire({
-              title: '문자 전송 실패',
-              text: `${error.response.data.message}`,
+              title: '문자 연속 전송',
+              html: result.message,
+              showCancelButton: true,
+              cancelButtonText: '닫기',
+              confirmButtonText: '문자 전송하기',
+              reverseButtons: true,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                sendSMS<sendSMSFilteredUsersRequest>(
+                  sendSMSFilteredUsers,
+                  formData
+                );
+                return;
+              } else if (result.isDismissed) {
+                setCheckPossibleToSend(true);
+              }
             });
-          });
+          } else {
+            sendSMS<sendSMSFilteredUsersRequest>(
+              sendSMSFilteredUsers,
+              formData
+            );
+          }
+        });
       }
     } else if (sendType === SEND_TYPE.USER) {
       if (searchedUsers.length === 0) {
@@ -147,20 +236,190 @@ const SMSForm = ({
           wuserListJson: JSON.stringify(searchedUsers),
           messageType,
           ...data,
+          scheduleType: data.scheduleType === 'y' ? 1 : 0,
+          sendDate: data.scheduleType === 'y' ? scheduledDate : null,
+          messageFileList: files,
         };
-        sendSMSSelectedUsers(formData)
-          .then((result) => {
-            if (result.status === 200) {
-              handleAlert('success');
-            }
-          })
-          .catch((error) => {
-            logger.error('<sendSMSFilteredUsers> error', error);
+        getSMSLastSendedTime(conferenceIdx).then((result) => {
+          if (result.content) {
             Swal.fire({
-              title: '문자 전송 실패',
-              text: `${error.response.data.message}`,
+              title: '문자 연속 전송',
+              html: result.message,
+              showCancelButton: true,
+              cancelButtonText: '닫기',
+              confirmButtonText: '문자 전송하기',
+              reverseButtons: true,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                sendSMS<sendSMSSelectedUsersRequest>(
+                  sendSMSSelectedUsers,
+                  formData
+                );
+                return;
+              } else if (result.isDismissed) {
+                setCheckPossibleToSend(true);
+              }
             });
+          } else {
+            sendSMS<sendSMSSelectedUsersRequest>(
+              sendSMSSelectedUsers,
+              formData
+            );
+          }
+        });
+      }
+    } else if (sendType === SEND_TYPE.DIRECT) {
+      if (addedUsers.length === 0) {
+        handleAlert('invalid');
+        setSearchParamError(true);
+      } else {
+        const userList = addedUsers.map((user) => {
+          return {
+            name: user.name === '-' ? '익명' : user.name,
+            phone: user.phone.replace(/[^0-9-]/g, ''),
+          };
+        });
+        setSearchParamError(false);
+        // api
+
+        if (touchedFields.subject && dirtyFields.subject) {
+          delete data['subject'];
+        }
+        const formData = {
+          conferenceIdx,
+          userListJson: JSON.stringify(userList),
+          messageType,
+          ...data,
+          scheduleType: data.scheduleType === 'y' ? 1 : 0,
+          sendDate: data.scheduleType === 'y' ? scheduledDate : null,
+          messageFileList: files,
+        };
+        getSMSLastSendedTime(conferenceIdx).then((result) => {
+          if (result.content) {
+            Swal.fire({
+              title: '문자 연속 전송',
+              html: result.message,
+              showCancelButton: true,
+              cancelButtonText: '닫기',
+              confirmButtonText: '문자 전송하기',
+              reverseButtons: true,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                sendSMS<sendSMSDirectlyAddedUsersRequest>(
+                  sendSMSDirectlyAddedUsers,
+                  formData
+                );
+                return;
+              } else if (result.isDismissed) {
+                setCheckPossibleToSend(true);
+              }
+            });
+          } else {
+            sendSMS<sendSMSDirectlyAddedUsersRequest>(
+              sendSMSDirectlyAddedUsers,
+              formData
+            );
+          }
+        });
+      }
+    } else if (sendType === SEND_TYPE.EXCEL) {
+      if (excelUploadedUser.length === 0) {
+        handleAlert('invalid');
+        setSearchParamError(true);
+      } else {
+        const userList = excelUploadedUser.map((user) => {
+          return {
+            name: user.name === '-' ? '익명' : user.name,
+            phone: user.phone,
+          };
+        });
+        setSearchParamError(false);
+        // api
+
+        if (touchedFields.subject && dirtyFields.subject) {
+          delete data['subject'];
+        }
+        const formData = {
+          conferenceIdx,
+          userListJson: JSON.stringify(userList),
+          messageType,
+          ...data,
+          scheduleType: data.scheduleType === 'y' ? 1 : 0,
+          sendDate: data.scheduleType === 'y' ? scheduledDate : null,
+          messageFileList: files,
+        };
+        const hasErrorData = excelUploadedUser.filter(
+          (item) => !item.isValid
+        ).length;
+        if (hasErrorData) {
+          Swal.fire({
+            title: '주소록 오류 확인',
+            html: `<div style=word-break:keep-all;>요청하신 ${excelUploadedUser.length}개 중 ${hasErrorData}건의 오류를 포함하여 전송 요청 하시겠습니까?<br/>
+            오류 데이터는 문자 전송이 되지 않으므로, 삭제 후 전송요청 하시기를 권합니다.</div>`,
+            showCancelButton: true,
+            cancelButtonText: '닫기',
+            confirmButtonText: '전송하기',
+            reverseButtons: true,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              getSMSLastSendedTime(conferenceIdx).then((result) => {
+                if (result.content) {
+                  Swal.fire({
+                    title: '문자 연속 전송',
+                    html: result.message,
+                    showCancelButton: true,
+                    cancelButtonText: '닫기',
+                    confirmButtonText: '문자 전송하기',
+                    reverseButtons: true,
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      sendSMS<sendSMSDirectlyAddedUsersRequest>(
+                        sendSMSExcelUploadedUsers,
+                        formData
+                      );
+                      return;
+                    } else if (result.isDismissed) {
+                      setCheckPossibleToSend(true);
+                    }
+                  });
+                } else {
+                  sendSMS<sendSMSDirectlyAddedUsersRequest>(
+                    sendSMSExcelUploadedUsers,
+                    formData
+                  );
+                }
+              });
+            }
           });
+        } else {
+          getSMSLastSendedTime(conferenceIdx).then((result) => {
+            if (result.content) {
+              Swal.fire({
+                title: '문자 연속 전송',
+                html: result.message,
+                showCancelButton: true,
+                cancelButtonText: '닫기',
+                confirmButtonText: '문자 전송하기',
+                reverseButtons: true,
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  sendSMS<sendSMSDirectlyAddedUsersRequest>(
+                    sendSMSExcelUploadedUsers,
+                    formData
+                  );
+                  return;
+                } else if (result.isDismissed) {
+                  setCheckPossibleToSend(true);
+                }
+              });
+            } else {
+              sendSMS<sendSMSDirectlyAddedUsersRequest>(
+                sendSMSExcelUploadedUsers,
+                formData
+              );
+            }
+          });
+        }
       }
     }
   };
@@ -168,13 +427,16 @@ const SMSForm = ({
   const handleSendTest = () => {
     const data = watch();
 
-    if (errors.testPhoneNumber) {
+    if (
+      data.testPhoneNumber === undefined ||
+      errors.testPhoneNumber !== undefined
+    ) {
       Swal.fire({
         title: '테스트 휴대폰 번호 확인',
         text: '테스트 전송을 위한 휴대폰 번호를 확인 후 다시 입력해 주세요.',
       });
       return;
-    } else if (errors.content || !data.content) {
+    } else if (errors.content && files.length === 0) {
       Swal.fire({
         title: '필수 정보 확인',
         text: '문자 전송을 위한 필수 정보를 확인 후 다시 입력해 주세요.',
@@ -188,6 +450,9 @@ const SMSForm = ({
         messageType,
         ...data,
         type: 'test',
+        scheduleType: data.scheduleType === 'y' ? 1 : 0,
+        sendDate: data.scheduleType === 'y' ? scheduledDate : null,
+        messageFileList: files,
       };
       sendSMSTest(formData)
         .then((result) => {
@@ -209,9 +474,36 @@ const SMSForm = ({
     }
   };
 
+  // sms/mms
   useEffect(() => {
+    const subject = watch('subject');
+    const content = watch('content');
+
+    // mms
+    if (files.length !== 0 || !!subject || calculateByteLength(content) > 80) {
+      if (isSMSMode) {
+        setIsSMSMode(false);
+        toast.info('MMS로 전환됩니다.', { duration: 1000 });
+        setMessageType('mms');
+        return;
+      }
+    } else {
+      // sms
+      if (!isSMSMode) {
+        setIsSMSMode(true);
+        toast.info('SMS로 전환됩니다.', { duration: 1000 });
+        setMessageType('sms');
+        return;
+      }
+    }
     setMessageType(isSMSMode ? 'sms' : 'mms');
-  }, [isSMSMode]);
+  }, [isSMSMode, files, watch('subject'), watch('content')]);
+
+  useEffect(() => {
+    if (errors.memo) {
+      window.scrollTo(0, 100);
+    }
+  }, [errors]);
 
   return (
     <Box
@@ -246,10 +538,15 @@ const SMSForm = ({
                   inputProps={{
                     maxLength: 49,
                   }}
+                  InputProps={{
+                    sx: {
+                      height: 44,
+                    },
+                  }}
                   helperText={
                     errors.memo
                       ? errors.memo?.message
-                      : '제목은 문자 발송 내역에 저장되는 내용이며, 문자 발송시 제목으로 표기되지 않습니다.'
+                      : '메모는 문자 발송 내역에 저장되는 내용이며, 문자 발송시 제목으로 표기되지 않습니다.'
                   }
                   fullWidth
                   {...field}
@@ -310,15 +607,16 @@ const SMSForm = ({
                       <TextField
                         label="제목"
                         sx={{ p: 0, width: 480 }}
+                        InputProps={{
+                          sx: {
+                            height: 44,
+                          },
+                        }}
                         error={Boolean(errors.subject)}
                         placeholder="(선택) 제목 입력 시 MMS로 자동 전환 됩니다."
                         helperText={errors.subject?.message}
                         fullWidth
                         {...field}
-                        onChange={(e) => {
-                          field.onChange(e.target.value);
-                          setIsSMSMode(e.target.value.length === 0);
-                        }}
                       />
                       <span className="text-12 leading-14 text-stone-600 text-end pt-6">
                         {field.value?.length
@@ -343,7 +641,8 @@ const SMSForm = ({
                 control={control}
                 name="content"
                 rules={{
-                  required: '보낼 메시지를 입력해 주세요.',
+                  required:
+                    files.length === 0 && '보낼 메시지를 입력해 주세요.',
                 }}
                 render={({ field }) => (
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -373,7 +672,6 @@ const SMSForm = ({
                               );
                             } else {
                               field.onChange(e.target.value);
-                              handleSMSMode(field.value);
                             }
                           }}
                         />
@@ -385,12 +683,116 @@ const SMSForm = ({
                         </span>
                       </Box>
                       <SMSTemplateInfo />
+                      <Divider
+                        orientation="vertical"
+                        sx={{ minHeight: '254px', ml: 2 }}
+                      />
+                      <UploadImageFiles
+                        files={files}
+                        handleFiles={(newFiles: File[]) => setFiles(newFiles)}
+                      />
                     </Box>
                   </Box>
                 )}
               />
             </Box>
           </Box>
+          <Divider />
+          <Controller
+            control={control}
+            name="scheduleType"
+            render={({ field }) => (
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Label label="전송 시간" minWidth={100} bold />
+                <RadioGroup
+                  sx={{ height: 44 }}
+                  row
+                  defaultValue={'n'}
+                  {...field}
+                  value={field.value}
+                  onChange={(e) => {
+                    field.onChange(e.target.value);
+                    if (field.value === 'n') {
+                      setScheduledDateErrorMessage('');
+                      setScheduledDate(null);
+                    }
+                  }}
+                >
+                  <FormControlLabel
+                    control={<Radio />}
+                    label={
+                      <div>
+                        <Typography
+                          sx={{
+                            color: 'var(--mui-palette-text-primary)',
+                          }}
+                          variant="inherit"
+                        >
+                          즉시 전송
+                        </Typography>
+                      </div>
+                    }
+                    value={'n'}
+                  />
+                  <FormControlLabel
+                    control={<Radio />}
+                    label={
+                      <div>
+                        <Typography
+                          sx={{
+                            color: 'var(--mui-palette-text-primary)',
+                          }}
+                          variant="inherit"
+                        >
+                          예약 전송
+                        </Typography>
+                      </div>
+                    }
+                    value={'y'}
+                  />
+                </RadioGroup>
+                {field.value === 'y' && (
+                  <DateTimePicker
+                    sx={{ ml: 1, py: 0 }}
+                    disablePast
+                    ampm={false}
+                    maxDateTime={dayjs().add(7, 'day')}
+                    timeSteps={{ minutes: 10 }}
+                    yearsOrder="desc"
+                    slotProps={{
+                      textField: {
+                        InputProps: {
+                          sx: { height: '44px' },
+                        },
+                        helperText: scheduledDateErrorMessage,
+                        sx: {
+                          ml: 1,
+                          py: 0,
+                          '& .MuiFormHelperText-root': {
+                            color: 'var(--mui-palette-error-main)',
+                          },
+                        },
+                      },
+                    }}
+                    onChange={(value) => {
+                      setScheduledDate(
+                        dayjs(value).format('YYYY-MM-DDTHH:mm:ss')
+                      );
+                    }}
+                    onError={(error) => {
+                      if (error) {
+                        setScheduledDateErrorMessage(
+                          '예약 전송 시간을 확인해주세요'
+                        );
+                      } else {
+                        setScheduledDateErrorMessage('');
+                      }
+                    }}
+                  />
+                )}
+              </Box>
+            )}
+          />
           <Divider />
           <Controller
             control={control}
@@ -418,7 +820,7 @@ const SMSForm = ({
                   variant="contained"
                   color="secondary"
                   onClick={() => handleSendTest()}
-                  disabled={testCompleted}
+                  // disabled={testCompleted}
                 >
                   테스트 전송
                 </Button>
@@ -462,6 +864,7 @@ const SMSForm = ({
               variant="contained"
               color="primary"
               type="submit"
+              disabled={!checkPossibleToSend}
             >
               문자 전송하기
             </Button>

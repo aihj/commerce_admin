@@ -3,6 +3,7 @@ import {
   REGISTRATION_STATUS,
   USER_STATUS,
 } from '@/api/types/attendeeTypes';
+import { TASK_STATUS } from '@/api/types/messageTypes';
 import { CHIP_COLOR } from '@/components/core/Chip';
 
 export const setUserStatusChipColor = (status: USER_STATUS) => {
@@ -48,5 +49,23 @@ export const setPaymentStatusChipColor = (status: PAYMENT_STATUS) => {
 
     default:
       return CHIP_COLOR.secondary;
+  }
+};
+
+export const setTaskStatusChipColor = (status: TASK_STATUS) => {
+  switch (status) {
+    case TASK_STATUS.inInProgress:
+      return CHIP_COLOR.primary;
+    case TASK_STATUS.inInComplete:
+      return CHIP_COLOR.primary;
+    case TASK_STATUS.apiInProgress:
+      return CHIP_COLOR.primary;
+    case TASK_STATUS.complete:
+      return CHIP_COLOR.neutral;
+    case TASK_STATUS.schedule:
+      return CHIP_COLOR.primary;
+
+    default:
+      return CHIP_COLOR.neutral;
   }
 };

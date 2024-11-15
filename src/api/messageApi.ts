@@ -12,6 +12,7 @@ import {
   getUsersWithNameOrPhoneRequest,
   getUsersWithNameOrPhoneResponse,
   sendSMSSelectedUsersRequest,
+  sendSMSDirectlyAddedUsersRequest,
 } from './types/messageTypes';
 import { SMSListFiltersType } from '@/app/(afterLogin)/[confStringIdx]/message/sms/list/SMSListFilters';
 
@@ -24,7 +25,7 @@ export const getTotalUserAmount = (
 ): Promise<ResponseMessageVo<any>> => {
   logger.debug('<getTotalUserAmount> params ', searchParam);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/attendee/filter-count`, {
+    .post(`/api/pco/admin/total/top/message/attendee/filtered-count`, {
       searchParam,
     })
     .then((response) => {
@@ -41,11 +42,23 @@ export const getTotalUserAmount = (
 export const sendSMSFilteredUsers = (
   data: sendSMSFilteredUsersRequest
 ): Promise<ResponseMessageVo<any>> => {
-  logger.debug('<sendSMSFilteredUsers> params ', data);
+  logger.debug('<sendSMSFilteredUsers> params ', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/attendee/message/filter`, {
-      ...data,
-    })
+    .post(
+      `/api/pco/admin/total/top/message/attendee/send-filtered`,
+      {
+        ...data,
+      },
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
     .then((response) => {
       logger.debug('<sendSMSFilteredUsers> response.data : ', response.data);
       return response.data;
@@ -62,9 +75,17 @@ export const sendSMSTest = (
 ): Promise<ResponseMessageVo<any>> => {
   logger.debug('<sendSMSTest> params ', data);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/message/test`, {
-      ...data,
-    })
+    .post(
+      `/api/pco/admin/total/top/message/attendee/send-test`,
+      {
+        ...data,
+      },
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
     .then((response) => {
       logger.debug('<sendSMSTest> response.data : ', response.data);
       return response.data;
@@ -81,7 +102,7 @@ export const getSMSList = (
 ): Promise<ResponseMessageVo<LetterDtResponse[]>> => {
   logger.debug('<getSMSList> params ', data);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/letter-dt`, {
+    .post(`/api/pco/admin/total/middle/message/letters`, {
       ...data,
     })
     .then((response) => {
@@ -99,7 +120,7 @@ export const getSMSDetail = (
 ): Promise<ResponseMessageVo<getSMSDetailResponse>> => {
   logger.debug('<getSMSDetail> params ', searchParam);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/letter-item-dt`, {
+    .post(`/api/pco/admin/total/middle/message/letter-items`, {
       ...searchParam,
     })
     .then((response) => {
@@ -116,7 +137,7 @@ export const getSMSDetail = (
 export const resendFailedUser = (data: resendFailedUserRequest) => {
   logger.debug('<resendFailedUser> params ', data);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/letter-item-dt/resend`, {
+    .post(`/api/pco/admin/total/top/message/resend`, {
       ...data,
     })
     .then((response) => {
@@ -154,11 +175,140 @@ export const sendSMSSelectedUsers = (
 ): Promise<ResponseMessageVo<any>> => {
   logger.debug('<sendSMSSelectedUsers> params ', data);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/attendee/message/select`, {
-      ...data,
-    })
+    .post(
+      `/api/pco/admin/total/top/message/attendee/send-selected`,
+      {
+        ...data,
+      },
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
     .then((response) => {
       logger.debug('<sendSMSSelectedUsers> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 직접 추가한 대상에게 문자 전송
+ * @param sendSMSDirectlyAddedUsersRequest
+ * @returns
+ */
+export const sendSMSDirectlyAddedUsers = (
+  data: sendSMSDirectlyAddedUsersRequest
+): Promise<ResponseMessageVo<any>> => {
+  logger.debug('<sendSMSDirectlyAddedUsers> params ', data);
+  return adminAxiosInstance
+    .post(
+      `/api/pco/admin/total/top/message/send-manual`,
+      {
+        ...data,
+      },
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
+    .then((response) => {
+      logger.debug(
+        '<sendSMSDirectlyAddedUsers> response.data : ',
+        response.data
+      );
+      return response.data;
+    });
+};
+
+/**
+ * 문자 발송 내역 상세페이지에서 전송결과 엑셀다운로드
+ * @param letterIdx
+ * @returns
+ */
+export const downloadSendedUsers = (letterIdx: string) => {
+  return adminAxiosInstance
+    .get(`/api/pco/admin/total/middle/message/${letterIdx}/excel-download`, {
+      headers: {
+        Accept:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      },
+      responseType: 'blob',
+    })
+    .then((response) => {
+      return response.data;
+    }) // Receive the file as a Blob
+    .then((blob) => {
+      // Create a download link
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob); // Create an object URL for the Blob
+      link.click(); // Trigger the download
+    })
+    .catch((error) => {
+      console.error('Error downloading file:', error);
+    });
+};
+
+/**
+ * 문자 발송 중일때, 즉시 발동 중단
+ * @param letterIdx
+ * @returns
+ */
+export const stopSendingMessage = (
+  letterIdx: string
+): Promise<ResponseMessageVo<null>> => {
+  logger.debug('<stopSendingMessage> params ', letterIdx);
+  return adminAxiosInstance
+    .get(`/api/pco/admin/total/top/message/${letterIdx}/stop`)
+    .then((response) => {
+      logger.debug('<stopSendingMessage> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 엑셀 업로드 대상에게 문자 전송
+ * @param sendSMSDirectlyAddedUsersRequest
+ * @returns
+ */
+export const sendSMSExcelUploadedUsers = (
+  data: sendSMSDirectlyAddedUsersRequest
+): Promise<ResponseMessageVo<any>> => {
+  logger.debug('<sendSMSExcelUploadedUsers> params ', data);
+  return adminAxiosInstance
+    .post(
+      `/api/pco/admin/total/top/message/send-excel`,
+      {
+        ...data,
+      },
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
+    .then((response) => {
+      logger.debug(
+        '<sendSMSExcelUploadedUsers> response.data : ',
+        response.data
+      );
+      return response.data;
+    });
+};
+
+/**
+ * 학회 별 10분이내 이미 발송한 문자건이 있는지 확인
+ * @param conferenceIdx
+ * @returns
+ */
+export const getSMSLastSendedTime = (
+  conferenceIdx: number
+): Promise<ResponseMessageVo<any>> => {
+  return adminAxiosInstance
+    .get(`/api/pco/admin/total/top/${conferenceIdx}/message/last-send-time`)
+    .then((response) => {
+      logger.debug('<getSMSLastSendedTime> response.data : ', response.data);
       return response.data;
     });
 };
