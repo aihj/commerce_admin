@@ -1,6 +1,11 @@
 image:
   name: atlassian/default-image:2
 
+definitions:
+  services:
+    docker:
+      memory: 12288 # 12GB 등으로 늘려봅니다.
+
 pipelines:
   custom:
     develop:
@@ -28,7 +33,7 @@ pipelines:
             - TAG=$BITBUCKET_COMMIT
 
             - export NODE_OPTIONS="--max-old-space-size=4096"
-            - docker build --memory=8g --build-arg APP_ENV=$APP_ENV --build-arg IMAGE=$IMAGE --build-arg TAG=$TAG --no-cache --progress=plain -t $IMAGE:latest -t $IMAGE:$TAG .
+            - docker build --memory=8g --memory-swap=16g --build-arg APP_ENV=$APP_ENV --build-arg IMAGE=$IMAGE --build-arg TAG=$TAG --no-cache --progress=plain -t $IMAGE:latest -t $IMAGE:$TAG .
 
             - docker push $AWS_ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
