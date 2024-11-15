@@ -103,6 +103,7 @@ export interface getSMSDetailResponse {
   memo: string;
   sendDate: string;
   completeDate: string | null;
+  cancelDate: string | null;
   senderPhoneNumber: string;
   senderWuserIdx: number;
   senderName: string;

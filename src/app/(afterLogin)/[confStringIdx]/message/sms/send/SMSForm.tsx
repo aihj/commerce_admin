@@ -168,6 +168,9 @@ const SMSForm = ({
         setScheduledDateErrorMessage('예약 전송 시간을 입력해주세요');
         return;
       }
+      if (scheduledDateErrorMessage !== '') {
+        return;
+      }
     }
     if (sendType === SEND_TYPE.FILTER) {
       if (Object.keys(searchParam).length === 0) {

@@ -259,6 +259,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
           })
           .finally(() => {
             setIsPending(false);
+            refetch();
           });
       }
     });
@@ -529,14 +530,16 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                   </>
                 ) : data.taskStatus === 'interior_in_progress' ? (
                   <>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={() => handleStopSend()}
-                      startIcon={<XIcon />}
-                    >
-                      즉시 발송 취소
-                    </Button>
+                    {data.cancelDate ? null : (
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => handleStopSend()}
+                        startIcon={<XIcon />}
+                      >
+                        즉시 발송 취소
+                      </Button>
+                    )}
                     <Button
                       variant="contained"
                       color="primary"
