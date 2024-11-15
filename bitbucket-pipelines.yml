@@ -56,7 +56,6 @@ pipelines:
               --codedeploy-appspec appspec-dev.yml
               --codedeploy-deployment-group $DEPLOYMENT_GROUP
 
-  custom:
     production-deploy:
       - step:
           name: Check Branch
