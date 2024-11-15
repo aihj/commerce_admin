@@ -424,7 +424,10 @@ const SMSForm = ({
   const handleSendTest = () => {
     const data = watch();
 
-    if (errors.testPhoneNumber) {
+    if (
+      data.testPhoneNumber === undefined ||
+      errors.testPhoneNumber !== undefined
+    ) {
       Swal.fire({
         title: '테스트 휴대폰 번호 확인',
         text: '테스트 전송을 위한 휴대폰 번호를 확인 후 다시 입력해 주세요.',
@@ -814,7 +817,7 @@ const SMSForm = ({
                   variant="contained"
                   color="secondary"
                   onClick={() => handleSendTest()}
-                  disabled={testCompleted}
+                  // disabled={testCompleted}
                 >
                   테스트 전송
                 </Button>
