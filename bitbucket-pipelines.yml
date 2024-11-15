@@ -4,7 +4,7 @@ image:
 definitions:
   services:
     docker:
-      memory: 12288 # 12GB 등으로 늘려봅니다.
+      memory: 4096 # Docker 서비스에 4GB만 할당
 
 pipelines:
   custom:
@@ -75,6 +75,7 @@ pipelines:
           services:
             - docker
           image: atlassian/pipelines-awscli
+          size: 4x
           script:
             # variables
             - export ECR_REPOSITORY="pco-prod-admin-front-ecr"
@@ -85,7 +86,9 @@ pipelines:
             - IMAGE=$AWS_ECR_REGISTRY/$ECR_REPOSITORY
             - TAG=$BITBUCKET_COMMIT
 
-            - docker build --build-arg=APP_ENV=$APP_ENV -t $IMAGE:latest -t $IMAGE:$TAG .
+            - export NODE_OPTIONS="--max-old-space-size=4096"
+
+            - docker build --memory=8g --memory-swap=16g --build-arg APP_ENV=$APP_ENV --build-arg IMAGE=$IMAGE --build-arg TAG=$TAG --no-cache --progress=plain -t $IMAGE:latest -t $IMAGE:$TAG .
 
             - docker push $AWS_ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
