@@ -105,19 +105,6 @@ const SMSForm = ({
 
   const [checkPossibleToSend, setCheckPossibleToSend] = useState<boolean>(true);
 
-  const handleSMSMode = (value: string) => {
-    if (!watch('subject')) {
-      if (isSMSMode && calculateByteLength(value) > 80) {
-        setIsSMSMode(false);
-        toast.info('MMS로 전환됩니다.', { duration: 1000 });
-      }
-      if (!isSMSMode && calculateByteLength(value) <= 80) {
-        setIsSMSMode(true);
-        toast.info('SMS로 전환됩니다.', { duration: 1000 });
-      }
-    }
-  };
-
   // tsx 화살표 함수로 제네릭을 사용하면 제네릭을 jsx태그로 인식하는 이슈때문에 function키워드 사용
   function sendSMS<T>(
     fn: (data: T) => Promise<ResponseMessageVo<any>>,
@@ -481,17 +468,30 @@ const SMSForm = ({
     }
   };
 
+  // sms/mms
   useEffect(() => {
-    if (files.length !== 0) {
+    const subject = watch('subject');
+    const content = watch('content');
+
+    // mms
+    if (files.length !== 0 || !!subject || calculateByteLength(content) > 80) {
       if (isSMSMode) {
         setIsSMSMode(false);
         toast.info('MMS로 전환됩니다.', { duration: 1000 });
         setMessageType('mms');
         return;
       }
+    } else {
+      // sms
+      if (!isSMSMode) {
+        setIsSMSMode(true);
+        toast.info('SMS로 전환됩니다.', { duration: 1000 });
+        setMessageType('sms');
+        return;
+      }
     }
     setMessageType(isSMSMode ? 'sms' : 'mms');
-  }, [isSMSMode, files]);
+  }, [isSMSMode, files, watch('subject'), watch('content')]);
 
   useEffect(() => {
     if (errors.memo) {
@@ -611,10 +611,6 @@ const SMSForm = ({
                         helperText={errors.subject?.message}
                         fullWidth
                         {...field}
-                        onChange={(e) => {
-                          field.onChange(e.target.value);
-                          setIsSMSMode(e.target.value.length === 0);
-                        }}
                       />
                       <span className="text-12 leading-14 text-stone-600 text-end pt-6">
                         {field.value?.length
@@ -670,7 +666,6 @@ const SMSForm = ({
                               );
                             } else {
                               field.onChange(e.target.value);
-                              handleSMSMode(field.value);
                             }
                           }}
                         />
