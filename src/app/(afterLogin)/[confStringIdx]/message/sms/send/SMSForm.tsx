@@ -434,7 +434,7 @@ const SMSForm = ({
     ) {
       Swal.fire({
         title: '필수 정보 확인',
-        text: '문자 전송을 위한 필수 정보를 확인 후 다시 입력해 주세요.',
+        text: '내용 또는 파일이 있는지 확인해 주세요.',
       });
     } else {
       if (data.subject === '' && touchedFields.subject && dirtyFields.subject) {
