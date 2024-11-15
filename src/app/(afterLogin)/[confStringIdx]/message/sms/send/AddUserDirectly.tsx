@@ -156,7 +156,7 @@ const AddUserDirectly = ({
             <span
               className={`text-14 leading-18 h-26 ${searchParamError && 'text-error-main'}`}
             >
-              회원을 선택하여 전송대상을 추가해 주세요.
+              번호 입력 후 전송대상을 추가해 주세요.
             </span>
           ) : (
             <>
