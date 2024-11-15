@@ -428,13 +428,16 @@ const SMSForm = ({
         text: '테스트 전송을 위한 휴대폰 번호를 확인 후 다시 입력해 주세요.',
       });
       return;
-    } else if (errors.content && files.length === 0) {
+    } else if (
+      data.content === undefined ||
+      (errors.content !== undefined && files.length === 0)
+    ) {
       Swal.fire({
         title: '필수 정보 확인',
         text: '문자 전송을 위한 필수 정보를 확인 후 다시 입력해 주세요.',
       });
     } else {
-      if (touchedFields.subject && dirtyFields.subject) {
+      if (data.subject === '' && touchedFields.subject && dirtyFields.subject) {
         delete data['subject'];
       }
       const formData = {

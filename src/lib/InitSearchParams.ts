@@ -1,6 +1,6 @@
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 
-export const rowsPerPageOptions = [20, 50, 100];
+export const rowsPerPageOptions = [10, 20, 50, 100];
 
 const InitSearchParam = (
   conferenceIdx: number,

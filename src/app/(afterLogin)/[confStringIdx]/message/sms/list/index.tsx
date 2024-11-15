@@ -221,7 +221,9 @@ const SMSList = () => {
 
   const initSearchParam = InitSearchParam(
     conferenceIdx as number,
-    'tbl_letter.letter_idx'
+    'tbl_letter.letter_idx',
+    'desc',
+    10
   );
 
   const { cSearchParams, setCSearchParamsFunc, deleteCSearchParams } =
