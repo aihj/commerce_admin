@@ -594,12 +594,6 @@ const SMSForm = ({
               <Controller
                 control={control}
                 name="subject"
-                rules={{
-                  pattern: {
-                    value: /^.{2,25}$/,
-                    message: '발송 제목을 올바르게 입력해 주세요.',
-                  },
-                }}
                 render={({ field }) => (
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -616,6 +610,11 @@ const SMSForm = ({
                         helperText={errors.subject?.message}
                         fullWidth
                         {...field}
+                        onChange={(e) => {
+                          if (calculateByteLength(e.target.value) <= 60) {
+                            field.onChange(e.target.value); // 바이트가 초과하지 않으면 값 업데이트
+                          }
+                        }}
                       />
                       <span className="text-12 leading-14 text-stone-600 text-end pt-6">
                         {field.value?.length
