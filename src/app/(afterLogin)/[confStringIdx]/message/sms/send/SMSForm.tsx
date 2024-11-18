@@ -514,7 +514,15 @@ const SMSForm = ({
         width: '100%',
       }}
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+          }
+        }}
+        className="w-full"
+      >
         <DevTool control={control} />
         <Stack spacing={2}>
           <Controller
