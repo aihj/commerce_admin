@@ -133,3 +133,9 @@ export interface getUsersWithNameOrPhoneResponse {
   phone: string;
   name: string;
 }
+
+export interface getSendersResponse {
+  contactNumberIdx: number;
+  phoneNumber: string;
+  nickname: string;
+}

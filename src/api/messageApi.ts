@@ -13,9 +13,11 @@ import {
   getUsersWithNameOrPhoneResponse,
   sendSMSSelectedUsersRequest,
   sendSMSDirectlyAddedUsersRequest,
+  getSendersResponse,
 } from './types/messageTypes';
 import { SMSListFiltersType } from '@/app/(afterLogin)/[confStringIdx]/message/sms/list/SMSListFilters';
 import { dateFormat } from '@/lib/dayjs';
+import axios from 'axios';
 
 /**
  * 문자 필터 선택 시 해당 총 회원수
@@ -314,6 +316,19 @@ export const getSMSLastSendedTime = (
     .get(`/api/pco/admin/total/top/${conferenceIdx}/message/last-send-time`)
     .then((response) => {
       logger.debug('<getSMSLastSendedTime> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+export const getSenders = (): Promise<
+  ResponseMessageVo<getSendersResponse>
+> => {
+  return axios
+    .get(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/public/wservice/1/company-contact-number`
+    )
+    .then((response) => {
+      logger.debug('<getSenders> response.data : ', response.data);
       return response.data;
     });
 };

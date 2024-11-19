@@ -19,6 +19,7 @@ import { SMSTemplateInfo } from './SMSTemplateInfo';
 import { toast } from '@/components/core/Toaster';
 import {
   getSMSLastSendedTime,
+  getSenders,
   sendSMSDirectlyAddedUsers,
   sendSMSExcelUploadedUsers,
   sendSMSFilteredUsers,
@@ -35,6 +36,7 @@ import { dayjs } from '@/lib/dayjs';
 import { UploadImageFiles } from './UploadImageFiles';
 import { DirectUser, ExcelUploadedUser } from '@/types/user';
 import {
+  getSendersResponse,
   sendSMSDirectlyAddedUsersRequest,
   sendSMSFilteredUsersRequest,
   sendSMSSelectedUsersRequest,
@@ -42,6 +44,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { PATH } from '@/paths';
 import { ResponseMessageVo } from '@/api/types/responseMessageVo';
+import { useQuery } from '@tanstack/react-query';
 
 interface SMSFormData {
   subject?: string;
@@ -65,11 +68,6 @@ interface SMSFormProps {
   setSearchParamError: (value: boolean) => void;
   conferenceStringIdx: string;
 }
-
-const dummySender = [
-  { label: '학회관리자 1', value: '01035793889' },
-  { label: '학회관리자 2', value: '01062813889' },
-];
 
 const SMSForm = ({
   searchParam,
@@ -473,6 +471,14 @@ const SMSForm = ({
     }
   };
 
+  const { data: senders, error: sendersError } = useQuery({
+    queryKey: ['getSenders'],
+    queryFn: () =>
+      getSenders().then((result) => {
+        return result.content as getSendersResponse[];
+      }),
+  });
+
   // sms/mms
   useEffect(() => {
     const subject = watch('subject');
@@ -841,7 +847,7 @@ const SMSForm = ({
                 message: '발신 번호를 올바르게 입력해 주세요.',
               },
             }}
-            defaultValue={dummySender[0].value}
+            defaultValue={senders ? senders[0]?.phoneNumber : 'error'}
             render={({ field }) => (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Label label="발신 번호*" minWidth={100} bold />
@@ -854,11 +860,20 @@ const SMSForm = ({
                   fullWidth
                   {...field}
                 >
-                  {dummySender.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label} {option.value}
-                    </MenuItem>
-                  ))}
+                  {senders
+                    ? senders.map((sender) => (
+                        <MenuItem
+                          key={sender.contactNumberIdx}
+                          value={sender.phoneNumber}
+                        >
+                          {sender.nickname} {sender.phoneNumber}
+                        </MenuItem>
+                      ))
+                    : sendersError && (
+                        <MenuItem value={'error'} disabled>
+                          발신번호를 가져오기 실패
+                        </MenuItem>
+                      )}
                 </TextField>
               </Box>
             )}
