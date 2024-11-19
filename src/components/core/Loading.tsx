@@ -32,7 +32,10 @@ const Loading = ({ open }: LoadingProps) => {
 
 const PageLoading = () => {
   return (
-    <div className="flex justify-center items-center md:h-636">
+    <div
+      className="flex justify-center items-center"
+      style={{ minHeight: 600 }}
+    >
       <div
         className="w-100 h-100 bg-white rounded-12 p-20"
         style={{ boxShadow: '0px 4px 16px 0px #292B301A' }}

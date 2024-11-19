@@ -36,7 +36,7 @@ import {
   REGISTRATION_STATUS,
   WUSER_STATUS,
 } from '@/constants/filterSelectOptions';
-import { Loading } from '@/components/core/Loading';
+import { Loading, PageLoading } from '@/components/core/Loading';
 import { SMSDetailList } from './SMSDetailList';
 import { bytesToKB } from '@/lib/byteToKB';
 import { DownloadIcon } from '@/components/icons/DownloadIcon';
@@ -152,7 +152,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
 
   const [selectedUser, setSelectedUser] = useState<number[]>([]);
 
-  const { error, data, refetch } = useQuery({
+  const { error, data, refetch, isLoading } = useQuery({
     queryKey: ['getSMSDetail', letterIdx],
     queryFn: () =>
       getSMSDetail({ ...cSearchParams, letterIdx })
@@ -270,6 +270,10 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
     return <div>Error: {error.message}</div>;
   }
 
+  if (isLoading) {
+    return <PageLoading />;
+  }
+
   return (
     <Box
       sx={{
@@ -359,6 +363,16 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                 </Box>
                 <Divider />
                 <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+                  <Label label="발신자" minWidth={100} bold />
+                  <span className="text-14">{data.senderName}</span>
+                </Box>
+                <Divider />
+                <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+                  <Label label="발신번호" minWidth={100} bold />
+                  <span className="text-14">{data.senderPhoneNumber}</span>
+                </Box>
+                <Divider />
+                <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
                   <Label label="메모" minWidth={100} bold />
                   <span className="text-14">{data.memo}</span>
                 </Box>
@@ -374,14 +388,16 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                   {/* TODO 양식 select */}
                   <Box sx={{ width: '100%' }}>
                     {data.messageType ? (
-                      <Chip
-                        label={data.messageType.toUpperCase()}
-                        color={
-                          data.messageType === 'sms'
-                            ? CHIP_COLOR.secondary
-                            : CHIP_COLOR.success
-                        }
-                      />
+                      <div className="mb-8">
+                        <Chip
+                          label={data.messageType.toUpperCase()}
+                          color={
+                            data.messageType === 'sms'
+                              ? CHIP_COLOR.secondary
+                              : CHIP_COLOR.success
+                          }
+                        />
+                      </div>
                     ) : null}
                     <Label label="제목" minWidth={100} />
                     <TextField

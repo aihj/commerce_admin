@@ -11,7 +11,7 @@ const InitSearchParam = (
   return {
     conferenceIdx: conferenceIdx as number,
     currentPage: 0,
-    rowsPerPage: rowsPerPage ? rowsPerPage : rowsPerPageOptions[0],
+    rowsPerPage: rowsPerPage ? rowsPerPage : rowsPerPageOptions[1],
 
     sortType: sortType,
     sortDir: sortDir ? sortDir : 'desc',
