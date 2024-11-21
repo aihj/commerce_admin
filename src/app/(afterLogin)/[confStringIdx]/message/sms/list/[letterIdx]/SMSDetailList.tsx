@@ -100,7 +100,7 @@ const SMSDetailList = <T extends object>({
   }, [selected, handleSelectedUser]);
 
   return (
-    <Box sx={{ mt: 2 }}>
+    <Box sx={{ mt: 2, maxHeight: '1000px', overflow: 'auto' }}>
       <DataTable<SMSDetailListDT>
         rows={data}
         columns={columns}

@@ -9,6 +9,10 @@ const useCustomSearchParams = <T>(initialParams: T) => {
   const [cSearchParams, setCSearchParams] = useState<T>(initialParams);
 
   const setCSearchParamsFunc = (param: T) => {
+    const key = Object.keys(param as object)[0];
+    if (key === 'rowsPerPage') {
+      param = { ...param, currentPage: 0 };
+    }
     setCSearchParams((prev) => ({ ...prev, ...param }));
   };
 

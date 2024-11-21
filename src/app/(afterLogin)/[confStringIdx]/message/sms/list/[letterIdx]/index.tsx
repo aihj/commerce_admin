@@ -153,7 +153,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
   const [selectedUser, setSelectedUser] = useState<number[]>([]);
 
   const { error, data, refetch, isLoading } = useQuery({
-    queryKey: ['getSMSDetail', letterIdx],
+    queryKey: ['getSMSDetail', letterIdx, cSearchParams],
     queryFn: () =>
       getSMSDetail({ ...cSearchParams, letterIdx })
         .then((result) => {

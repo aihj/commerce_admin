@@ -112,19 +112,25 @@ const SMSForm = ({
     fn(data)
       .then((result) => {
         if (result.status === 200) {
-          handleAlert('success', result.content);
+          handleAlert({ type: 'success', letterIdx: result.content });
         }
       })
       .catch((error) => {
         logger.error(`<${fn} error`, error);
-        handleAlert('fail');
+        handleAlert({ type: 'fail', message: error.response.data.message });
       })
       .finally(() => {
         setCheckPossibleToSend(true);
       });
   }
 
-  const handleAlert = (type: string, letterIdx?: number) => {
+  type AlertParams = {
+    type: string;
+    letterIdx?: number;
+    message?: string;
+  };
+
+  const handleAlert = ({ type, letterIdx, message }: AlertParams) => {
     switch (type) {
       case 'invalid':
         Swal.fire({
@@ -154,7 +160,7 @@ const SMSForm = ({
       case 'fail':
         Swal.fire({
           title: '문자 보내기 실패',
-          html: `문자 발송 요청 완료되었습니다.`,
+          html: `${message}`,
         });
         return;
     }
@@ -177,7 +183,7 @@ const SMSForm = ({
 
     if (sendType === SEND_TYPE.FILTER) {
       if (Object.keys(searchParam).length === 0) {
-        handleAlert('invalid');
+        handleAlert({ type: 'invalid' });
         setSearchParamError(true);
       } else {
         setSearchParamError(false);
@@ -221,7 +227,7 @@ const SMSForm = ({
       }
     } else if (sendType === SEND_TYPE.USER) {
       if (searchedUsers.length === 0) {
-        handleAlert('invalid');
+        handleAlert({ type: 'invalid' });
         setSearchParamError(true);
       } else {
         setSearchParamError(false);
@@ -266,7 +272,7 @@ const SMSForm = ({
       }
     } else if (sendType === SEND_TYPE.DIRECT) {
       if (addedUsers.length === 0) {
-        handleAlert('invalid');
+        handleAlert({ type: 'invalid' });
         setSearchParamError(true);
       } else {
         const userList = addedUsers.map((user) => {
@@ -317,7 +323,7 @@ const SMSForm = ({
       }
     } else if (sendType === SEND_TYPE.EXCEL) {
       if (excelUploadedUser.length === 0) {
-        handleAlert('invalid');
+        handleAlert({ type: 'invalid' });
         setSearchParamError(true);
       } else {
         const userList = excelUploadedUser.map((user) => {
@@ -478,6 +484,16 @@ const SMSForm = ({
         return result.content as getSendersResponse[];
       }),
   });
+
+  const [selectedValue, setSelectedValue] = useState('');
+
+  useEffect(() => {
+    if (senders && senders?.length !== 0) {
+      const initValue = `${senders[0].phoneNumber}`;
+      // setValue('senderPhoneNumber', senders[0].phoneNumber);
+      setSelectedValue(initValue);
+    }
+  }, [senders]);
 
   // sms/mms
   useEffect(() => {
@@ -847,18 +863,22 @@ const SMSForm = ({
                 message: '발신 번호를 올바르게 입력해 주세요.',
               },
             }}
-            defaultValue={senders ? senders[0]?.phoneNumber : 'error'}
             render={({ field }) => (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Label label="발신 번호*" minWidth={100} bold />
                 <TextField
-                  sx={{ p: 0, height: 44, width: 240 }}
+                  sx={{ p: 0, height: 44, width: 300 }}
                   select
                   error={Boolean(errors.senderPhoneNumber)}
                   placeholder="숫자 10~11자리"
                   helperText={errors.senderPhoneNumber?.message}
                   fullWidth
                   {...field}
+                  value={selectedValue}
+                  onChange={(e) => {
+                    field.onChange;
+                    setSelectedValue(e.target.value);
+                  }}
                 >
                   {senders
                     ? senders.map((sender) => (
