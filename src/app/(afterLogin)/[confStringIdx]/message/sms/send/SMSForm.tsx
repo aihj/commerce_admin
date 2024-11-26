@@ -83,6 +83,7 @@ const SMSForm = ({
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, touchedFields, dirtyFields },
   } = useForm<SMSFormData>({
     defaultValues: { letterTemplateIdx: null, type: 'custom' },
@@ -242,6 +243,7 @@ const SMSForm = ({
           sendDate: data.scheduleType === 'y' ? scheduledDate : null,
           messageFileList: files,
         };
+        console.log(formData);
         getSMSLastSendedTime(conferenceIdx).then((result) => {
           if (result.content) {
             Swal.fire({
@@ -490,7 +492,7 @@ const SMSForm = ({
   useEffect(() => {
     if (senders && senders?.length !== 0) {
       const initValue = `${senders[0].phoneNumber}`;
-      // setValue('senderPhoneNumber', senders[0].phoneNumber);
+      setValue('senderPhoneNumber', senders[0].phoneNumber);
       setSelectedValue(initValue);
     }
   }, [senders]);
