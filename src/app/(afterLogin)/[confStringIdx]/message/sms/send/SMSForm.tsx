@@ -243,7 +243,6 @@ const SMSForm = ({
           sendDate: data.scheduleType === 'y' ? scheduledDate : null,
           messageFileList: files,
         };
-        console.log(formData);
         getSMSLastSendedTime(conferenceIdx).then((result) => {
           if (result.content) {
             Swal.fire({
@@ -878,7 +877,7 @@ const SMSForm = ({
                   {...field}
                   value={selectedValue}
                   onChange={(e) => {
-                    field.onChange;
+                    field.onChange(e.target.value);
                     setSelectedValue(e.target.value);
                   }}
                 >
