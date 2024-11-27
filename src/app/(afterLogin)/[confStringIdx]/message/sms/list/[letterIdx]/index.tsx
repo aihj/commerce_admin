@@ -340,12 +340,21 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                 <Divider />
                 <Box sx={{ display: 'flex', flex: 1, alignItems: 'center' }}>
                   <Label label="발송 요청 일시" minWidth={100} bold />
-                  {data.scheduleType === 1 && (
-                    <span className="mr-4">
-                      <Chip label="예약" color={CHIP_COLOR.neutral} />
-                    </span>
-                  )}
-                  <span className="text-14">{data.sendDate}</span>
+                  <Box>
+                    <div className="flex">
+                      {data.scheduleType === 1 && (
+                        <span className="mr-4">
+                          <Chip label="예약" color={CHIP_COLOR.neutral} />
+                        </span>
+                      )}
+                      <span className="text-14">{data.sendDate}</span>
+                    </div>
+                    {data.scheduleType === 1 && (
+                      <div className="text-12 text-gray-800 leading-20 pl-8 pt-4">
+                        *예약발송이 시작되면 취소 불가
+                      </div>
+                    )}
+                  </Box>
                 </Box>
                 <Divider />
                 <Box sx={{ display: 'flex', flex: 1 }}>

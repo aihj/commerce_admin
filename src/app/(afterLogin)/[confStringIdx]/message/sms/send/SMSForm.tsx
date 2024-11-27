@@ -611,7 +611,7 @@ const SMSForm = ({
           <Box
             sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
           >
-            <Label label="메시지 입력*" minWidth={100} bold />
+            <Label label="메시지 입력" minWidth={100} bold />
             <Box>
               {isSMSMode ? (
                 <Chip label="SMS" sx={{ width: 72, margin: '0 0 4px 0' }} />
@@ -678,7 +678,7 @@ const SMSForm = ({
                     <Box sx={{ display: 'flex' }}>
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                         <TextField
-                          label="내용"
+                          label="내용*"
                           sx={{
                             mt: 1,
                             p: 0,
@@ -733,92 +733,106 @@ const SMSForm = ({
             render={({ field }) => (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Label label="전송 시간" minWidth={100} bold />
-                <RadioGroup
-                  sx={{ height: 44 }}
-                  row
-                  defaultValue={'n'}
-                  {...field}
-                  value={field.value}
-                  onChange={(e) => {
-                    field.onChange(e.target.value);
-                    if (field.value === 'n') {
-                      setScheduledDateErrorMessage('');
-                      setScheduledDate(null);
-                    }
-                  }}
-                >
-                  <FormControlLabel
-                    control={<Radio />}
-                    label={
-                      <div>
-                        <Typography
-                          sx={{
-                            color: 'var(--mui-palette-text-primary)',
-                          }}
-                          variant="inherit"
-                        >
-                          즉시 전송
-                        </Typography>
-                      </div>
-                    }
-                    value={'n'}
-                  />
-                  <FormControlLabel
-                    control={<Radio />}
-                    label={
-                      <div>
-                        <Typography
-                          sx={{
-                            color: 'var(--mui-palette-text-primary)',
-                          }}
-                          variant="inherit"
-                        >
-                          예약 전송
-                        </Typography>
-                      </div>
-                    }
-                    value={'y'}
-                  />
-                </RadioGroup>
-                {field.value === 'y' && (
-                  <DateTimePicker
-                    sx={{ ml: 1, py: 0 }}
-                    disablePast
-                    ampm={false}
-                    maxDateTime={dayjs().add(7, 'day')}
-                    timeSteps={{ minutes: 10 }}
-                    yearsOrder="desc"
-                    slotProps={{
-                      textField: {
-                        InputProps: {
-                          sx: { height: '44px' },
-                        },
-                        helperText: scheduledDateErrorMessage,
-                        sx: {
-                          ml: 1,
-                          py: 0,
-                          '& .MuiFormHelperText-root': {
-                            color: 'var(--mui-palette-error-main)',
+                <Box>
+                  <div className="flex">
+                    <RadioGroup
+                      sx={{ height: 44 }}
+                      row
+                      defaultValue={'n'}
+                      {...field}
+                      value={field.value}
+                      onChange={(e) => {
+                        field.onChange(e.target.value);
+                        if (field.value === 'n') {
+                          setScheduledDateErrorMessage('');
+                          setScheduledDate(null);
+                        }
+                      }}
+                    >
+                      <FormControlLabel
+                        control={<Radio />}
+                        label={
+                          <div>
+                            <Typography
+                              sx={{
+                                color: 'var(--mui-palette-text-primary)',
+                              }}
+                              variant="inherit"
+                            >
+                              즉시 전송
+                            </Typography>
+                          </div>
+                        }
+                        value={'n'}
+                      />
+                      <FormControlLabel
+                        control={<Radio />}
+                        label={
+                          <div>
+                            <Typography
+                              sx={{
+                                color: 'var(--mui-palette-text-primary)',
+                              }}
+                              variant="inherit"
+                            >
+                              예약 전송
+                            </Typography>
+                          </div>
+                        }
+                        value={'y'}
+                      />
+                    </RadioGroup>
+                    {field.value === 'y' && (
+                      <DateTimePicker
+                        sx={{ ml: 1, py: 0 }}
+                        disablePast
+                        ampm={false}
+                        maxDateTime={dayjs().add(7, 'day')}
+                        timeSteps={{ minutes: 10 }}
+                        yearsOrder="desc"
+                        slotProps={{
+                          textField: {
+                            InputProps: {
+                              sx: { height: '44px' },
+                            },
+                            helperText: scheduledDateErrorMessage,
+                            sx: {
+                              ml: 1,
+                              py: 0,
+                              '& .MuiFormHelperText-root': {
+                                color: 'var(--mui-palette-error-main)',
+                              },
+                            },
                           },
-                        },
-                      },
-                    }}
-                    onChange={(value) => {
-                      setScheduledDate(
-                        dayjs(value).format('YYYY-MM-DDTHH:mm:ss')
-                      );
-                    }}
-                    onError={(error) => {
-                      if (error) {
-                        setScheduledDateErrorMessage(
-                          '예약 전송 시간을 확인해주세요'
-                        );
-                      } else {
-                        setScheduledDateErrorMessage('');
-                      }
-                    }}
-                  />
-                )}
+                        }}
+                        onChange={(value) => {
+                          setScheduledDate(
+                            dayjs(value).format('YYYY-MM-DDTHH:mm:ss')
+                          );
+                        }}
+                        onError={(error) => {
+                          if (error) {
+                            setScheduledDateErrorMessage(
+                              '예약 전송 시간을 확인해주세요'
+                            );
+                          } else {
+                            setScheduledDateErrorMessage('');
+                          }
+                        }}
+                      />
+                    )}
+                  </div>
+                  <div className="pl-8">
+                    <ul className="text-12 text-gray-600 leading-20 list-disc list-inside">
+                      <span className="font-bold">[ 안내사항 ]</span>
+                      <li>
+                        예약전송이 시작되면 중간에 전송중인 내용을 취소할 수
+                        없습니다.
+                      </li>
+                      <li>예약시간이 도래하기 전에 미리 취소는 가능합니다.</li>
+                    </ul>
+                  </div>
+                </Box>
               </Box>
             )}
           />
