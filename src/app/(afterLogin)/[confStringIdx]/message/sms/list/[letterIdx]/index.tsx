@@ -21,10 +21,14 @@ import { numberWithComma } from '@/lib/numberWithComma';
 import {
   downloadSendedUsers,
   getSMSDetail,
+  resendFailedUser,
   // resendFailedUser,
   stopSendingMessage,
 } from '@/api/messageApi';
-import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
+import {
+  selectConferenceIdx,
+  selectConferenceStringIdx,
+} from '@/redux/slices/pcoSlice';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 import { logger } from '@/lib/logger/defaultLogger';
@@ -43,6 +47,9 @@ import { DownloadIcon } from '@/components/icons/DownloadIcon';
 import { ResetIcon } from '@/components/icons/ResetIcon';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { InitSearchParam } from '@/lib/InitSearchParams';
+import { useRouter } from 'next/navigation';
+import { PATH } from '@/paths';
+import { Alert } from '@/components/core/Alert';
 
 interface SMSSendDetailProps {
   letterIdx: string;
@@ -50,11 +57,14 @@ interface SMSSendDetailProps {
 
 const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
   const conferenceIdx = useSelector(selectConferenceIdx);
+  const conferenceStringIdx = useSelector(selectConferenceStringIdx);
 
   const initSearchParam = InitSearchParam(
     conferenceIdx as number,
     'tbl_letter_item.letter_item_idx'
   );
+
+  const router = useRouter();
 
   const { cSearchParams, setCSearchParamsFunc } =
     useCustomSearchParams<TableSearchParams>(initSearchParam);
@@ -165,70 +175,136 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
   });
 
   // 재발송
-  // const handleAllFailedResend = () => {
-  //   Swal.fire({
-  //     title: '실패 문자 재발송',
-  //     text: `문자 발송 실패한 ${data?.failureCount}명에게 문자 내용을 재발송 하시겠습니까?`,
-  //     confirmButtonText: '발송',
-  //     showCancelButton: true,
-  //     cancelButtonText: '취소',
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       setIsPending(true);
-  //       resendFailedUser({
-  //         conferenceIdx: conferenceIdx as number,
-  //         letterIdx: data?.letterIdx as number,
-  //         type: 'failedTotal',
-  //       })
-  //         .then((result) => {
-  //           return result;
-  //         })
-  //         .catch((error) => {
-  //           logger.error(error);
-  //         })
-  //         .finally(() => {
-  //           setIsPending(false);
-  //         });
-  //     }
-  //   });
-  // };
+  const handleAllFailedResend = () => {
+    if (data?.failureCount === 0) {
+      Alert({
+        title: '실패 내역 없음',
+        text: '재전송 할 실패 건이 없습니다.',
+        confirmButtonText: '닫기',
+      });
+    } else if (
+      data?.letterFileList.length !== 0 &&
+      data?.letterFileList[0].fileStatus === 'delete'
+    ) {
+      Alert({
+        title: '파일 저장기간 만료',
+        text: '발송한 이미지 파일의 저장기간이 만료되어 메세지를 재전송 할 수 없습니다. 새로운 문자 전송으로 요청해 주세요.',
+        confirmButtonText: '닫기',
+      });
+    } else {
+      Alert({
+        title: '실패 일괄 재발송',
+        text: `${data?.failureCount}개의 실패건을 재발송 하시겠습니까?`,
+        confirmButtonText: '재발송',
+        showCancelButton: true,
+        cancelButtonText: '닫기',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setIsPending(true);
+          resendFailedUser({
+            conferenceIdx: conferenceIdx as number,
+            letterIdx: data?.letterIdx as number,
+            type: 'failedTotal',
+          })
+            .then((result) => {
+              Alert({
+                title: '재발송 요청 완료',
+                html: `${data?.failureCount}건의 재발송 요청이 완료되었습니다.<br/>재발송 완료 내역은 새로운 문자 발송 이력에서 조회 가능합니다.`,
+                confirmButtonText: '문자 발송 내역 보기',
+                showCancelButton: true,
+                cancelButtonText: '닫기',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  router.push(PATH.EACH.MESSAGE.SMS.LIST(conferenceStringIdx));
+                }
+              });
+              return result;
+            })
+            .catch((error) => {
+              logger.error(error);
+              Alert({
+                title: '재발송 요청 실패',
+                html: `${data?.failureCount}건의 재발송 요청이 실패했습니다.<br/>잠시후 다시 시도해 주세요.`,
+                confirmButtonText: '닫기',
+              });
+            })
+            .finally(() => {
+              setIsPending(false);
+            });
+        }
+      });
+    }
+  };
 
   // 재발송
-  // const handleSelectedFailedResend = () => {
-  //   Swal.fire({
-  //     title: '선택 문자 재발송',
-  //     text: `선택된 ${selectedUser.length}명에게 문자 내용을 재발송 하시겠습니까?`,
-  //     confirmButtonText: '발송',
-  //     showCancelButton: true,
-  //     cancelButtonText: '취소',
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       setIsPending(true);
-  //       resendFailedUser({
-  //         conferenceIdx: conferenceIdx as number,
-  //         letterIdx: data?.letterIdx as number,
-  //         type: 'selected',
-  //         letterItemIdxListJson: JSON.stringify(selectedUser),
-  //       })
-  //         .then((result) => {
-  //           return result;
-  //         })
-  //         .catch((error) => {
-  //           logger.error(error);
-  //         })
-  //         .finally(() => {
-  //           setIsPending(false);
-  //         });
-  //     }
-  //   });
-  // };
+  const handleSelectedFailedResend = () => {
+    if (selectedUser.length === 0) {
+      Alert({
+        title: '선택 항목 없음',
+        html: '선택된 항목이 없습니다.<br/>재발송 할 항목을 선택 후 다시 요청해 주세요.',
+        confirmButtonText: '닫기',
+      });
+    } else if (
+      data?.letterFileList.length !== 0 &&
+      data?.letterFileList[0].fileStatus === 'delete'
+    ) {
+      Alert({
+        title: '파일 저장기간 만료',
+        text: '발송한 이미지 파일의 저장기간이 만료되어 메세지를 재전송 할 수 없습니다. 새로운 문자 전송으로 요청해 주세요.',
+        confirmButtonText: '닫기',
+      });
+    } else {
+      Alert({
+        title: '선택 재발송',
+        html: `${selectedUser.length}개의 선택건을 재발송 하시겠습니까?<br/>재발송 완료 내역은 새로운 문자 발송 이력으로 저장됩니다.`,
+        confirmButtonText: '재발송',
+        showCancelButton: true,
+        cancelButtonText: '닫기',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setIsPending(true);
+          resendFailedUser({
+            conferenceIdx: conferenceIdx as number,
+            letterIdx: data?.letterIdx as number,
+            type: 'selected',
+            letterItemIdxListJson: JSON.stringify(selectedUser),
+          })
+            .then((result) => {
+              Alert({
+                title: '재발송 요청 완료',
+                html: `선택한 ${data?.failureCount}건의 재발송 요청이 완료되었습니다.<br/>재발송 완료 내역은 새로운 문자 발송 이력에서 조회 가능합니다.`,
+                confirmButtonText: '문자 발송 내역 보기',
+                showCancelButton: true,
+                cancelButtonText: '닫기',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  router.push(PATH.EACH.MESSAGE.SMS.LIST(conferenceStringIdx));
+                }
+              });
+              return result;
+            })
+            .catch((error) => {
+              logger.error(error);
+              Alert({
+                title: '재발송 요청 실패',
+                html: `${data?.failureCount}건의 재발송 요청이 실패했습니다.<br/>잠시후 다시 시도해 주세요.`,
+                confirmButtonText: '닫기',
+              });
+            })
+            .finally(() => {
+              setIsPending(false);
+            });
+        }
+      });
+    }
+  };
 
   const handleExcelDownload = () => {
     downloadSendedUsers(letterIdx, data?.completeDate as string);
   };
 
   const handleStopSend = () => {
-    Swal.fire({
+    Alert({
       title: '문자 발송 취소',
       html: `<div style=text-align:left;margin:auto;width:400px;>
     <div style=word-break:keep-all;>
@@ -242,7 +318,6 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
       confirmButtonText: '발송 취소하기',
       showCancelButton: true,
       cancelButtonText: '닫기',
-      reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
         setIsPending(true);
@@ -537,12 +612,10 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                       color="secondary"
                       onClick={() => handleExcelDownload()}
                       startIcon={<DownloadIcon fill="white" />}
-                      // disabled={data.failureCount === 0}
                     >
                       엑셀 다운로드
                     </Button>
-                    {/* 
-                    다음 스프린트로 기능 이전
+
                     <Button
                       variant="contained"
                       color="secondary"
@@ -558,7 +631,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                     >
                       선택 재발송
                       {selectedUser.length !== 0 && `(${selectedUser.length})`}
-                    </Button> */}
+                    </Button>
                   </>
                 ) : data.taskStatus === 'interior_in_progress' ? (
                   <>
@@ -606,9 +679,9 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                 cSearchParams={cSearchParams as TableSearchParams}
                 setCSearchParamsFunc={setCSearchParamsFunc}
                 totalCount={data.count}
-                handleSelectedUser={(selectedUser: number[]) =>
-                  setSelectedUser(selectedUser)
-                }
+                handleSelectedUser={(selectedUser: number[]) => {
+                  setSelectedUser(selectedUser);
+                }}
               />
             </Card>
           </Stack>

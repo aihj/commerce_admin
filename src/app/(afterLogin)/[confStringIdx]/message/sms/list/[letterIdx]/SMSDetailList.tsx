@@ -97,7 +97,7 @@ const SMSDetailList = <T extends object>({
     if (arraySelected.length) {
       handleSelectedUser(arraySelected);
     }
-  }, [selected, handleSelectedUser]);
+  }, [selected]);
 
   return (
     <Box sx={{ mt: 2, maxHeight: '1000px', overflow: 'auto' }}>

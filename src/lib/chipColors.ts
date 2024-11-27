@@ -54,9 +54,9 @@ export const setPaymentStatusChipColor = (status: PAYMENT_STATUS) => {
 
 export const setTaskStatusChipColor = (status: TASK_STATUS) => {
   switch (status) {
-    case TASK_STATUS.inInProgress:
+    case TASK_STATUS.inProgress:
       return CHIP_COLOR.primary;
-    case TASK_STATUS.inInComplete:
+    case TASK_STATUS.inComplete:
       return CHIP_COLOR.primary;
     case TASK_STATUS.apiInProgress:
       return CHIP_COLOR.primary;
