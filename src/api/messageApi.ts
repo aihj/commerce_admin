@@ -320,6 +320,10 @@ export const getSMSLastSendedTime = (
     });
 };
 
+/**
+ * 문자보내기 발신 가능 번호 조회
+ * @returns
+ */
 export const getSenders = (): Promise<
   ResponseMessageVo<getSendersResponse>
 > => {
@@ -329,6 +333,24 @@ export const getSenders = (): Promise<
     )
     .then((response) => {
       logger.debug('<getSenders> response.data : ', response.data);
+      return response.data;
+    });
+};
+
+/**
+ * 문자 상세 > 예약 발송이고 발송 시작 전일때 예약 취소
+ * @param letterIdx
+ * @returns
+ */
+export const cancelScheduledSend = (
+  letterIdx: string
+): Promise<ResponseMessageVo<null>> => {
+  return adminAxiosInstance
+    .get(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/pco/admin/total/top/message/${letterIdx}/schedule-stop`
+    )
+    .then((response) => {
+      logger.debug('<cancelScheduledSend> response.data : ', response.data);
       return response.data;
     });
 };

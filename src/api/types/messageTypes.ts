@@ -113,6 +113,7 @@ export interface getSMSDetailResponse {
   letterFileList: SMSUploadedImages[];
   taskStatus: string;
   scheduleType: number;
+  canceller?: string;
 }
 
 export interface resendFailedUserRequest {

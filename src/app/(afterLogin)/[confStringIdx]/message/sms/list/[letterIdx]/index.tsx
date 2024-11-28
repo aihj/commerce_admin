@@ -19,6 +19,7 @@ import { TASK_STATUS, getSMSDetailResponse } from '@/api/types/messageTypes';
 import { Label } from '@/components/core/Label';
 import { numberWithComma } from '@/lib/numberWithComma';
 import {
+  cancelScheduledSend,
   downloadSendedUsers,
   getSMSDetail,
   resendFailedUser,
@@ -50,6 +51,7 @@ import { InitSearchParam } from '@/lib/InitSearchParams';
 import { useRouter } from 'next/navigation';
 import { PATH } from '@/paths';
 import { Alert } from '@/components/core/Alert';
+import dayjs from 'dayjs';
 
 interface SMSSendDetailProps {
   letterIdx: string;
@@ -340,6 +342,51 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
     });
   };
 
+  const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
+
+  const handleCancelSchedule = () => {
+    if (data?.sendDate && now > data?.sendDate) {
+      Alert({
+        title: '예약 취소 불가',
+        html: '예약 시간이 도래하여 이미 문자가 발송 중 입니다.<br/>페이지를 새로 불러와 확인해 보세요.',
+        confirmButtonText: '페이지 새로고침',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          refetch();
+        }
+      });
+    } else {
+      Alert({
+        title: '예약 발송 취소',
+        text: '예약중인 문자 발송을 취소 합니다.',
+        showCancelButton: true,
+        confirmButtonText: '예약 취소하기',
+        cancelButtonText: '닫기',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          cancelScheduledSend(letterIdx)
+            .then((response) => {
+              Alert({
+                title: '예약 발송 취소 완료',
+                html: '문자 발송 예약이 취소되었습니다.<br/>예약 취소된 내용은 발송 실패로 표시됩니다.',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  refetch();
+                }
+              });
+              return response;
+            })
+            .catch((error) => {
+              Alert({
+                title: '예약 발송 취소 실패',
+                html: `문자 발송 예약 취소를 실패했습니다.<br/>${error.response.data.message}`,
+              });
+            });
+        }
+      });
+    }
+  };
+
   if (error) {
     logger.error(error);
     return <div>Error: {error.message}</div>;
@@ -432,6 +479,20 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                   </Box>
                 </Box>
                 <Divider />
+                {data.cancelDate !== null && (
+                  <>
+                    <Box sx={{ display: 'flex', flex: 1 }}>
+                      <Label label="예약 취소 일시" minWidth={100} bold />
+                      <span className="text-14">{data.cancelDate}</span>
+                    </Box>
+                    <Divider />
+                    <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+                      <Label label="취소 요청자" minWidth={100} bold />
+                      <span className="text-14">{data?.canceller}</span>
+                    </Box>
+                    <Divider />
+                  </>
+                )}
                 <Box sx={{ display: 'flex', flex: 1 }}>
                   <Label label="발송 완료 일시" minWidth={100} bold />
                   <span className="text-14">
@@ -641,6 +702,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                         color="secondary"
                         onClick={() => handleStopSend()}
                         startIcon={<XIcon />}
+                        disabled={data.scheduleType === 1}
                       >
                         즉시 발송 취소
                       </Button>
@@ -659,18 +721,32 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                     </Button>
                   </>
                 ) : (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<ResetIcon className="fill-white" />}
-                    onClick={() => {
-                      setIsPending(true);
-                      refetch();
-                    }}
-                  >
-                    새로고침
-                    {selectedUser.length !== 0 && `(${selectedUser.length})`}
-                  </Button>
+                  <>
+                    {data.scheduleType === 1 &&
+                      data.sendDate > now &&
+                      data.cancelDate == null && (
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          onClick={() => handleCancelSchedule()}
+                          startIcon={<XIcon />}
+                        >
+                          예약 취소
+                        </Button>
+                      )}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<ResetIcon className="fill-white" />}
+                      onClick={() => {
+                        setIsPending(true);
+                        refetch();
+                      }}
+                    >
+                      새로고침
+                      {selectedUser.length !== 0 && `(${selectedUser.length})`}
+                    </Button>
+                  </>
                 )}
               </Stack>
 
