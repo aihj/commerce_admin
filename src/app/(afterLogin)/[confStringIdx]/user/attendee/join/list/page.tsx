@@ -5,7 +5,6 @@ import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import { PATH } from '@/paths';
 import { useParams, useRouter } from 'next/navigation';
@@ -34,6 +33,7 @@ import {
   setUserStatusChipColor,
 } from '@/lib/chipColors';
 import { InitSearchParam } from '@/lib/InitSearchParams';
+import { PageTitle } from '@/components/core/PageTitle';
 
 export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
   birthDateStartT?: string;
@@ -273,7 +273,7 @@ const JoinAttendeeList = () => {
           sx={{ alignItems: 'flex-start' }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">가입 회원 목록</Typography>
+            <PageTitle title="등록 회원 목록" />
           </Box>
         </Stack>
 

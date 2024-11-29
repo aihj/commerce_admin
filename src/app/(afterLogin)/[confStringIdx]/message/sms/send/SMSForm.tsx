@@ -479,7 +479,7 @@ const SMSForm = ({
   };
 
   const { data: senders, error: sendersError } = useQuery({
-    queryKey: ['getSenders'],
+    queryKey: ['getSenders', 'smsForm'],
     queryFn: () =>
       getSenders().then((result) => {
         return result.content as getSendersResponse[];
@@ -494,7 +494,7 @@ const SMSForm = ({
       setValue('senderPhoneNumber', senders[0].phoneNumber);
       setSelectedValue(initValue);
     }
-  }, [senders]);
+  }, [senders, setValue]);
 
   // sms/mms
   useEffect(() => {
@@ -895,7 +895,7 @@ const SMSForm = ({
                     setSelectedValue(e.target.value);
                   }}
                 >
-                  {senders
+                  {senders && senders?.length !== 0
                     ? senders.map((sender) => (
                         <MenuItem
                           key={sender.contactNumberIdx}

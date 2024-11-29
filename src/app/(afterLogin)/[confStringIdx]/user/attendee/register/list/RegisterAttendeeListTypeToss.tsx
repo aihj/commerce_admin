@@ -17,7 +17,7 @@ import {
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import { useParams, useRouter } from 'next/navigation';
-import { Box, Button, Card, Stack, Typography } from '@mui/material';
+import { Box, Button, Card, Stack } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import {
   getRegisterAttendeeDtTypeToss,
@@ -34,6 +34,7 @@ import {
 } from '@/lib/chipColors';
 import { logger } from '@/lib/logger/defaultLogger';
 import { InitSearchParam } from '@/lib/InitSearchParams';
+import { PageTitle } from '@/components/core/PageTitle';
 
 type RegisterAttendeeListTypeTossTypes = NonNullable<unknown>;
 
@@ -343,7 +344,7 @@ const RegisterAttendeeListTypeToss =
             sx={{ alignItems: 'flex-start' }}
           >
             <Box sx={{ flex: '1 1 auto' }}>
-              <Typography variant="h4">등록 회원 목록</Typography>
+              <PageTitle title="등록 회원 목록" />
             </Box>
           </Stack>
 

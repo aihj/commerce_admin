@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  Box,
-  Button,
-  Card,
-  IconButton,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Card, IconButton, Stack } from '@mui/material';
 import {
   LetterDtResponse,
   getSendersResponse,
@@ -38,6 +31,7 @@ import { CHIP_COLOR, Chip } from '@/components/core/Chip';
 import { setTaskStatusChipColor } from '@/lib/chipColors';
 import { ImageIcon } from '@/components/icons/ImageIcon';
 import { InitSearchParam } from '@/lib/InitSearchParams';
+import { PageTitle } from '@/components/core/PageTitle';
 
 const SMSList = () => {
   const [failModalOpen, setFailModalOpen] = useState<boolean>(false);
@@ -259,7 +253,7 @@ const SMSList = () => {
   });
 
   const { data: getSendersData } = useQuery({
-    queryKey: ['getSenders'],
+    queryKey: ['getSenders', 'smsList'],
     queryFn: () =>
       getSenders()
         .then((result) => {
@@ -307,7 +301,7 @@ const SMSList = () => {
           sx={{ alignItems: 'flex-start' }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">문자 발송 목록</Typography>
+            <PageTitle title="문자 발송 목록" />
           </Box>
         </Stack>
         <Card>

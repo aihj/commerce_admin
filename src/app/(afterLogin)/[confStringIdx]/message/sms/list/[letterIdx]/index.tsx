@@ -274,7 +274,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
             .then((result) => {
               Alert({
                 title: '재발송 요청 완료',
-                html: `선택한 ${data?.failureCount}건의 재발송 요청이 완료되었습니다.<br/>재발송 완료 내역은 새로운 문자 발송 이력에서 조회 가능합니다.`,
+                html: `선택한 ${selectedUser.length}건의 재발송 요청이 완료되었습니다.<br/>재발송 완료 내역은 새로운 문자 발송 이력에서 조회 가능합니다.`,
                 confirmButtonText: '문자 발송 내역 보기',
                 showCancelButton: true,
                 cancelButtonText: '닫기',
@@ -289,7 +289,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
               logger.error(error);
               Alert({
                 title: '재발송 요청 실패',
-                html: `${data?.failureCount}건의 재발송 요청이 실패했습니다.<br/>잠시후 다시 시도해 주세요.`,
+                html: `${selectedUser.length}건의 재발송 요청이 실패했습니다.<br/>잠시후 다시 시도해 주세요.`,
                 confirmButtonText: '닫기',
               });
             })
