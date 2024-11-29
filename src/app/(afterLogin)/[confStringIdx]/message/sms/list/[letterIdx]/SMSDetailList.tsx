@@ -60,7 +60,9 @@ const SMSDetailList = <T extends object>({
                       ? CHIP_COLOR.pink
                       : row.resultCode === 'schedule_cancel'
                         ? CHIP_COLOR.neutral
-                        : CHIP_COLOR.error
+                        : row.resultCode === 'pending'
+                          ? CHIP_COLOR.neutral
+                          : CHIP_COLOR.error
             }
             label={
               row.resultCode === 'success'
@@ -73,7 +75,9 @@ const SMSDetailList = <T extends object>({
                       ? '서버 발송중'
                       : row.resultCode === 'schedule_cancel'
                         ? '예약 취소'
-                        : '실패'
+                        : row.resultCode === 'pending'
+                          ? '알 수 없음'
+                          : '실패'
             }
           />
         </Box>
