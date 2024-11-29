@@ -8,7 +8,11 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { LetterDtResponse, taskStatusLabels } from '@/api/types/messageTypes';
+import {
+  LetterDtResponse,
+  getSendersResponse,
+  taskStatusLabels,
+} from '@/api/types/messageTypes';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
@@ -27,7 +31,7 @@ import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { useQuery } from '@tanstack/react-query';
 import { getAdministrators } from '@/api/mediAdminApi';
 import { logger } from '@/lib/logger/defaultLogger';
-import { getSMSList } from '@/api/messageApi';
+import { getSMSList, getSenders } from '@/api/messageApi';
 import { Loading } from '@/components/core/Loading';
 import { CustomTooltip } from '@/components/CustomTooltip';
 import { CHIP_COLOR, Chip } from '@/components/core/Chip';
@@ -38,6 +42,13 @@ import { InitSearchParam } from '@/lib/InitSearchParams';
 const SMSList = () => {
   const [failModalOpen, setFailModalOpen] = useState<boolean>(false);
   const [administrators, setAdministrators] = useState<
+    {
+      value: number;
+      label: string;
+    }[]
+  >([]);
+
+  const [senders, setSenders] = useState<
     {
       value: number;
       label: string;
@@ -202,7 +213,7 @@ const SMSList = () => {
             </span>
           </DTCellBox>
         ),
-        size: 60,
+        size: 80,
       }),
       columnHelper.accessor('senderName', {
         header: '관리자',
@@ -211,7 +222,7 @@ const SMSList = () => {
             <span>{info.row.original.senderName}</span>
           </DTCellBox>
         ),
-        size: 60,
+        size: 200,
       }),
     ],
     [columnHelper, moveSMSSendDetail]
@@ -240,6 +251,25 @@ const SMSList = () => {
           }));
           setAdministrators(newData);
           logger.debug('getAdministratorsData', getAdministratorsData);
+          return result;
+        })
+        .catch((error) => {
+          logger.error('<getAdministrators error>', error);
+        }),
+  });
+
+  const { data: getSendersData } = useQuery({
+    queryKey: ['getSenders'],
+    queryFn: () =>
+      getSenders()
+        .then((result) => {
+          const contents = result.content as getSendersResponse[];
+          const newData = contents.map((item) => ({
+            label: `${item.nickname} ${item.phoneNumber}`,
+            value: item.contactNumberIdx,
+          }));
+          setSenders(newData);
+          logger.debug('getSendersData', getSendersData);
           return result;
         })
         .catch((error) => {
@@ -286,6 +316,7 @@ const SMSList = () => {
             setSearchParams={setCSearchParamsFunc}
             deleteSearchParams={deleteCSearchParams}
             administrators={administrators}
+            senders={senders}
           />
           <TableBody<LetterDtResponse>
             data={data as LetterDtResponse[]}

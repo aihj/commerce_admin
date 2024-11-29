@@ -21,12 +21,14 @@ export interface SMSListFiltersType extends TableSearchParams {
   senderWuserIdx?: number;
   searchText?: string;
   hasMemo?: boolean;
+  contactNumberIdx?: number;
 }
 interface SMSListFiltersProps {
   cSearchParams: SMSListFiltersType;
   setSearchParams: (parma: any) => any;
   deleteSearchParams: () => any;
   administrators: { label: string; value: number }[];
+  senders: { label: string; value: number }[];
 }
 
 const SMSListFilters = ({
@@ -34,6 +36,7 @@ const SMSListFilters = ({
   setSearchParams,
   deleteSearchParams,
   administrators,
+  senders,
 }: SMSListFiltersProps) => {
   const onChangeSelect = useCallback((_selected: any) => {
     const data = { [_selected.name]: _selected.value };
@@ -146,6 +149,26 @@ const SMSListFilters = ({
           />
         }
         value={cSearchParams?.senderWuserIdx}
+      />
+
+      <FilterButton
+        displayValue={
+          cSearchParams?.senderWuserIdx &&
+          senders.filter(
+            (item) => item.value === cSearchParams.senderWuserIdx
+          )[0].label
+        }
+        label="발신번호"
+        onFilterApply={(value) => {
+          onChangeSelect({ name: 'contactNumberIdx', value });
+        }}
+        onFilterDelete={() => {
+          onChangeSelect({ name: 'contactNumberIdx', value: null });
+        }}
+        popover={
+          <TableOneSelectFilterPopover title="발신번호 선택" data={senders} />
+        }
+        value={cSearchParams?.contactNumberIdx}
       />
 
       <FilterButton

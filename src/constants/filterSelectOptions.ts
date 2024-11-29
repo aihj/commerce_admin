@@ -53,8 +53,8 @@ export const SEND_STATUS_OPTIONS = [
     label: taskStatusLabels[TASK_STATUS.schedule],
   },
   {
-    value: TASK_STATUS.stop,
-    label: taskStatusLabels[TASK_STATUS.stop],
+    value: TASK_STATUS.scheduleCancel,
+    label: taskStatusLabels[TASK_STATUS.scheduleCancel],
   },
 ];
 
