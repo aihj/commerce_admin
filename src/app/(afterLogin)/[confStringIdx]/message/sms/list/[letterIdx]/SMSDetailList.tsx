@@ -58,7 +58,9 @@ const SMSDetailList = <T extends object>({
                     ? CHIP_COLOR.info
                     : row.resultCode === 'server_in_progress'
                       ? CHIP_COLOR.pink
-                      : CHIP_COLOR.error
+                      : row.resultCode === 'schedule_cancel'
+                        ? CHIP_COLOR.neutral
+                        : CHIP_COLOR.error
             }
             label={
               row.resultCode === 'success'
@@ -69,7 +71,9 @@ const SMSDetailList = <T extends object>({
                     ? '발송 취소'
                     : row.resultCode === 'server_in_progress'
                       ? '서버 발송중'
-                      : '실패'
+                      : row.resultCode === 'schedule_cancel'
+                        ? '예약 취소'
+                        : '실패'
             }
           />
         </Box>

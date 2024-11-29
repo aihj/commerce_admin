@@ -39,6 +39,7 @@ export enum TASK_STATUS {
   failure = 'interior_fail',
   schedule = 'schedule',
   stop = 'interior_stop',
+  scheduleCancel = 'schedule_cancel',
 }
 
 export const taskStatusLabels = {
@@ -49,6 +50,7 @@ export const taskStatusLabels = {
   [TASK_STATUS.failure]: '발송실패',
   [TASK_STATUS.schedule]: '예약',
   [TASK_STATUS.stop]: '중단',
+  [TASK_STATUS.scheduleCancel]: '예약취소',
 };
 
 export interface LetterDtResponse {
