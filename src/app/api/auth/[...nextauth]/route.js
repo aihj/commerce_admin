@@ -43,6 +43,7 @@ const handler = NextAuth({
             // .post(`https://testauth.medistaff.co.kr/request_token`, credentials)
             .then((response) => {
               console.log('<authorize> success');
+              console.log(response.data);
               if (response.data.content.accessToken) {
                 return response.data.content;
               } else {

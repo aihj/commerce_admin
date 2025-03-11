@@ -6,11 +6,12 @@ import Box from '@mui/material/Box';
 import { selectConferenceStringIdx } from '@/redux/slices/pcoSlice';
 import { MediMain } from '@/components/main/MediMain';
 import { PcoEachMain } from '@/components/main/PcoEachMain';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
-// export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
+const page = (): React.JSX.Element => {
+  // const conferenceStringIdx = useSelector(selectConferenceStringIdx);
 
-export default function Page(): React.JSX.Element {
-  const conferenceStringIdx = useSelector(selectConferenceStringIdx);
   /* ---------------------------------------------------------------------- */
   return (
     <Box
@@ -21,7 +22,11 @@ export default function Page(): React.JSX.Element {
         width: 'var(--Content-width)',
       }}
     >
-      {conferenceStringIdx === null ? <MediMain /> : <PcoEachMain />}
+      {/* {conferenceStringIdx === null ?  */}
+      <MediMain />
+      {/* : <PcoEachMain />} */}
     </Box>
   );
-}
+};
+
+export default page;

@@ -23,7 +23,9 @@ adminAxiosInstance.interceptors.request.use(
     // refreshToken후 새로운 값이 아닌 옛날값이 들어감
     config.headers.Authorization =
       config.headers.Authorization || `Bearer ${session.user.accessToken}`;
-    config.headers.conferenceIdx = `${session.user.conferenceIdx}`;
+    if (session.user.conferenceIdx) {
+      config.headers.conferenceIdx = `${session.user.conferenceIdx}`;
+    }
     return config;
   },
   async (err) => {

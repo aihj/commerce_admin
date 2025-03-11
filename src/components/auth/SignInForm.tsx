@@ -26,7 +26,6 @@ import { signIn, useSession } from 'next-auth/react';
 import { phoneRegex } from '@/zod';
 import { logger } from '@/lib/logger/defaultLogger';
 import Swal from 'sweetalert2';
-import OpenAdminPcoSelect from '@/components/conferences/OpenAdminPcoSelect';
 
 // ----------------------------------------------------------------------------------
 export type SignInFormValues = {
@@ -49,7 +48,6 @@ const schema = zod.object({
   password: zod.string().min(1, { message: '패스워드는 필수값입니다.' }),
   serviceType: zod.string().min(1, { message: '서비스 타입은 필수값입니다.' }),
 });
-type Values = zod.infer<typeof schema>;
 // ----------------------------------------------------------------------------------
 
 // **************** 로그인하기 ****************
@@ -80,26 +78,29 @@ export function SignInForm(): React.JSX.Element {
   });
   logger.debug('errors', errors);
   // ********************* 로그인 하기 *********************
-  const onSubmit = React.useCallback(async (values: Values): Promise<void> => {
-    console.log('onSubmit values : ', values);
-    await signIn('credentials', {
-      redirect: false,
-      ...values,
-    }).then((result) => {
-      // TODO : nextAuth가 서버가 없을때 return을 400을 하는것이 아니라 401을 함...400을 했으면 좋겠는데..
-      if (result.status === 401) {
-        Swal.fire({
-          icon: 'error',
-          text:
-            result.error ===
-              "Cannot read properties of undefined (reading 'data')" ||
-            !result.error
-              ? '현재 서버에 문제가 있어 로그인을 진행하실수 없습니다. 관리자에게 문의하여주세요.'
-              : result.error,
-        });
-      }
-    });
-  }, []);
+  const onSubmit = React.useCallback(
+    async (values: SignInFormValues): Promise<void> => {
+      console.log('onSubmit values : ', values);
+      await signIn('credentials', {
+        redirect: false,
+        ...values,
+      }).then((result) => {
+        // TODO : nextAuth가 서버가 없을때 return을 400을 하는것이 아니라 401을 함...400을 했으면 좋겠는데..
+        if (result?.status === 401) {
+          Swal.fire({
+            icon: 'error',
+            text:
+              result.error ===
+                "Cannot read properties of undefined (reading 'data')" ||
+              !result.error
+                ? '현재 서버에 문제가 있어 로그인을 진행하실수 없습니다. 관리자에게 문의하여주세요.'
+                : result.error,
+          });
+        }
+      });
+    },
+    []
+  );
 
   return (
     <Stack spacing={4}>
@@ -140,8 +141,6 @@ export function SignInForm(): React.JSX.Element {
                 {...register('serviceType')}
                 value={process.env.NEXT_PUBLIC_AUTH_TYPE}
               />
-
-              <OpenAdminPcoSelect errors={errors} control={control} />
 
               {process.env.NEXT_PUBLIC_LOGIN_TYPE === 'email' ? (
                 <Controller
