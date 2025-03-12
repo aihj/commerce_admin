@@ -11,7 +11,5 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
-  return (
-    <StrategyGuard expected={AuthStrategy.NEXT_AUTH}>{children}</StrategyGuard>
-  );
+  return <StrategyGuard expected={AuthStrategy.jwt}>{children}</StrategyGuard>;
 }

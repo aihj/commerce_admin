@@ -4,3 +4,8 @@ export interface UserDuplicatedInfoRequest {
   phone?: string;
   wserviceName?: string;
 }
+
+export interface GetPcoInfoForFirstRequest {
+  conferenceIdx: number;
+  conferenceStringIdx: string;
+}

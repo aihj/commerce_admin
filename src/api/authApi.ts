@@ -14,8 +14,6 @@ adminAxiosInstance.interceptors.request.use(
   async (config) => {
     const session = (await getSession()) as Session;
 
-    // console.log('<axiosInstance.interceptors.request> session : ', session);
-
     // 리프레시 토큰 갱신 실패했을 경우 사용자 로그아웃
     if (session?.user?.error === 'refresh_token_update_failed') {
       await signOut();

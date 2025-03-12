@@ -31,10 +31,7 @@ export const getAdministrators = (): Promise<
   return adminAxiosInstance
     .get(`/api/pco/admin/total/managers`)
     .then((response) => {
-      /*logger.debug(
-        '<getAdminOpenStatusActivePcoList> data : ',
-        response.data.content
-      );*/
+      console.log('<getAdministrators> data : ', response.data.content);
       return response.data.content;
     });
 };

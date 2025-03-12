@@ -10,6 +10,7 @@ type ImageCardTypes = {
   title: string;
   onClickLink: string;
   children: ReactNode;
+  onClick: () => void;
 };
 
 const ImageCard = ({
@@ -17,10 +18,11 @@ const ImageCard = ({
   onClickLink,
   title,
   children,
+  onClick,
 }: ImageCardTypes) => {
   console.log('onClickLink', onClickLink);
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: 345 }} onClick={onClick}>
       <Link href={onClickLink}>
         {/*<CardActionArea component={Link} >*/}
         {imageUrl && (

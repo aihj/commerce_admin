@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { PcoBaseInfoVo } from '@/types/type';
-import { UserDuplicatedInfoRequest } from './types/publicTypes';
+import {
+  GetPcoInfoForFirstRequest,
+  UserDuplicatedInfoRequest,
+} from './types/publicTypes';
 import { ResponseMessageVo } from '@/types/type';
 import { logger } from '@/lib/logger/defaultLogger';
 
@@ -8,12 +11,13 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
 // 학회 기본 데이터 가져오기
 export const getPcoInfoForFirst = (
-  conferenceStringIdx: string
+  data: GetPcoInfoForFirstRequest
 ): Promise<PcoBaseInfoVo> => {
   return axios
     .post(
       `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/public/pco/pco-info`,
-      { url: siteUrl, confStringIdx: conferenceStringIdx }
+      { url: siteUrl, confStringIdx: data.conferenceStringIdx },
+      { headers: { conferenceIdx: data.conferenceIdx } }
     )
     .then((result) => result.data.content);
 };

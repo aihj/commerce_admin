@@ -16,6 +16,7 @@ let UserContext: React.Context<UserContextValue | undefined>;
 switch (config.auth.strategy) {
   case AuthStrategy.CUSTOM:
   case AuthStrategy.NEXT_AUTH:
+  case AuthStrategy.jwt:
     UserContext = CustomUserContext;
     UserProvider = CustomUserProvider;
     break;

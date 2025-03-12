@@ -1,12 +1,12 @@
+import { useQuery } from '@tanstack/react-query';
 import { ImageCard } from '@/components/core/ImageCard';
 import { getAdminOpenStatusActivePcoList } from '@/api/mediAdminApi';
-import { useQuery } from '@tanstack/react-query';
 import { PATH } from '@/paths';
+import { useSession } from 'next-auth/react';
 
-type MediMainTypes = NonNullable<unknown>;
+const MediMain = () => {
+  const { update } = useSession();
 
-// eslint-disable-next-line no-empty-pattern
-const MediMain = ({}: MediMainTypes) => {
   const {
     isLoading,
     // error,
@@ -27,6 +27,7 @@ const MediMain = ({}: MediMainTypes) => {
             imageUrl={item.thumbnailImageUrl as string}
             title={item.conference_name}
             onClickLink={PATH.EACH.MAIN(item.conference_string_idx)}
+            onClick={() => update({ conferenceIdx: item.conference_idx })}
           >
             <p>
               {item.conference_start_t} ~ {item.conference_end_t}
