@@ -60,6 +60,7 @@ export function AuthGuard({
     }
 
     switch (config.auth.strategy) {
+      case AuthStrategy.jwt:
       case AuthStrategy.NEXT_AUTH: {
         logger.debug(
           '[AuthGuard]: 유저가 로그인 하지 않았습니다. 로그인 페이지로 이동합니다.'

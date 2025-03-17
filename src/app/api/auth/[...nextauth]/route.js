@@ -3,6 +3,11 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios';
 import { adminPostRefreshTokenSES } from '../../../../api/authApi';
 
+const AUTH_BACKEND_URL =
+  process.env.NEXT_PUBLIC_APP_ENV === 'development'
+    ? 'https://testauth.medistaff.co.kr'
+    : 'https://auth.medistaff.co.kr';
+
 // /api/auth/* 의 경로로 요청되는 모든 request는 위 파일에서 hand
 const handler = NextAuth({
   providers: [
@@ -30,7 +35,7 @@ const handler = NextAuth({
         try {
           console.log('<authorize> credentials', credentials);
           const user = await axios
-            .post(`${process.env.AUTH_BACKEND_URL}/request_token`, credentials)
+            .post(`${AUTH_BACKEND_URL}/request_token`, credentials)
             .then((response) => {
               console.log('<authorize> success');
               console.log(response.data);
