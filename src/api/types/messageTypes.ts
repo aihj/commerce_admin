@@ -32,25 +32,25 @@ export interface sendSMSDirectlyAddedUsersRequest extends sendSMSRequest {
 }
 
 export enum TASK_STATUS {
-  inProgress = 'interior_in_progress',
-  inComplete = 'interior_complete',
-  apiInProgress = 'api_in_progress',
-  complete = 'api_complete',
-  failure = 'interior_fail',
-  schedule = 'schedule',
-  stop = 'interior_stop',
-  scheduleCancel = 'schedule_cancel',
+  sending = 'sending',
+  sent = 'sent',
+  resultPending = 'result_pending',
+  complete = 'result_completed',
+  failure = 'send_failed',
+  scheduled = 'scheduledd',
+  stopped = 'send_stopped',
+  scheduleCancelled = 'schedule_cancelled',
 }
 
 export const taskStatusLabels = {
-  [TASK_STATUS.inProgress]: '발송중',
-  [TASK_STATUS.inComplete]: '발송중',
-  [TASK_STATUS.apiInProgress]: '발송중',
+  [TASK_STATUS.sending]: '발송중',
+  [TASK_STATUS.sent]: '발송중',
+  [TASK_STATUS.resultPending]: '발송중',
   [TASK_STATUS.complete]: '발송완료',
   [TASK_STATUS.failure]: '발송실패',
-  [TASK_STATUS.schedule]: '예약',
-  [TASK_STATUS.stop]: '중단',
-  [TASK_STATUS.scheduleCancel]: '예약취소',
+  [TASK_STATUS.scheduled]: '예약',
+  [TASK_STATUS.stopped]: '중단',
+  [TASK_STATUS.scheduleCancelled]: '예약취소',
 };
 
 export interface LetterDtResponse {

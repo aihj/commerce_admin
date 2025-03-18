@@ -37,8 +37,8 @@ export const HAS_MEMO = [
 
 export const SEND_STATUS_OPTIONS = [
   {
-    value: TASK_STATUS.inProgress,
-    label: taskStatusLabels[TASK_STATUS.inProgress],
+    value: TASK_STATUS.sending,
+    label: taskStatusLabels[TASK_STATUS.sending],
   },
   {
     value: TASK_STATUS.complete,
@@ -49,12 +49,12 @@ export const SEND_STATUS_OPTIONS = [
     label: taskStatusLabels[TASK_STATUS.failure],
   },
   {
-    value: TASK_STATUS.schedule,
-    label: taskStatusLabels[TASK_STATUS.schedule],
+    value: TASK_STATUS.scheduled,
+    label: taskStatusLabels[TASK_STATUS.scheduled],
   },
   {
-    value: TASK_STATUS.scheduleCancel,
-    label: taskStatusLabels[TASK_STATUS.scheduleCancel],
+    value: TASK_STATUS.scheduleCancelled,
+    label: taskStatusLabels[TASK_STATUS.scheduleCancelled],
   },
 ];
 
