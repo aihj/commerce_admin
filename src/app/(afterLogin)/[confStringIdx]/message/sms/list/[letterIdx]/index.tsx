@@ -19,11 +19,10 @@ import { TASK_STATUS, getSMSDetailResponse } from '@/api/types/messageTypes';
 import { Label } from '@/components/core/Label';
 import { numberWithComma } from '@/lib/numberWithComma';
 import {
-  // cancelScheduledSend,
+  cancelScheduledSend,
   downloadSendedUsers,
   getSMSDetail,
   resendFailedUser,
-  // resendFailedUser,
   stopSendingMessage,
 } from '@/api/messageApi';
 import {
@@ -51,7 +50,7 @@ import { InitSearchParam } from '@/lib/InitSearchParams';
 import { useRouter } from 'next/navigation';
 import { PATH } from '@/paths';
 import { Alert } from '@/components/core/Alert';
-// import dayjs from 'dayjs';
+import dayjs from 'dayjs';
 
 interface SMSSendDetailProps {
   letterIdx: string;
@@ -342,50 +341,50 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
     });
   };
 
-  // const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
+  const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
 
-  // const handleCancelSchedule = () => {
-  //   if (data?.sendDate && now > data?.sendDate) {
-  //     Alert({
-  //       title: '예약 취소 불가',
-  //       html: '예약 시간이 도래하여 이미 문자가 발송 중 입니다.<br/>페이지를 새로 불러와 확인해 보세요.',
-  //       confirmButtonText: '페이지 새로고침',
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         refetch();
-  //       }
-  //     });
-  //   } else {
-  //     Alert({
-  //       title: '예약 발송 취소',
-  //       text: '예약중인 문자 발송을 취소 합니다.',
-  //       showCancelButton: true,
-  //       confirmButtonText: '예약 취소하기',
-  //       cancelButtonText: '닫기',
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         cancelScheduledSend(letterIdx)
-  //           .then((response) => {
-  //             Alert({
-  //               title: '예약 발송 취소 완료',
-  //               html: '문자 발송 예약이 취소되었습니다.<br/>예약 취소된 내용은 발송 실패로 표시됩니다.',
-  //             }).then((result) => {
-  //               if (result.isConfirmed) {
-  //                 refetch();
-  //               }
-  //             });
-  //             return response;
-  //           })
-  //           .catch((error) => {
-  //             Alert({
-  //               title: '예약 발송 취소 실패',
-  //               html: `문자 발송 예약 취소를 실패했습니다.<br/>${error.response.data.message}`,
-  //             });
-  //           });
-  //       }
-  //     });
-  //   }
-  // };
+  const handleCancelSchedule = () => {
+    if (data?.sendDate && now > data?.sendDate) {
+      Alert({
+        title: '예약 취소 불가',
+        html: '예약 시간이 도래하여 이미 문자가 발송 중 입니다.<br/>페이지를 새로 불러와 확인해 보세요.',
+        confirmButtonText: '페이지 새로고침',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          refetch();
+        }
+      });
+    } else {
+      Alert({
+        title: '예약 발송 취소',
+        text: '예약중인 문자 발송을 취소 합니다.',
+        showCancelButton: true,
+        confirmButtonText: '예약 취소하기',
+        cancelButtonText: '닫기',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          cancelScheduledSend(letterIdx)
+            .then((response) => {
+              Alert({
+                title: '예약 발송 취소 완료',
+                html: '문자 발송 예약이 취소되었습니다.<br/>예약 취소된 내용은 발송 실패로 표시됩니다.',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  refetch();
+                }
+              });
+              return response;
+            })
+            .catch((error) => {
+              Alert({
+                title: '예약 발송 취소 실패',
+                html: `문자 발송 예약 취소를 실패했습니다.<br/>${error.response.data.message}`,
+              });
+            });
+        }
+      });
+    }
+  };
 
   if (error) {
     logger.error(error);
@@ -499,9 +498,9 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                     {data.completeDate
                       ? data.completeDate
                       : data.taskStatus ===
-                          (TASK_STATUS.apiInProgress ||
-                            TASK_STATUS.inComplete ||
-                            TASK_STATUS.inProgress)
+                          (TASK_STATUS.sending ||
+                            TASK_STATUS.sent ||
+                            TASK_STATUS.resultPending)
                         ? '발송중'
                         : '-'}
                   </span>
@@ -722,7 +721,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                   </>
                 ) : (
                   <>
-                    {/* {data.scheduleType === 1 &&
+                    {data.scheduleType === 1 &&
                       data.sendDate > now &&
                       data.cancelDate == null && (
                         <Button
@@ -733,7 +732,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                         >
                           예약 취소
                         </Button>
-                      )} */}
+                      )}
                     <Button
                       variant="contained"
                       color="primary"

@@ -13,7 +13,7 @@ import {
 import { ResponseMessageVo } from '@/types/type';
 import { logger } from '@/lib/logger/defaultLogger';
 import { JoinAttendeeListSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/page';
-import { BasicInfoForm } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/[userIdx]/BasicInfo';
+import { BasicInfoForm } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/[attendeeIdx]/BasicInfo';
 import { RegisterAttendeeListTypeManualSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeManual';
 import { RegisterAttendeeListTypeTossSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeToss';
 
@@ -43,7 +43,7 @@ export const getRegisterAttendeeDtTypeToss = (
 ): Promise<ResponseMessageVo<RegisterAttendeeDtVo[]>> => {
   logger.debug('<getRegisterAttendeeDtTypeToss> params ', params);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/register-attendee-dt-toss`, params)
+    .post(`/api/pco/admin/attendees/registered`, params)
     .then((response) => {
       logger.debug(
         '<getRegisterAttendeeDtTypeToss> response.data : ',
@@ -72,16 +72,18 @@ export const getRegisterAttendeeDtTypeManual = (
 /**
  * 회원 상세 가져오기(일반정보)
  * @return JoinAttendeeDtVo
- * @param wuserIdx
+ * @param attendeeIdx
+ *
+ * /pco/admin/attendee/{attendeeIdx}/sign-up
  */
 export const getAttendeeBasicInfo = (
-  wuserIdx: number
+  attendeeIdx: number
 ): Promise<ResponseMessageVo<JoinAttendeeDtVo>> => {
   return adminAxiosInstance
-    .get(`/api/pco/admin/total/attendee/join-info/${wuserIdx}`)
+    .get(`/api/pco/admin/attendee/${attendeeIdx}/sign-up`)
     .then((response) => {
       logger.debug(
-        `<getAttendeeBasicInfo> response.data ${wuserIdx} : `,
+        `<getAttendeeBasicInfo> response.data ${attendeeIdx} : `,
         response.data
       );
       return response.data;

@@ -37,7 +37,7 @@ export enum TASK_STATUS {
   resultPending = 'result_pending',
   complete = 'result_completed',
   failure = 'send_failed',
-  scheduled = 'scheduledd',
+  scheduled = 'scheduled',
   stopped = 'send_stopped',
   scheduleCancelled = 'schedule_cancelled',
 }

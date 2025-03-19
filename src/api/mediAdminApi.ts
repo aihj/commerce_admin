@@ -3,16 +3,15 @@ import { adminAxiosInstance } from '@/api/authApi';
 export const getAdminOpenStatusActivePcoList = (): Promise<
   {
     thumbnailImageUrl?: string | null;
-    conference_idx: number;
-    conference_string_idx: string;
-    conference_name: string;
-    conference_start_t: string;
-    conference_end_t: string;
-    committee_name: string;
+    conferenceIdx: number;
+    conferenceStringIdx: string;
+    conferenceName: string;
+    conferenceStartT: string;
+    conferenceEndT: string;
   }[]
 > => {
   return adminAxiosInstance
-    .get(`/api/pco/admin/medi/middle/admin-active-pco`)
+    .get(`/api/pco/admin/opened-conferences`)
     .then((response) => {
       /*logger.debug(
         '<getAdminOpenStatusActivePcoList> data : ',
