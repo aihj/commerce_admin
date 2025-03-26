@@ -665,7 +665,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                 direction="row"
                 sx={{ m: 2, justifyContent: 'flex-end' }}
               >
-                {data.taskStatus === 'api_complete' ? (
+                {data.taskStatus === TASK_STATUS.complete ? (
                   <>
                     <Button
                       variant="contained"
@@ -693,7 +693,7 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
                       {selectedUser.length !== 0 && `(${selectedUser.length})`}
                     </Button>
                   </>
-                ) : data.taskStatus === 'interior_in_progress' ? (
+                ) : data.taskStatus === TASK_STATUS.resultPending ? (
                   <>
                     {data.cancelDate ? null : (
                       <Button

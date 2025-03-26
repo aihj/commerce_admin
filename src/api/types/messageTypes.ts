@@ -113,7 +113,7 @@ export interface getSMSDetailResponse {
   receiverInfo: string;
   letterItemList: SMSDetailListDT[];
   letterFileList: SMSUploadedImages[];
-  taskStatus: string;
+  taskStatus: TASK_STATUS;
   scheduleType: number;
   canceller?: string;
 }
