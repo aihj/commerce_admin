@@ -9,15 +9,14 @@ import Stack from '@mui/material/Stack';
 import { PATH } from '@/paths';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { getJoinAttendeeDt } from '@/api/attendeeApi';
+import { getUsers } from '@/api/attendeeApi';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { useSelector } from 'react-redux';
 import TableBody from '@/components/core/table/TableBody';
 import {
-  JoinAttendeeDtVo,
+  getUsersResponse,
   USER_STATUS,
   genderLabels,
-  registrationStatusLabels,
   userStatusLabels,
 } from '@/api/types/attendeeTypes';
 import { TablePagination } from '@/components/core/table/TablePagination';
@@ -28,10 +27,7 @@ import { MemoIcon } from '@/components/icons/MemoIcon';
 import { numberWithComma } from '@/lib/numberWithComma';
 import { DownloadIcon } from '@/components/icons/DownloadIcon';
 import { Chip } from '@/components/core/Chip';
-import {
-  setRegistrationStatusChipColor,
-  setUserStatusChipColor,
-} from '@/lib/chipColors';
+import { setUserStatusChipColor } from '@/lib/chipColors';
 import { InitSearchParam } from '@/lib/InitSearchParams';
 import { PageTitle } from '@/components/core/PageTitle';
 
@@ -71,7 +67,7 @@ const JoinAttendeeList = () => {
     [confStringIdx, router]
   );
 
-  const columnHelper = createColumnHelper<JoinAttendeeDtVo>();
+  const columnHelper = createColumnHelper<getUsersResponse>();
   const columns = useMemo(
     () => [
       columnHelper.accessor('wuserIdx', {
@@ -111,25 +107,12 @@ const JoinAttendeeList = () => {
               }
               title={`${info.row.original.wuserIdx}`}
             >
-              {`${info.getValue()}`}
+              <span className="mr-4">{`${info.getValue()}`}</span>
+              {info.row.original.memo ? <MemoIcon size={16} /> : ''}
             </Button>
           </Box>
         ),
         minSize: 10,
-      }),
-      columnHelper.accessor('memo', {
-        header: '',
-        cell: (info) => (
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
-            {info.row.original.memo ? <MemoIcon size={16} /> : ''}
-          </Box>
-        ),
-        maxSize: 5,
       }),
       columnHelper.accessor('birthDate', {
         header: '생년',
@@ -193,16 +176,16 @@ const JoinAttendeeList = () => {
         cell: (info) => (
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Chip
-              key={userStatusLabels[info.row.original.wuserStatus]}
-              label={userStatusLabels[info.row.original.wuserStatus]}
+              key={userStatusLabels[info.row.original.wuserRoleStatus]}
+              label={userStatusLabels[info.row.original.wuserRoleStatus]}
               type="soft"
-              color={setUserStatusChipColor(info.row.original.wuserStatus)}
+              color={setUserStatusChipColor(info.row.original.wuserRoleStatus)}
             />
           </Box>
         ),
         size: 80,
       }),
-      columnHelper.accessor('wuserCreateT', {
+      columnHelper.accessor('attendeeCreateT', {
         header: '가입날짜',
         cell: (info) => {
           return (
@@ -213,38 +196,13 @@ const JoinAttendeeList = () => {
         },
         size: 110,
       }),
-      columnHelper.display({
-        header: '등록상태',
-        cell: (info) => (
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            {info.row.original.registrationStatus ? (
-              <Chip
-                key={
-                  registrationStatusLabels[info.row.original.registrationStatus]
-                }
-                label={
-                  registrationStatusLabels[info.row.original.registrationStatus]
-                }
-                type="strong"
-                color={setRegistrationStatusChipColor(
-                  info.row.original.registrationStatus
-                )}
-              />
-            ) : info.row.original.wuserStatus === 'delete' ? (
-              '-'
-            ) : null}
-          </Box>
-        ),
-        size: 110,
-      }),
     ],
     [columnHelper, moveUserDetail]
   );
   // endregion ****************************** 열 구성 설정 ******************************
   const { isLoading, error, data } = useQuery({
     queryKey: ['getJoinAttendeeDt', cSearchParams],
-    queryFn: () =>
-      getJoinAttendeeDt(cSearchParams as JoinAttendeeListSearchParamsType),
+    queryFn: () => getUsers(cSearchParams as JoinAttendeeListSearchParamsType),
     enabled: !!conferenceIdx,
   });
   // **********************************************************
@@ -308,12 +266,12 @@ const JoinAttendeeList = () => {
               엑셀 다운로드
             </Button>
           </Stack>
-          <TableBody<JoinAttendeeDtVo>
+          <TableBody<getUsersResponse>
             data={data.content}
-            columns={columns as ColumnDef<JoinAttendeeDtVo>[]}
+            columns={columns as ColumnDef<getUsersResponse>[]}
             selectable={false}
             hideHead={false}
-            uniqueRowId={(row: JoinAttendeeDtVo) => row.attendeeIdx as number}
+            uniqueRowId={(row: getUsersResponse) => row.attendeeIdx as number}
             isHover={true}
             // size="medium"
           />

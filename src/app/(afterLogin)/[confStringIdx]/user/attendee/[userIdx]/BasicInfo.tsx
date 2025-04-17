@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { Label } from '@/components/core/Label';
 import { WUSER_STATUS } from '@/constants/filterSelectOptions';
-import { JoinAttendeeDtVo } from '@/api/types/attendeeTypes';
+import { getUsersResponse } from '@/api/types/attendeeTypes';
 import { dateFormat } from '@/lib/dayjs';
 import { UserDuplicatedInfoRequest } from '@/api/types/publicTypes';
 
@@ -32,7 +32,7 @@ export interface BasicInfoForm {
 }
 
 interface BasicInfoProp {
-  basicInfo: JoinAttendeeDtVo | undefined;
+  basicInfo: getUsersResponse | undefined;
   userIdx: number;
   conferenceIdx: number;
   handleBasicInfo: (data: BasicInfoForm) => void;
@@ -242,9 +242,9 @@ const BasicInfo = forwardRef(
                   control={control}
                   name="wuserStatus"
                   defaultValue={
-                    basicInfo?.wuserStatus === 'active'
+                    basicInfo?.wuserRoleStatus === 'active'
                       ? '회원'
-                      : basicInfo?.wuserStatus === 'delete'
+                      : basicInfo?.wuserRoleStatus === 'delete'
                         ? '탈퇴'
                         : '기회원'
                   }
@@ -268,7 +268,7 @@ const BasicInfo = forwardRef(
                 <Controller
                   control={control}
                   name="signUpDate"
-                  defaultValue={basicInfo?.wuserCreateT}
+                  defaultValue={basicInfo?.attendeeCreateT}
                   render={({ field }) => (
                     <TextField
                       label="가입 날짜"

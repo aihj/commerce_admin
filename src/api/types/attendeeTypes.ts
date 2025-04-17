@@ -61,29 +61,23 @@ export const paymentStatusLabels = {
   [PAYMENT_STATUS.cancelCompleted]: '환불완료',
 };
 
-// 결제 방식
-export enum PAYMENT_METHOD {
-  toss = 'toss',
-  free = 'free',
-  manual = 'manual',
-}
-
 // 결제 수단
-export enum PAYMENT_SOURCE {
-  card = 'card',
-  eWallet = 'eWallet',
-  free = 'free',
-  manual = 'manual',
+export enum PAYMENT_METHOD {
+  무료 = '무료',
+  수동계좌이체 = '수동계좌이체',
+  카드 = '카드',
+  간편결제 = '간편결제',
+  토스계좌이체 = '토스계좌이체',
 }
 
-export const paymentSourceLabels = {
-  [PAYMENT_SOURCE.card]: '카드',
-  [PAYMENT_SOURCE.eWallet]: '간편결제',
-  [PAYMENT_SOURCE.free]: '무료결제',
-  [PAYMENT_SOURCE.manual]: '수동 계좌이체',
-};
+// export const paymentMethodLabels = {
+//   [PAYMENT_METHOD.card]: '카드',
+//   [PAYMENT_METHOD.eWallet]: '간편결제',
+//   [PAYMENT_METHOD.free]: '무료결제',
+//   [PAYMENT_METHOD.manual]: '수동계좌이체',
+// };
 
-export interface JoinAttendeeDtVo {
+export interface getUsersResponse {
   wuserIdx: number;
   attendeeIdx: number;
   birthDate: string;
@@ -91,36 +85,26 @@ export interface JoinAttendeeDtVo {
   gender: GENDER;
   name: string;
   phone: string;
-  registrationStatus: REGISTRATION_STATUS;
-  wuserCreateT?: string;
-  wuserStatus: USER_STATUS;
+  attendeeCreateT?: string;
+  wuserRoleStatus: USER_STATUS;
   memo: string;
 }
 
 /*** 등록 회원 DT*/
-export interface RegisterAttendeeDtVo {
+export interface getRegisteredUsersResponse {
   wuserIdx: number;
   attendeeIdx?: number;
   name: string;
   birthDate: string;
   gender: GENDER;
-
-  /* 결제 상태
-    freeRegi:무료 등록|freeRegiCancelled:무료 등록 취소|paymentCompleted:결제 완료|refundCompleted:환불 완료|pendingPayment:결제 대기
-  */
-  paymentStatus: PAYMENT_STATUS;
-  registrationStatus: REGISTRATION_STATUS;
+  regiStatus: REGISTRATION_STATUS;
   registrationAt?: number;
   hasMemo: boolean; //  메모 존재 여부
-  regifeeName: string;
-
-  // 추가 결제
-  additionalPaidPrograms?: HashMap[];
-  paymentMethod?: PAYMENT_METHOD; // 결제 방식(토스,수동계좌이체)
-  paymentSource: PAYMENT_SOURCE; // 결제 수단
-  amount?: number;
-  indicatedAmount?: number;
   memo: string;
+  regiName: string;
+  paymentMethod: PAYMENT_METHOD;
+  amount?: number;
+  additionalPaidPrograms?: HashMap[]; // 추가 결제
 }
 
 /** 회원 상세 (약관 동의) */

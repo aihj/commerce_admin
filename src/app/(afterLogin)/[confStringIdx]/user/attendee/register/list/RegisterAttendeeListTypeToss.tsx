@@ -6,32 +6,24 @@ import { PATH } from '@/paths';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import TableBody from '@/components/core/table/TableBody';
 import {
-  PAYMENT_SOURCE,
   REGISTRATION_STATUS,
-  RegisterAttendeeDtVo,
+  getRegisteredUsersResponse,
   genderLabels,
-  paymentSourceLabels,
-  paymentStatusLabels,
   registrationStatusLabels,
+  PAYMENT_METHOD,
 } from '@/api/types/attendeeTypes';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import { useParams, useRouter } from 'next/navigation';
 import { Box, Button, Card, Stack } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import {
-  getRegisterAttendeeDtTypeToss,
-  getRegistrationType,
-} from '@/api/attendeeApi';
+import { getRegisteredUsers, getRegistrationType } from '@/api/attendeeApi';
 import { RegisterAttendeeListTypeTossFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeTossFilters';
 import { DownloadIcon } from '@/components/icons/DownloadIcon';
 import { numberWithComma } from '@/lib/numberWithComma';
 import { MemoIcon } from '@/components/icons/MemoIcon';
 import { Chip } from '@/components/core/Chip';
-import {
-  setPaymentStatusChipColor,
-  setRegistrationStatusChipColor,
-} from '@/lib/chipColors';
+import { setRegistrationStatusChipColor } from '@/lib/chipColors';
 import { logger } from '@/lib/logger/defaultLogger';
 import { InitSearchParam } from '@/lib/InitSearchParams';
 import { PageTitle } from '@/components/core/PageTitle';
@@ -88,7 +80,7 @@ const RegisterAttendeeListTypeToss =
       [confStringIdx, router]
     );
 
-    const columnHelper = createColumnHelper<RegisterAttendeeDtVo>();
+    const columnHelper = createColumnHelper<getRegisteredUsersResponse>();
     const columns = useMemo(
       () => [
         columnHelper.accessor('wuserIdx', {
@@ -140,24 +132,11 @@ const RegisterAttendeeListTypeToss =
                 }
                 title={`${info.row.original.wuserIdx}`}
               >
-                {`${info.getValue()}`}
+                <span className="mr-4">{`${info.getValue()}`}</span>
+                {info.row.original.memo ? <MemoIcon size={16} /> : ''}
               </Button>
             </Box>
           ),
-        }),
-        columnHelper.accessor('memo', {
-          header: '',
-          cell: (info) => (
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              {info.row.original.memo ? <MemoIcon size={16} /> : ''}
-            </Box>
-          ),
-          size: 10,
         }),
         columnHelper.accessor('birthDate', {
           header: '생년',
@@ -184,29 +163,11 @@ const RegisterAttendeeListTypeToss =
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <Chip
-                key={info.row.original.registrationStatus}
-                label={
-                  registrationStatusLabels[info.row.original.registrationStatus]
-                }
+                key={info.row.original.regiStatus}
+                label={registrationStatusLabels[info.row.original.regiStatus]}
                 type="soft"
                 color={setRegistrationStatusChipColor(
-                  info.row.original.registrationStatus
-                )}
-              />
-            </Box>
-          ),
-          size: 110,
-        }),
-        columnHelper.display({
-          header: '결제상태',
-          cell: (info) => (
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Chip
-                key="birthFullYear"
-                label={paymentStatusLabels[info.row.original.paymentStatus]}
-                type="strong"
-                color={setPaymentStatusChipColor(
-                  info.row.original.paymentStatus
+                  info.row.original.regiStatus
                 )}
               />
             </Box>
@@ -217,11 +178,9 @@ const RegisterAttendeeListTypeToss =
           header: '결제수단',
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              {info.row.original.paymentSource === null
+              {info.row.original.paymentMethod === null
                 ? '-'
-                : paymentSourceLabels[
-                    info.row.original.paymentSource as PAYMENT_SOURCE
-                  ]}
+                : PAYMENT_METHOD[info.row.original.paymentMethod]}
             </Box>
           ),
           size: 110,
@@ -230,7 +189,7 @@ const RegisterAttendeeListTypeToss =
           header: '등록구분',
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              {info.row.original.regifeeName}
+              {info.row.original.regiName}
             </Box>
           ),
           size: 110,
@@ -246,20 +205,8 @@ const RegisterAttendeeListTypeToss =
         //   },
         //   size: 110,
         // }),
+
         columnHelper.accessor('amount', {
-          header: '총 금액',
-          cell: (info) => {
-            return (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                {info.getValue() === null
-                  ? '-'
-                  : numberWithComma(Number(info.getValue()))}
-              </Box>
-            );
-          },
-          size: 110,
-        }),
-        columnHelper.accessor('indicatedAmount', {
           header: '결제금액',
           cell: (info) => {
             return (
@@ -311,9 +258,9 @@ const RegisterAttendeeListTypeToss =
     });
 
     const { isLoading, error, data } = useQuery({
-      queryKey: ['getRegisterAttendeeDtTypeToss', cSearchParams],
+      queryKey: ['getRegisteredUsers', cSearchParams],
       queryFn: () =>
-        getRegisterAttendeeDtTypeToss(
+        getRegisteredUsers(
           cSearchParams as RegisterAttendeeListTypeTossSearchParamsType
         ),
       enabled: !!conferenceIdx,
@@ -382,12 +329,12 @@ const RegisterAttendeeListTypeToss =
                 엑셀 다운로드
               </Button>
             </Stack>
-            <TableBody<RegisterAttendeeDtVo>
+            <TableBody<getRegisteredUsersResponse>
               data={data.content}
-              columns={columns as ColumnDef<RegisterAttendeeDtVo>[]}
+              columns={columns as ColumnDef<getRegisteredUsersResponse>[]}
               selectable={false}
               hideHead={false}
-              uniqueRowId={(row: RegisterAttendeeDtVo) =>
+              uniqueRowId={(row: getRegisteredUsersResponse) =>
                 row.attendeeIdx as number
               }
               isHover={true}

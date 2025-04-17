@@ -6,30 +6,30 @@ import {
   AttendeeRegisterPaymentsInfoResponse,
   AttendeeTermsAgreeInfoResponse,
   AttendeeTermsInfoRequest,
-  JoinAttendeeDtVo,
-  RegisterAttendeeDtVo,
   RegistrationTypeResponse,
+  getRegisteredUsersResponse,
+  getUsersResponse,
 } from '@/api/types/attendeeTypes';
 import { ResponseMessageVo } from '@/types/type';
 import { logger } from '@/lib/logger/defaultLogger';
 import { JoinAttendeeListSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/page';
-import { BasicInfoForm } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/[attendeeIdx]/BasicInfo';
 import { RegisterAttendeeListTypeManualSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeManual';
 import { RegisterAttendeeListTypeTossSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeToss';
+import { BasicInfoForm } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/[userIdx]/BasicInfo';
 
 /**
  * 가입 회원 리스트 가져오기
  * @return regifeeIdx, wuserIdx
  * @param params
  */
-export const getJoinAttendeeDt = (
+export const getUsers = (
   params: JoinAttendeeListSearchParamsType
-): Promise<ResponseMessageVo<JoinAttendeeDtVo[]>> => {
-  logger.debug('<getJoinAttendeeDt> params ', params);
+): Promise<ResponseMessageVo<getUsersResponse[]>> => {
+  logger.debug('<getUsers> params ', params);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/join-attendee-dt`, params)
+    .post(`/api/pco/admin/attendee`, params)
     .then((response) => {
-      logger.debug('<getJoinAttendeeDt> response.data : ', response.data);
+      logger.debug('<getUsers> response.data : ', response.data);
       return response.data;
     });
 };
@@ -38,17 +38,14 @@ export const getJoinAttendeeDt = (
  * 등록 회원 리스트 가져오기(결제 방식이 토스인경우)
  * @param params
  */
-export const getRegisterAttendeeDtTypeToss = (
+export const getRegisteredUsers = (
   params: RegisterAttendeeListTypeTossSearchParamsType
-): Promise<ResponseMessageVo<RegisterAttendeeDtVo[]>> => {
-  logger.debug('<getRegisterAttendeeDtTypeToss> params ', params);
+): Promise<ResponseMessageVo<getRegisteredUsersResponse[]>> => {
+  logger.debug('<getRegisteredUsers> params ', params);
   return adminAxiosInstance
-    .post(`/api/pco/admin/attendees/registered`, params)
+    .post(`/api/pco/admin/attendee/registered`, params)
     .then((response) => {
-      logger.debug(
-        '<getRegisterAttendeeDtTypeToss> response.data : ',
-        response.data
-      );
+      logger.debug('<getRegisteredUsers> response.data : ', response.data);
       return response.data;
     });
 };
@@ -59,7 +56,7 @@ export const getRegisterAttendeeDtTypeToss = (
  */
 export const getRegisterAttendeeDtTypeManual = (
   params: RegisterAttendeeListTypeManualSearchParamsType
-): Promise<ResponseMessageVo<RegisterAttendeeDtVo[]>> => {
+): Promise<ResponseMessageVo<getRegisteredUsersResponse[]>> => {
   logger.debug('<getRegisterAttendeeDtTypeManual> params ', params);
   return adminAxiosInstance
     .post(`/api/pco/admin/total/register-attendee-dt-manual`, params)
@@ -71,16 +68,16 @@ export const getRegisterAttendeeDtTypeManual = (
 
 /**
  * 회원 상세 가져오기(일반정보)
- * @return JoinAttendeeDtVo
+ * @return getUsersResponse
  * @param attendeeIdx
  *
- * /pco/admin/attendee/{attendeeIdx}/sign-up
+ * /pco/admin/attendee/{attendeeIdx}
  */
 export const getAttendeeBasicInfo = (
   attendeeIdx: number
-): Promise<ResponseMessageVo<JoinAttendeeDtVo>> => {
+): Promise<ResponseMessageVo<getUsersResponse>> => {
   return adminAxiosInstance
-    .get(`/api/pco/admin/attendee/${attendeeIdx}/sign-up`)
+    .get(`/api/pco/admin/attendee/join-info/${attendeeIdx}`)
     .then((response) => {
       logger.debug(
         `<getAttendeeBasicInfo> response.data ${attendeeIdx} : `,
@@ -92,7 +89,7 @@ export const getAttendeeBasicInfo = (
 
 /**
  * 회원 상세 가져오기(약관동의)
- * @return JoinAttendeeDtVo
+ * @return getUsersResponse
  * @param wuserIdx
  */
 export const getAttendeeTermsInfo = (
