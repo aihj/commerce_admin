@@ -8,33 +8,23 @@ import Swal from 'sweetalert2';
 import { ScrollMenu } from '@/components/ScrollMenu';
 import {
   getAttendeeBasicInfo,
-  getAttendeeRegisterDetailOptionInfo,
-  getAttendeeRegisterInfo,
-  getAttendeeRegisterPaymentsInfo,
   getAttendeeTermsInfo,
   updateAttendeeBasicInfo,
-  updateAttendeeRegisterDetailInfo,
 } from '@/api/attendeeApi';
 import { useQuery } from '@tanstack/react-query';
 import { useAppSelector } from '@/redux/hooks';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
-import { getConferenceRegisterOptions } from '@/api/conferenceApi';
-import { RegisterDetailOptionsState } from '@/constants/registerOptions';
 import { logger } from '@/lib/logger/defaultLogger';
-import { AttendeeRegisterDetailInfoRequest } from '@/api/types/attendeeTypes';
 import { UserDuplicatedInfoRequest } from '@/api/types/publicTypes';
-import { checkDuplicatedEmail, checkDuplicatedPhone } from '@/api/publicApi';
+import { checkDuplicatedEmail } from '@/api/publicApi';
 import { BasicInfo, BasicInfoForm } from './BasicInfo';
 import { TermsAgreeInfo } from './TermsAgreeInfo';
-import { RegisterDetailInfo } from './RegisterDetailInfo';
-import { RegisterInfo } from './RegisterInfo';
-import { PaymentListInfo } from './PaymentListInfo';
 
 interface UserDetailProps {
-  userIdx: number;
+  attendeeIdx: number;
 }
 
-const UserDetail = ({ userIdx }: UserDetailProps) => {
+const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
   const conferenceIdx = useAppSelector(selectConferenceIdx);
 
   const basicRef = useRef<HTMLElement>(null);
@@ -42,29 +32,7 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
   const registerDetailRef = useRef<HTMLElement>(null);
   const registerRef = useRef<HTMLElement>(null);
   const paymentRef = useRef<HTMLElement>(null);
-
-  const menus = [
-    {
-      title: '일반 정보',
-      type: 'basic',
-    },
-    {
-      title: '약관 동의 여부',
-      type: 'termAgree',
-    },
-    {
-      title: '회원/등록 정보',
-      type: 'registerDetail',
-    },
-    {
-      title: '학회 등록 정보',
-      type: 'register',
-    },
-    {
-      title: '전체 결제 정보',
-      type: 'payment',
-    },
-  ];
+  const [menus, setMenus] = useState<{ title: string; type: string }[]>([]);
 
   const handleMenuClick = (menu: string) => {
     if (menu === 'basic') {
@@ -81,61 +49,60 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
     }
   };
 
-  // 학회 세부 옵션 정보 (시작)
-  const [registerDetailOptions, setRegisterDetailOptions] = useState<
-    RegisterDetailOptionsState[] | null
-  >();
-  [
-    {
-      idx: -1,
-      type: '',
-      label: '',
-      isEssential: false,
-      value: '',
-    },
-  ];
-  useEffect(() => {
-    getConferenceRegisterOptions(conferenceIdx as number)
-      .then((result) => {
-        getAttendeeRegisterDetailOptionInfo(userIdx)
-          .then(({ content }) => {
-            if (content) {
-              const optionsData = result.map((item) => ({
-                idx: item.optionIdx,
-                key: item.optionKey,
-                name: item.optionKey,
-                type: item.optionType,
-                label: item.optionLabel,
-                isEssential: item.isEssential === 1 ? true : false,
-                value: content?.find(
-                  (option) => option.optionIdx === item.optionIdx
-                )?.optionValue as string,
-              }));
-              setRegisterDetailOptions(optionsData);
-            } else {
-              setRegisterDetailOptions(null);
-            }
-          })
-          .catch((error) => {
-            logger.error('<getAttendeeRegisterDetailOptionInfo> error', error);
-          });
-      })
-      .catch((error) => {
-        logger.error('<getConferenceRegisterOptions> error', error);
-      });
-  }, [conferenceIdx, userIdx]);
-  // 학회 세부 옵션 정보 (끝)
+  // // 학회 세부 옵션 정보 (시작)
+  // const [registerDetailOptions, setRegisterDetailOptions] = useState<
+  //   RegisterDetailOptionsState[] | null
+  // >();
+  // [
+  //   {
+  //     idx: -1,
+  //     type: '',
+  //     label: '',
+  //     isEssential: false,
+  //     value: '',
+  //   },
+  // ];
+  // useEffect(() => {
+  //   getConferenceRegisterOptions(conferenceIdx as number)
+  //     .then((result) => {
+  //       getAttendeeRegisterDetailOptionInfo(attendeeIdx)
+  //         .then(({ content }) => {
+  //           if (content) {
+  //             const optionsData = result.map((item) => ({
+  //               idx: item.optionIdx,
+  //               key: item.optionKey,
+  //               name: item.optionKey,
+  //               type: item.optionType,
+  //               label: item.optionLabel,
+  //               isEssential: item.isEssential === 1 ? true : false,
+  //               value: content?.find(
+  //                 (option) => option.optionIdx === item.optionIdx
+  //               )?.optionValue as string,
+  //             }));
+  //             setRegisterDetailOptions(optionsData);
+  //           } else {
+  //             setRegisterDetailOptions(null);
+  //           }
+  //         })
+  //         .catch((error) => {
+  //           logger.error('<getAttendeeRegisterDetailOptionInfo> error', error);
+  //         });
+  //     })
+  //     .catch((error) => {
+  //       logger.error('<getConferenceRegisterOptions> error', error);
+  //     });
+  // }, [conferenceIdx, attendeeIdx]);
+  // // 학회 세부 옵션 정보 (끝)
 
   const [checkedEmail, setCheckedEmail] = useState<boolean>(false);
-  const [checkedPhone, setCheckedPhone] = useState<boolean>(false);
 
   const {
     isLoading: getAttendeeBasicInfoIsLoading,
     error: getAttendeeBasicInfoError,
     data: getAttendeeBasicInfoData,
   } = useQuery({
-    queryKey: ['getAttendeeBasicInfo', userIdx],
-    queryFn: () => getAttendeeBasicInfo(userIdx),
+    queryKey: ['getAttendeeBasicInfo', attendeeIdx],
+    queryFn: () => getAttendeeBasicInfo(attendeeIdx),
     enabled: !!conferenceIdx,
   });
 
@@ -144,30 +111,30 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
     error: getAttendeeTermsInfoError,
     data: getAttendeeTermsInfoData,
   } = useQuery({
-    queryKey: ['getAttendeeTermsInfo', userIdx],
-    queryFn: () => getAttendeeTermsInfo(userIdx),
+    queryKey: ['getAttendeeTermsInfo', attendeeIdx],
+    queryFn: () => getAttendeeTermsInfo(attendeeIdx),
     enabled: !!conferenceIdx,
   });
 
-  const {
-    isLoading: getAttendeeRegisterInfoIsLoading,
-    error: getAttendeeRegisterInfoError,
-    data: getAttendeeRegisterInfoData,
-  } = useQuery({
-    queryKey: ['getAttendeeRegisterInfo', userIdx],
-    queryFn: () => getAttendeeRegisterInfo(userIdx),
-    enabled: !!conferenceIdx,
-  });
+  // const {
+  //   isLoading: getAttendeeRegisterInfoIsLoading,
+  //   error: getAttendeeRegisterInfoError,
+  //   data: getAttendeeRegisterInfoData,
+  // } = useQuery({
+  //   queryKey: ['getAttendeeRegisterInfo', userIdx],
+  //   queryFn: () => getAttendeeRegisterInfo(userIdx),
+  //   enabled: !!conferenceIdx,
+  // });
 
-  const {
-    isLoading: getAttendeeRegisterPaymentsInfoIsLoading,
-    error: getAttendeeRegisterPaymentsInfoError,
-    data: getAttendeeRegisterPaymentsInfoData,
-  } = useQuery({
-    queryKey: ['getAttendeeRegisterPaymentsInfo', userIdx],
-    queryFn: () => getAttendeeRegisterPaymentsInfo(userIdx),
-    enabled: !!conferenceIdx,
-  });
+  // const {
+  //   isLoading: getAttendeeRegisterPaymentsInfoIsLoading,
+  //   error: getAttendeeRegisterPaymentsInfoError,
+  //   data: getAttendeeRegisterPaymentsInfoData,
+  // } = useQuery({
+  //   queryKey: ['getAttendeeRegisterPaymentsInfo', userIdx],
+  //   queryFn: () => getAttendeeRegisterPaymentsInfo(userIdx),
+  //   enabled: !!conferenceIdx,
+  // });
 
   const handleBasicInfo = (basicInfo: BasicInfoForm) => {
     updateAttendeeBasicInfo(basicInfo)
@@ -188,26 +155,26 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
       });
   };
 
-  const handleRegisterDetailInfo = (
-    detailInfo: AttendeeRegisterDetailInfoRequest
-  ) => {
-    updateAttendeeRegisterDetailInfo(detailInfo)
-      .then((result) => {
-        if (result.status === 200) {
-          Swal.fire({
-            title: '저장 완료',
-            text: '학회 등록 세부 정보가 수정되었습니다.',
-          });
-        }
-      })
-      .catch((error) => {
-        logger.error('<updateAttendeeRegisterDetailInfo> error', error);
-        Swal.fire({
-          title: '저장 실패',
-          text: '다시 시도하거나 관리자에게 문의해 주세요.',
-        });
-      });
-  };
+  // const handleRegisterDetailInfo = (
+  //   detailInfo: AttendeeRegisterDetailInfoRequest
+  // ) => {
+  //   updateAttendeeRegisterDetailInfo(detailInfo)
+  //     .then((result) => {
+  //       if (result.status === 200) {
+  //         Swal.fire({
+  //           title: '저장 완료',
+  //           text: '학회 등록 세부 정보가 수정되었습니다.',
+  //         });
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       logger.error('<updateAttendeeRegisterDetailInfo> error', error);
+  //       Swal.fire({
+  //         title: '저장 실패',
+  //         text: '다시 시도하거나 관리자에게 문의해 주세요.',
+  //       });
+  //     });
+  // };
 
   const handleDuplicatedEmail = (data: UserDuplicatedInfoRequest) => {
     setCheckedEmail(false);
@@ -239,51 +206,74 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
       });
   };
 
-  const handleDuplicatedPhone = (data: UserDuplicatedInfoRequest) => {
-    setCheckedPhone(false);
-    checkDuplicatedPhone(data)
-      .then((result) => {
-        if (result.status === 200) {
-          setCheckedPhone(true);
-          Swal.fire({
-            title: '중복확인 완료',
-            text: '사용 가능한 휴대폰 번호입니다.',
-          });
-        }
-      })
-      .catch((error) => {
-        logger.error('<handleDuplicatedPhone> error', error);
-        if (
-          error.response.data.code.split('.')[3] === 'duplicate_phone_attendee'
-        ) {
-          Swal.fire({
-            title: '중복확인 실패',
-            text: '이미 사용중인 휴대폰 번호 입니다.',
-          });
-        } else {
-          Swal.fire({
-            title: '중복확인 실패',
-            text: '다시 시도하거나 관리자에게 문의해 주세요.',
-          });
-        }
-      });
-  };
+  useEffect(() => {
+    let newMenu;
+    if (getAttendeeTermsInfoData?.content) {
+      newMenu = [
+        {
+          title: '일반 정보',
+          type: 'basic',
+        },
+        {
+          title: '약관 동의 여부',
+          type: 'termAgree',
+        },
+        {
+          title: '회원/등록 정보',
+          type: 'registerDetail',
+        },
+        {
+          title: '학회 등록 정보',
+          type: 'register',
+        },
+        {
+          title: '전체 결제 정보',
+          type: 'payment',
+        },
+      ];
+
+      setMenus(newMenu);
+    } else {
+      newMenu = [
+        {
+          title: '일반 정보',
+          type: 'basic',
+        },
+        {
+          title: '회원/등록 정보',
+          type: 'registerDetail',
+        },
+        {
+          title: '학회 등록 정보',
+          type: 'register',
+        },
+        {
+          title: '전체 결제 정보',
+          type: 'payment',
+        },
+      ];
+
+      setMenus(newMenu);
+    }
+  }, [getAttendeeTermsInfo]);
 
   // 전체 api 공통으로 사용 TODO <PageLoading />
   if (
     getAttendeeBasicInfoIsLoading ||
-    getAttendeeTermsInfoIsLoading ||
-    getAttendeeRegisterInfoIsLoading ||
-    getAttendeeRegisterPaymentsInfoIsLoading
+    getAttendeeTermsInfoIsLoading
+    // ||
+    // getAttendeeRegisterInfoIsLoading ||
+    // getAttendeeRegisterPaymentsInfoIsLoading
   ) {
     return 'getAttendeeBasicInfoIsLoading';
   }
 
   if (
     getAttendeeBasicInfoError ||
-    getAttendeeTermsInfoError ||
-    getAttendeeRegisterInfoError ||
-    getAttendeeRegisterPaymentsInfoError
+    getAttendeeTermsInfoError
+    // ||
+    // getAttendeeRegisterInfoError ||
+    // getAttendeeRegisterPaymentsInfoError
   ) {
     return 'getAttendeeBasicInfoError';
   }
@@ -306,24 +296,20 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
         <ScrollMenu menus={menus} handleMenuClick={handleMenuClick} />
         <BasicInfo
           ref={basicRef}
-          userIdx={userIdx}
+          attendeeIdx={attendeeIdx}
           conferenceIdx={conferenceIdx as number}
           basicInfo={getAttendeeBasicInfoData?.content}
           handleBasicInfo={(data: BasicInfoForm) => handleBasicInfo(data)}
           checkedEmail={checkedEmail}
-          checkedPhone={checkedPhone}
           handleDuplicatedEmail={(data: UserDuplicatedInfoRequest) =>
             handleDuplicatedEmail(data)
-          }
-          handleDuplicatedPhone={(data: UserDuplicatedInfoRequest) =>
-            handleDuplicatedPhone(data)
           }
         />
         <TermsAgreeInfo
           ref={termAgreeRef}
           terms={getAttendeeTermsInfoData?.content}
         />
-        <RegisterDetailInfo
+        {/* <RegisterDetailInfo
           ref={registerDetailRef}
           conferenceIdx={conferenceIdx as number}
           userIdx={userIdx}
@@ -339,7 +325,7 @@ const UserDetail = ({ userIdx }: UserDetailProps) => {
         <PaymentListInfo
           ref={paymentRef}
           paymentList={getAttendeeRegisterPaymentsInfoData?.content}
-        />
+        /> */}
       </Stack>
     </Box>
   );

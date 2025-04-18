@@ -7,7 +7,6 @@ import { RegisterAttendeeListTypeManual } from '@/app/(afterLogin)/[confStringId
 
 const RegisterAttendeeList = () => {
   const pco: Pco = useAppSelector((state) => state.pco);
-  console.log('pco.paymentMethod', pco.paymentMethod);
   if (pco.paymentMethod === 'toss_payment') {
     return <RegisterAttendeeListTypeToss />;
   } else {

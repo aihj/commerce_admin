@@ -228,6 +228,6 @@ export const getConferenceRegisterOptions = (
   conferenceIdx: number
 ): Promise<OptionVo[]> => {
   return adminAxiosInstance
-    .get(`/api/pco/admin/total/${conferenceIdx}/option`)
+    .get(`/api/pco/admin/attendee/${conferenceIdx}/option`)
     .then((result) => result.data.content);
 };

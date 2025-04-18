@@ -20,11 +20,11 @@ import { dateFormat } from '@/lib/dayjs';
 import { UserDuplicatedInfoRequest } from '@/api/types/publicTypes';
 
 export interface BasicInfoForm {
-  wuserIdx: number;
+  attendeeIdx: number;
   name: string;
   birthDate: string;
   gender: string;
-  wuserStatus: string;
+  wuserRoleStatus: string;
   signUpDate: string;
   phone: string;
   email: string;
@@ -33,26 +33,22 @@ export interface BasicInfoForm {
 
 interface BasicInfoProp {
   basicInfo: getUsersResponse | undefined;
-  userIdx: number;
+  attendeeIdx: number;
   conferenceIdx: number;
   handleBasicInfo: (data: BasicInfoForm) => void;
   handleDuplicatedEmail: (data: UserDuplicatedInfoRequest) => void;
-  handleDuplicatedPhone: (data: UserDuplicatedInfoRequest) => void;
   checkedEmail: boolean;
-  checkedPhone: boolean;
 }
 
 const BasicInfo = forwardRef(
   (
     {
       basicInfo,
-      userIdx,
+      attendeeIdx,
       conferenceIdx,
       handleBasicInfo,
       handleDuplicatedEmail,
-      handleDuplicatedPhone,
       checkedEmail,
-      checkedPhone,
     }: BasicInfoProp,
     ref
   ) => {
@@ -62,7 +58,7 @@ const BasicInfo = forwardRef(
       watch,
       formState: { errors, dirtyFields },
       trigger,
-    } = useForm<BasicInfoForm>({ defaultValues: { wuserIdx: userIdx } });
+    } = useForm<BasicInfoForm>({ defaultValues: { attendeeIdx: attendeeIdx } });
 
     /**
      * 중복 확인 api 응답과 별개로
@@ -70,21 +66,9 @@ const BasicInfo = forwardRef(
      * 수정 한 값이 기존 값과 동일한지를 확인하기 위한 state
      */
     const [validEmail, setValidEmail] = useState<boolean>(true);
-    const [validPhone, setValidPhone] = useState<boolean>(true);
 
     const onsubmit = (data: BasicInfoForm) => {
-      if (basicInfo?.phone !== data.phone) {
-        // 수정된 값이 중복체크 api를 통과하지 못했거나, 중복체크 api를 호출하지 않았을때
-        if (!checkedPhone || !validPhone) {
-          Swal.fire({
-            title: '휴대폰 번호 확인',
-            text: '휴대폰 번호 중복 체크 후 저장해 주세요.',
-          });
-          return;
-        } else {
-          handleBasicInfo(data);
-        }
-      } else if (basicInfo.email !== data.email) {
+      if (basicInfo?.email !== data.email) {
         if (!checkedEmail || !validEmail) {
           Swal.fire({
             title: '이메일 확인',
@@ -108,30 +92,10 @@ const BasicInfo = forwardRef(
       });
     };
 
-    const handleCheckPhone = () => {
-      trigger('phone').then((result) => {
-        if (result) {
-          const data = watch();
-          handleDuplicatedPhone({
-            conferenceIdx,
-            phone: data.phone,
-            wserviceName: process.env.NEXT_PUBLIC_AUTH_TYPE,
-          });
-        }
-      });
-    };
-
     const handleValidEmail = (value: string) => {
       setValidEmail(false);
       if (value === basicInfo?.email) {
         setValidEmail(true);
-      }
-    };
-
-    const handleValidPhone = (value: string) => {
-      setValidPhone(false);
-      if (value === basicInfo?.phone) {
-        setValidPhone(true);
       }
     };
 
@@ -240,7 +204,7 @@ const BasicInfo = forwardRef(
               <Stack spacing={2} direction="row" sx={{ width: '100%' }}>
                 <Controller
                   control={control}
-                  name="wuserStatus"
+                  name="wuserRoleStatus"
                   defaultValue={
                     basicInfo?.wuserRoleStatus === 'active'
                       ? '회원'
@@ -301,14 +265,11 @@ const BasicInfo = forwardRef(
                       error={Boolean(errors.phone)}
                       helperText={errors.phone?.message}
                       {...field}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                        handleValidPhone(e.target.value);
-                      }}
+                      disabled
                     />
                   )}
                 />
-                <Button
+                {/* <Button
                   sx={{ minWidth: 120, maxHeight: 49 }}
                   color="secondary"
                   onClick={() => handleCheckPhone()}
@@ -317,7 +278,7 @@ const BasicInfo = forwardRef(
                   disabled={!dirtyFields.phone || validPhone}
                 >
                   중복확인
-                </Button>
+                </Button> */}
               </Stack>
             </div>
             <div className="flex">

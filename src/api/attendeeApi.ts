@@ -15,7 +15,7 @@ import { logger } from '@/lib/logger/defaultLogger';
 import { JoinAttendeeListSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/join/list/page';
 import { RegisterAttendeeListTypeManualSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeManual';
 import { RegisterAttendeeListTypeTossSearchParamsType } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeToss';
-import { BasicInfoForm } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/[userIdx]/BasicInfo';
+import { BasicInfoForm } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/[attendeeIdx]/BasicInfo';
 
 /**
  * 가입 회원 리스트 가져오기
@@ -77,7 +77,7 @@ export const getAttendeeBasicInfo = (
   attendeeIdx: number
 ): Promise<ResponseMessageVo<getUsersResponse>> => {
   return adminAxiosInstance
-    .get(`/api/pco/admin/attendee/join-info/${attendeeIdx}`)
+    .get(`/api/pco/admin/attendee/${attendeeIdx}/join`)
     .then((response) => {
       logger.debug(
         `<getAttendeeBasicInfo> response.data ${attendeeIdx} : `,
@@ -90,16 +90,16 @@ export const getAttendeeBasicInfo = (
 /**
  * 회원 상세 가져오기(약관동의)
  * @return getUsersResponse
- * @param wuserIdx
+ * @param attendeeIdx
  */
 export const getAttendeeTermsInfo = (
-  wuserIdx: number
+  attendeeIdx: number
 ): Promise<ResponseMessageVo<AttendeeTermsAgreeInfoResponse[]>> => {
   return adminAxiosInstance
-    .get(`/api/pco/admin/total/attendee/select-terms/${wuserIdx}`)
+    .get(`/api/pco/admin/attendee/${attendeeIdx}/terms`)
     .then((response) => {
       logger.debug(
-        `<getAttendeeTermsInfo> response.data ${wuserIdx} : `,
+        `<getAttendeeTermsInfo> response.data ${attendeeIdx} : `,
         response.data
       );
       return response.data;

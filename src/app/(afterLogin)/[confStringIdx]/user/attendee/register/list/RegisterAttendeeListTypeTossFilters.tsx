@@ -11,7 +11,6 @@ import TableTextFilterPopover from '@/components/core/table/filter/TableTextFilt
 import {
   BIRTH_YEAR_RANGE,
   GENDERS,
-  PAYMENT_STATUS,
   REGISTRATION_STATUS,
 } from '@/constants/filterSelectOptions';
 import { hasFilters } from '@/lib/hasFilters';
@@ -20,7 +19,6 @@ const paymentSourceFD = [
   { value: 'card', label: '카드' },
   { value: 'eWallet', label: '간편결제' },
   { value: 'free', label: '무료 결제' },
-  // { value: 'manual', label: '수동 계좌이체' },
 ];
 
 const memoFD = [
@@ -157,7 +155,7 @@ const RegisterAttendeeListTypeTossFilters = ({
                 (item) => item.value === cSearchParams.registrationStatus
               )[0].label
             }
-            label="등록상태"
+            label="등록타입"
             onFilterApply={(value) => {
               onChangeSelect({ name: 'registrationStatus', value });
             }}
@@ -166,34 +164,11 @@ const RegisterAttendeeListTypeTossFilters = ({
             }}
             popover={
               <TableOneSelectFilterPopover
-                title="등록상태 선택"
+                title="등록타입 선택"
                 data={REGISTRATION_STATUS}
               />
             }
             value={cSearchParams?.registrationStatus}
-          />
-
-          <FilterButton
-            displayValue={
-              cSearchParams?.paymentStatus &&
-              PAYMENT_STATUS.filter(
-                (item) => item.value === cSearchParams.paymentStatus
-              )[0].label
-            }
-            label="결제상태"
-            onFilterApply={(value) => {
-              onChangeSelect({ name: 'paymentStatus', value });
-            }}
-            onFilterDelete={() => {
-              onChangeSelect({ name: 'paymentStatus', value: null });
-            }}
-            popover={
-              <TableOneSelectFilterPopover
-                title="결제상태 선택"
-                data={PAYMENT_STATUS}
-              />
-            }
-            value={cSearchParams?.paymentStatus}
           />
 
           <FilterButton

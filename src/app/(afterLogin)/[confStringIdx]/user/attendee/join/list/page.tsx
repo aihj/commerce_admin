@@ -56,11 +56,11 @@ const JoinAttendeeList = () => {
 
   // 유저 상세 페이지로 이동하기
   const moveUserDetail = useCallback(
-    (wuserIdx: number) => {
+    (attendeeIdx: number) => {
       router.push(
         PATH.EACH.USER.ATTENDEE.DETAIL(
           confStringIdx as string,
-          wuserIdx as number
+          attendeeIdx as number
         )
       );
     },
@@ -70,7 +70,7 @@ const JoinAttendeeList = () => {
   const columnHelper = createColumnHelper<getUsersResponse>();
   const columns = useMemo(
     () => [
-      columnHelper.accessor('wuserIdx', {
+      columnHelper.accessor('attendeeIdx', {
         header: '고유번호',
         cell: (info) => (
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -82,9 +82,9 @@ const JoinAttendeeList = () => {
               }}
               color="secondary"
               onClick={() =>
-                moveUserDetail(info.row.original.wuserIdx as number)
+                moveUserDetail(info.row.original.attendeeIdx as number)
               }
-              title={`${info.row.original.wuserIdx}`}
+              title={`${info.row.original.attendeeIdx}`}
             >
               {`${info.getValue()}`}
             </Button>
@@ -103,9 +103,9 @@ const JoinAttendeeList = () => {
                 textUnderlinePosition: 'under',
               }}
               onClick={() =>
-                moveUserDetail(info.row.original.wuserIdx as number)
+                moveUserDetail(info.row.original.attendeeIdx as number)
               }
-              title={`${info.row.original.wuserIdx}`}
+              title={`${info.row.original.attendeeIdx}`}
             >
               <span className="mr-4">{`${info.getValue()}`}</span>
               {info.row.original.memo ? <MemoIcon size={16} /> : ''}
@@ -231,7 +231,7 @@ const JoinAttendeeList = () => {
           sx={{ alignItems: 'flex-start' }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <PageTitle title="등록 회원 목록" />
+            <PageTitle title="가입 회원 목록" />
           </Box>
         </Stack>
 

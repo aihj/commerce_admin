@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 
-export default function Home() {
+const Home = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -39,4 +39,6 @@ export default function Home() {
       router.replace('/');
     }
   }
-}
+};
+
+export default Home;

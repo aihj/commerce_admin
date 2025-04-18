@@ -69,11 +69,11 @@ const RegisterAttendeeListTypeToss =
 
     // 유저 상세 페이지로 이동하기
     const moveUserDetail = useCallback(
-      (wuserIdx: number) => {
+      (attendeeIdx: number) => {
         router.push(
           PATH.EACH.USER.ATTENDEE.DETAIL(
             confStringIdx as string,
-            wuserIdx as number
+            attendeeIdx as number
           )
         );
       },
@@ -83,7 +83,7 @@ const RegisterAttendeeListTypeToss =
     const columnHelper = createColumnHelper<getRegisteredUsersResponse>();
     const columns = useMemo(
       () => [
-        columnHelper.accessor('wuserIdx', {
+        columnHelper.accessor('attendeeIdx', {
           header: '고유번호',
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -95,9 +95,9 @@ const RegisterAttendeeListTypeToss =
                 }}
                 color="secondary"
                 onClick={() =>
-                  moveUserDetail(info.row.original.wuserIdx as number)
+                  moveUserDetail(info.row.original.attendeeIdx as number)
                 }
-                title={`${info.row.original.wuserIdx}`}
+                title={`${info.row.original.attendeeIdx}`}
               >
                 {`${info.getValue()}`}
               </Button>
@@ -128,9 +128,9 @@ const RegisterAttendeeListTypeToss =
                   textUnderlinePosition: 'under',
                 }}
                 onClick={() =>
-                  moveUserDetail(info.row.original.wuserIdx as number)
+                  moveUserDetail(info.row.original.attendeeIdx as number)
                 }
-                title={`${info.row.original.wuserIdx}`}
+                title={`${info.row.original.attendeeIdx}`}
               >
                 <span className="mr-4">{`${info.getValue()}`}</span>
                 {info.row.original.memo ? <MemoIcon size={16} /> : ''}
