@@ -53,7 +53,6 @@ const Filters = ({
   const [paymentStatus, setPaymentStatus] = useState<string>('');
   const [allUser, setAllUser] = useState<boolean>(false);
 
-  const [filteredChips, setFilteredChips] = useState<ReactElement[]>();
   const [filteredCount, setFilteredCount] = useState<number>(-1);
 
   const handleClearFilters = () => {
@@ -65,7 +64,6 @@ const Filters = ({
     setRegiStatus('');
     setPaymentStatus('');
     setAllUser(false);
-    setFilteredChips([]);
   };
 
   const handleFilters = () => {
@@ -109,23 +107,15 @@ const Filters = ({
   };
 
   const handleDelete = (key: string) => {
-    // console.log(filteredChips, 'filteredChips');
-    const newChips = filteredChips?.filter((item) => item.key !== key);
-    // console.log(key);
-    // console.log(
-    //   'filteredChips?.filter((item) => item.key !== key)',
-    //   filteredChips?.filter((item) => item.key !== key)
-    // );
-    // console.log(newChips);
-    if (newChips?.length === 1) {
-      // 총 {total}건만 남은 상황
-      setFilteredChips([]);
-    } else {
-      setFilteredChips(newChips);
-    }
+    setSearchParam((prev) => ({
+      ...prev,
+      [key]: '',
+    }));
   };
 
-  console.log('filteredChips', filteredChips);
+  const [total, setTotal] = useState<number>(0);
+
+  console.log('wuserRoleStatus', wuserRoleStatus);
 
   const handleChips = (total: number) => {
     const chips = [];
@@ -138,7 +128,6 @@ const Filters = ({
           color={CHIP_COLOR.secondary}
         />
       );
-      setFilteredChips(chips);
       return chips;
     } else {
       if (searchParam.birthDateStartT && searchParam.birthDateEndT) {
@@ -238,7 +227,6 @@ const Filters = ({
           />
         );
       }
-      setFilteredChips(chips);
       return chips;
     }
   };
@@ -246,7 +234,8 @@ const Filters = ({
   useEffect(() => {
     if (searchParam.conferenceIdx) {
       getTotalUserAmount(searchParam).then((result) => {
-        handleChips(result.content);
+        // handleChips(result.content);
+        setTotal(result.content);
         setFilteredCount(result.content);
       });
     }
@@ -478,11 +467,11 @@ const Filters = ({
         <Label label="전송 대상*" minWidth={100} bold />
         <Box>
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            {filteredChips && filteredChips.length > 0 && !allUser ? (
+            {handleChips(total).length > 0 && !allUser ? (
               <div className="text-14 mb-4">총 {filteredCount}건</div>
             ) : null}
-            {filteredChips && filteredChips.length !== 0 ? (
-              filteredChips
+            {handleChips(total).length !== 0 ? (
+              handleChips(total)
             ) : (
               <span
                 className={`text-14 leading-18 h-26 ${searchParamError && 'text-error-main'}`}
