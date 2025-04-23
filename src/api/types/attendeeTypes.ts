@@ -124,36 +124,18 @@ export interface AttendeeRegisterInfoResponse {
 
 /** 회원 상세 (회원의 학회 등록 정보) */
 export interface AttendeeDetailTypeRegiInfoResponse {
-  registrationStatus:
-    | 'unregistered'
-    | 'preRegistered'
-    | 'onSiteRegi'
-    | 'cancelled';
-  discountCode?: string;
-  indicatedAmount?: number;
-  paymentAmount?: number;
-  regiFeeAmount?: number;
-  regiFeeName?: string;
-  paymentStatus?:
-    | 'freeRegi'
-    | 'freeRegiCancelled'
-    | 'paymentCompleted'
-    | 'refundCompleted'
-    | 'pendingPayment';
+  orderAmount?: number;
+  productName?: string;
+  productType?: string;
   registrationAt: string;
 }
 
 export interface AttendeeRegisterPaymentsInfoResponse {
   type: string;
-  regiFeeName: string;
-  amount: number;
-  paymentStatus:
-    | 'freeRegi'
-    | 'freeRegiCancelled'
-    | 'paymentCompleted'
-    | 'refundCompleted'
-    | 'pendingPayment';
-  paymentCreateT: string;
+  productName: string;
+  orderAmount: number;
+  paymentStatus: 'payment_completed' | 'cancel_completed';
+  paymentT: string;
   paymentMethod: string;
 }
 
@@ -164,7 +146,7 @@ export interface AttendeeTermsInfoRequest {
 
 export interface AttendeeRegisterDetailInfoRequest {
   conferenceIdx: number;
-  wuserIdx: number;
+  attendeeIdx: number;
   optionsJson: string;
 }
 

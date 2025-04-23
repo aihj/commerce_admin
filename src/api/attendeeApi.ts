@@ -6,7 +6,6 @@ import {
   AttendeeRegisterPaymentsInfoResponse,
   AttendeeTermsAgreeInfoResponse,
   AttendeeTermsInfoRequest,
-  RegistrationTypeResponse,
   getRegisteredUsersResponse,
   getUsersResponse,
 } from '@/api/types/attendeeTypes';
@@ -109,16 +108,16 @@ export const getAttendeeTermsInfo = (
 /**
  * 회원 상세 가져오기(학회 세부 등록 옵션 정보)
  * @return AttendeeRegisterInfoResponse[]
- * @param wuserIdx
+ * @param attendeeIdx
  */
 export const getAttendeeRegisterDetailOptionInfo = (
-  wuserIdx: number
+  attendeeIdx: number
 ): Promise<ResponseMessageVo<AttendeeRegisterInfoResponse[]>> => {
   return adminAxiosInstance
-    .get(`/api/pco/admin/total/attendee/option/${wuserIdx}`)
+    .get(`/api/pco/admin/attendee/${attendeeIdx}/option`)
     .then((response) => {
       logger.debug(
-        `<getAttendeeRegisterDetailOptionInfo> response.data ${wuserIdx} : `,
+        `<getAttendeeRegisterDetailOptionInfo> response.data ${attendeeIdx} : `,
         response.data
       );
       return response.data;
@@ -128,16 +127,16 @@ export const getAttendeeRegisterDetailOptionInfo = (
 /**
  * 회원 상세 가져오기(학회 등록 정보)
  * @return AttendeeDetailTypeRegiInfoResponse[]
- * @param wuserIdx
+ * @param attendeeIdx
  */
 export const getAttendeeRegisterInfo = (
-  wuserIdx: number
+  attendeeIdx: number
 ): Promise<ResponseMessageVo<AttendeeDetailTypeRegiInfoResponse>> => {
   return adminAxiosInstance
-    .get(`/api/pco/admin/total/attendee/regi-info/${wuserIdx}`)
+    .get(`/api/pco/admin/attendee/${attendeeIdx}/basic-plan`)
     .then((response) => {
       logger.debug(
-        `<getAttendeeRegisterInfo> response.data ${wuserIdx} : `,
+        `<getAttendeeRegisterInfo> response.data ${attendeeIdx} : `,
         response.data
       );
       return response.data;
@@ -147,16 +146,16 @@ export const getAttendeeRegisterInfo = (
 /**
  * 회원 상세 가져오기(결제 내역)
  * @return AttendeeRegisterPaymentsInfoResponse[]
- * @param wuserIdx
+ * @param attendeeIdx
  */
 export const getAttendeeRegisterPaymentsInfo = (
-  wuserIdx: number
+  attendeeIdx: number
 ): Promise<ResponseMessageVo<AttendeeRegisterPaymentsInfoResponse[]>> => {
   return adminAxiosInstance
-    .get(`/api/pco/admin/total/attendee/payment-history/${wuserIdx}`)
+    .get(`/api/pco/admin/attendee/${attendeeIdx}/payment-history`)
     .then((response) => {
       logger.debug(
-        `<getAttendeeRegisterPaymentsInfo> response.data ${wuserIdx} : `,
+        `<getAttendeeRegisterPaymentsInfo> response.data ${attendeeIdx} : `,
         response.data
       );
       return response.data;
@@ -231,11 +230,40 @@ export const attendeePaymentManualStatusChange = (
 
 export const getRegistrationType = (
   conferenceIdx: number
-): Promise<ResponseMessageVo<RegistrationTypeResponse[]>> => {
+): Promise<ResponseMessageVo<string[]>> => {
   return adminAxiosInstance
     .post(`/api/pco/admin/total/basic-plan`, { conferenceIdx })
     .then((response) => {
       // logger.debug('<getRegistrationType> response.data : ', response.data);
       return response.data;
+    });
+};
+
+/**
+ * 탈퇴 제외 모든 회원 다운로드
+ * @param date
+ * @returns
+ */
+export const downloadAllUsers = (conferenceName: string, date: string) => {
+  return adminAxiosInstance
+    .get(`/api/pco/admin/attendee/excel`, {
+      headers: {
+        Accept:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      },
+      responseType: 'blob',
+    })
+    .then((response) => {
+      return response.data;
+    }) // Receive the file as a Blob
+    .then((blob) => {
+      // Create a download link
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob); // Create an object URL for the Blob
+      link.download = `${date}_${conferenceName}_회원목록`;
+      link.click(); // Trigger the download
+    })
+    .catch((error) => {
+      console.error('Error downloading file:', error);
     });
 };

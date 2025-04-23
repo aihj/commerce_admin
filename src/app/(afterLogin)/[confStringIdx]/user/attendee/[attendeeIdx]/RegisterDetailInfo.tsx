@@ -2,14 +2,7 @@
 
 import React, { forwardRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Stack,
-  TextField,
-} from '@mui/material';
+import { Card, CardContent, CardHeader, Stack, TextField } from '@mui/material';
 import {
   RegisterDetailOptionsState,
   RegisterOptions,
@@ -20,7 +13,7 @@ import { AttendeeRegisterDetailInfoRequest } from '@/api/types/attendeeTypes';
 interface RegisterDetailInfoProp {
   options: RegisterDetailOptionsState[] | null | undefined;
   conferenceIdx: number;
-  userIdx: number;
+  attendeeIdx: number;
   handleRegisterDetailInfo: (data: AttendeeRegisterDetailInfoRequest) => void;
 }
 
@@ -29,11 +22,12 @@ const RegisterDetailInfo = forwardRef(
     {
       options,
       conferenceIdx,
-      userIdx,
+      attendeeIdx,
       handleRegisterDetailInfo,
     }: RegisterDetailInfoProp,
     ref
   ) => {
+    console.log('options', options);
     const {
       control,
       handleSubmit,
@@ -59,7 +53,7 @@ const RegisterDetailInfo = forwardRef(
       const optionsString = JSON.stringify(transform(newData));
       const formData: AttendeeRegisterDetailInfoRequest = {
         conferenceIdx,
-        wuserIdx: userIdx,
+        attendeeIdx: attendeeIdx,
         optionsJson: optionsString,
       };
       handleRegisterDetailInfo(formData);
@@ -99,13 +93,14 @@ const RegisterDetailInfo = forwardRef(
                       label={option.label}
                       sx={{ p: 0 }}
                       fullWidth
+                      disabled
                       {...field}
                     />
                   )}
                 />
               ))}
             </Stack>
-            <div className="text-right">
+            {/* <div className="text-right">
               <Button
                 sx={{ minWidth: 180 }}
                 variant="contained"
@@ -115,7 +110,7 @@ const RegisterDetailInfo = forwardRef(
               >
                 저장
               </Button>
-            </div>
+            </div> */}
           </CardContent>
         </form>
       </Card>

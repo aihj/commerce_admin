@@ -224,10 +224,8 @@ export const processConferenceSettings = (data: any): Promise<SettingVo[]> => {
 /**
  * 학회 별 학회 등록 시 필요한 세부정보 입력
  */
-export const getConferenceRegisterOptions = (
-  conferenceIdx: number
-): Promise<OptionVo[]> => {
+export const getConferenceRegisterOptions = (): Promise<OptionVo[]> => {
   return adminAxiosInstance
-    .get(`/api/pco/admin/attendee/${conferenceIdx}/option`)
+    .get(`/api/pco/admin/attendee/option`)
     .then((result) => result.data.content);
 };

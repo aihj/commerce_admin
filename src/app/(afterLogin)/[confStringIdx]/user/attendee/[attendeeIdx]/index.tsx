@@ -8,8 +8,12 @@ import Swal from 'sweetalert2';
 import { ScrollMenu } from '@/components/ScrollMenu';
 import {
   getAttendeeBasicInfo,
+  getAttendeeRegisterDetailOptionInfo,
+  getAttendeeRegisterInfo,
+  getAttendeeRegisterPaymentsInfo,
   getAttendeeTermsInfo,
   updateAttendeeBasicInfo,
+  updateAttendeeRegisterDetailInfo,
 } from '@/api/attendeeApi';
 import { useQuery } from '@tanstack/react-query';
 import { useAppSelector } from '@/redux/hooks';
@@ -19,6 +23,12 @@ import { UserDuplicatedInfoRequest } from '@/api/types/publicTypes';
 import { checkDuplicatedEmail } from '@/api/publicApi';
 import { BasicInfo, BasicInfoForm } from './BasicInfo';
 import { TermsAgreeInfo } from './TermsAgreeInfo';
+import { RegisterDetailInfo } from './RegisterDetailInfo';
+import { getConferenceRegisterOptions } from '@/api/conferenceApi';
+import { RegisterDetailOptionsState } from '@/constants/registerOptions';
+import { AttendeeRegisterDetailInfoRequest } from '@/api/types/attendeeTypes';
+import { RegisterInfo } from './RegisterInfo';
+import { PaymentListInfo } from './PaymentListInfo';
 
 interface UserDetailProps {
   attendeeIdx: number;
@@ -32,7 +42,6 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
   const registerDetailRef = useRef<HTMLElement>(null);
   const registerRef = useRef<HTMLElement>(null);
   const paymentRef = useRef<HTMLElement>(null);
-  const [menus, setMenus] = useState<{ title: string; type: string }[]>([]);
 
   const handleMenuClick = (menu: string) => {
     if (menu === 'basic') {
@@ -50,48 +59,48 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
   };
 
   // // 학회 세부 옵션 정보 (시작)
-  // const [registerDetailOptions, setRegisterDetailOptions] = useState<
-  //   RegisterDetailOptionsState[] | null
-  // >();
-  // [
-  //   {
-  //     idx: -1,
-  //     type: '',
-  //     label: '',
-  //     isEssential: false,
-  //     value: '',
-  //   },
-  // ];
-  // useEffect(() => {
-  //   getConferenceRegisterOptions(conferenceIdx as number)
-  //     .then((result) => {
-  //       getAttendeeRegisterDetailOptionInfo(attendeeIdx)
-  //         .then(({ content }) => {
-  //           if (content) {
-  //             const optionsData = result.map((item) => ({
-  //               idx: item.optionIdx,
-  //               key: item.optionKey,
-  //               name: item.optionKey,
-  //               type: item.optionType,
-  //               label: item.optionLabel,
-  //               isEssential: item.isEssential === 1 ? true : false,
-  //               value: content?.find(
-  //                 (option) => option.optionIdx === item.optionIdx
-  //               )?.optionValue as string,
-  //             }));
-  //             setRegisterDetailOptions(optionsData);
-  //           } else {
-  //             setRegisterDetailOptions(null);
-  //           }
-  //         })
-  //         .catch((error) => {
-  //           logger.error('<getAttendeeRegisterDetailOptionInfo> error', error);
-  //         });
-  //     })
-  //     .catch((error) => {
-  //       logger.error('<getConferenceRegisterOptions> error', error);
-  //     });
-  // }, [conferenceIdx, attendeeIdx]);
+  const [registerDetailOptions, setRegisterDetailOptions] = useState<
+    RegisterDetailOptionsState[] | null
+  >();
+  [
+    {
+      idx: -1,
+      type: '',
+      label: '',
+      isEssential: false,
+      value: '',
+    },
+  ];
+  useEffect(() => {
+    getConferenceRegisterOptions()
+      .then((result) => {
+        getAttendeeRegisterDetailOptionInfo(attendeeIdx)
+          .then(({ content }) => {
+            if (content?.length) {
+              const optionsData = result.map((item) => ({
+                idx: item.optionIdx,
+                key: item.optionKey,
+                name: item.optionKey,
+                type: item.optionType,
+                label: item.optionLabel,
+                isEssential: item.isEssential === 1 ? true : false,
+                value: content?.find(
+                  (option) => option.optionIdx === item.optionIdx
+                )?.optionValue as string,
+              }));
+              setRegisterDetailOptions(optionsData);
+            } else {
+              setRegisterDetailOptions(null);
+            }
+          })
+          .catch((error) => {
+            logger.error('<getAttendeeRegisterDetailOptionInfo> error', error);
+          });
+      })
+      .catch((error) => {
+        logger.error('<getConferenceRegisterOptions> error', error);
+      });
+  }, [conferenceIdx, attendeeIdx]);
   // // 학회 세부 옵션 정보 (끝)
 
   const [checkedEmail, setCheckedEmail] = useState<boolean>(false);
@@ -116,25 +125,25 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
     enabled: !!conferenceIdx,
   });
 
-  // const {
-  //   isLoading: getAttendeeRegisterInfoIsLoading,
-  //   error: getAttendeeRegisterInfoError,
-  //   data: getAttendeeRegisterInfoData,
-  // } = useQuery({
-  //   queryKey: ['getAttendeeRegisterInfo', userIdx],
-  //   queryFn: () => getAttendeeRegisterInfo(userIdx),
-  //   enabled: !!conferenceIdx,
-  // });
+  const {
+    isLoading: getAttendeeRegisterInfoIsLoading,
+    error: getAttendeeRegisterInfoError,
+    data: getAttendeeRegisterInfoData,
+  } = useQuery({
+    queryKey: ['getAttendeeRegisterInfo', attendeeIdx],
+    queryFn: () => getAttendeeRegisterInfo(attendeeIdx),
+    enabled: !!conferenceIdx,
+  });
 
-  // const {
-  //   isLoading: getAttendeeRegisterPaymentsInfoIsLoading,
-  //   error: getAttendeeRegisterPaymentsInfoError,
-  //   data: getAttendeeRegisterPaymentsInfoData,
-  // } = useQuery({
-  //   queryKey: ['getAttendeeRegisterPaymentsInfo', userIdx],
-  //   queryFn: () => getAttendeeRegisterPaymentsInfo(userIdx),
-  //   enabled: !!conferenceIdx,
-  // });
+  const {
+    isLoading: getAttendeeRegisterPaymentsInfoIsLoading,
+    error: getAttendeeRegisterPaymentsInfoError,
+    data: getAttendeeRegisterPaymentsInfoData,
+  } = useQuery({
+    queryKey: ['getAttendeeRegisterPaymentsInfo', attendeeIdx],
+    queryFn: () => getAttendeeRegisterPaymentsInfo(attendeeIdx),
+    enabled: !!conferenceIdx,
+  });
 
   const handleBasicInfo = (basicInfo: BasicInfoForm) => {
     updateAttendeeBasicInfo(basicInfo)
@@ -155,26 +164,26 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
       });
   };
 
-  // const handleRegisterDetailInfo = (
-  //   detailInfo: AttendeeRegisterDetailInfoRequest
-  // ) => {
-  //   updateAttendeeRegisterDetailInfo(detailInfo)
-  //     .then((result) => {
-  //       if (result.status === 200) {
-  //         Swal.fire({
-  //           title: '저장 완료',
-  //           text: '학회 등록 세부 정보가 수정되었습니다.',
-  //         });
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       logger.error('<updateAttendeeRegisterDetailInfo> error', error);
-  //       Swal.fire({
-  //         title: '저장 실패',
-  //         text: '다시 시도하거나 관리자에게 문의해 주세요.',
-  //       });
-  //     });
-  // };
+  const handleRegisterDetailInfo = (
+    detailInfo: AttendeeRegisterDetailInfoRequest
+  ) => {
+    updateAttendeeRegisterDetailInfo(detailInfo)
+      .then((result) => {
+        if (result.status === 200) {
+          Swal.fire({
+            title: '저장 완료',
+            text: '학회 등록 세부 정보가 수정되었습니다.',
+          });
+        }
+      })
+      .catch((error) => {
+        logger.error('<updateAttendeeRegisterDetailInfo> error', error);
+        Swal.fire({
+          title: '저장 실패',
+          text: '다시 시도하거나 관리자에게 문의해 주세요.',
+        });
+      });
+  };
 
   const handleDuplicatedEmail = (data: UserDuplicatedInfoRequest) => {
     setCheckedEmail(false);
@@ -206,74 +215,67 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
       });
   };
 
-  useEffect(() => {
-    let newMenu;
-    if (getAttendeeTermsInfoData?.content) {
-      newMenu = [
-        {
-          title: '일반 정보',
-          type: 'basic',
-        },
-        {
-          title: '약관 동의 여부',
-          type: 'termAgree',
-        },
-        {
-          title: '회원/등록 정보',
-          type: 'registerDetail',
-        },
-        {
-          title: '학회 등록 정보',
-          type: 'register',
-        },
-        {
-          title: '전체 결제 정보',
-          type: 'payment',
-        },
-      ];
-
-      setMenus(newMenu);
-    } else {
-      newMenu = [
-        {
-          title: '일반 정보',
-          type: 'basic',
-        },
-        {
-          title: '회원/등록 정보',
-          type: 'registerDetail',
-        },
-        {
-          title: '학회 등록 정보',
-          type: 'register',
-        },
-        {
-          title: '전체 결제 정보',
-          type: 'payment',
-        },
-      ];
-
-      setMenus(newMenu);
-    }
-  }, [getAttendeeTermsInfo]);
+  // useEffect(() => {
+  //   let newMenu = [
+  //     {
+  //       title: '일반 정보',
+  //       type: 'basic',
+  //     },
+  //   ];
+  //   if (getAttendeeTermsInfoData?.content) {
+  //     newMenu = [
+  //       ...newMenu,
+  //       {
+  //         title: '약관 동의 여부',
+  //         type: 'termAgree',
+  //       },
+  //     ];
+  //   }
+  //   if (registerDetailOptions) {
+  //     newMenu = [
+  //       ...newMenu,
+  //       {
+  //         title: '회원/등록 정보',
+  //         type: 'registerDetail',
+  //       },
+  //     ];
+  //   }
+  //   if (getAttendeeRegisterInfoData?.content) {
+  //     newMenu = [
+  //       ...newMenu,
+  //       {
+  //         title: '학회 등록 정보',
+  //         type: 'register',
+  //       },
+  //     ];
+  //   }
+  //   if (getAttendeeRegisterPaymentsInfoData?.content) {
+  //     newMenu = [
+  //       ...newMenu,
+  //       {
+  //         title: '전체 결제 정보',
+  //         type: 'payment',
+  //       },
+  //     ];
+  //   }
+  //   setMenus(newMenu);
+  // }, [getAttendeeTermsInfo]);
 
   // 전체 api 공통으로 사용 TODO <PageLoading />
   if (
     getAttendeeBasicInfoIsLoading ||
-    getAttendeeTermsInfoIsLoading
-    // ||
-    // getAttendeeRegisterInfoIsLoading ||
-    // getAttendeeRegisterPaymentsInfoIsLoading
+    getAttendeeTermsInfoIsLoading ||
+    getAttendeeRegisterInfoIsLoading ||
+    getAttendeeRegisterPaymentsInfoIsLoading
   ) {
     return 'getAttendeeBasicInfoIsLoading';
   }
 
   if (
     getAttendeeBasicInfoError ||
-    getAttendeeTermsInfoError
-    // ||
-    // getAttendeeRegisterInfoError ||
-    // getAttendeeRegisterPaymentsInfoError
+    getAttendeeTermsInfoError ||
+    getAttendeeRegisterInfoError ||
+    getAttendeeRegisterPaymentsInfoError
   ) {
     return 'getAttendeeBasicInfoError';
   }
@@ -309,23 +311,30 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
           ref={termAgreeRef}
           terms={getAttendeeTermsInfoData?.content}
         />
-        {/* <RegisterDetailInfo
-          ref={registerDetailRef}
-          conferenceIdx={conferenceIdx as number}
-          userIdx={userIdx}
-          options={registerDetailOptions}
-          handleRegisterDetailInfo={(data: AttendeeRegisterDetailInfoRequest) =>
-            handleRegisterDetailInfo(data)
-          }
-        />
-        <RegisterInfo
-          ref={registerRef}
-          registerInfo={getAttendeeRegisterInfoData?.content}
-        />
-        <PaymentListInfo
-          ref={paymentRef}
-          paymentList={getAttendeeRegisterPaymentsInfoData?.content}
-        /> */}
+        {registerDetailOptions?.length ? (
+          <RegisterDetailInfo
+            ref={registerDetailRef}
+            conferenceIdx={conferenceIdx as number}
+            attendeeIdx={attendeeIdx}
+            options={registerDetailOptions}
+            handleRegisterDetailInfo={(
+              data: AttendeeRegisterDetailInfoRequest
+            ) => handleRegisterDetailInfo(data)}
+          />
+        ) : null}
+        {getAttendeeRegisterInfoData?.content ? (
+          <RegisterInfo
+            ref={registerRef}
+            registerInfo={getAttendeeRegisterInfoData?.content}
+          />
+        ) : null}
+
+        {getAttendeeRegisterPaymentsInfoData?.content ? (
+          <PaymentListInfo
+            ref={paymentRef}
+            paymentList={getAttendeeRegisterPaymentsInfoData?.content}
+          />
+        ) : null}
       </Stack>
     </Box>
   );

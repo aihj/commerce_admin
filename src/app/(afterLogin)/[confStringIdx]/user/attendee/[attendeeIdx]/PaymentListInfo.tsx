@@ -32,10 +32,7 @@ const PaymentListInfo = forwardRef(
         />
         <CardContent className="flex flex-col gap-12" sx={{ p: 3 }}>
           {paymentList?.map((paymentInfo) => (
-            <PaymentInfo
-              key={paymentInfo.paymentCreateT}
-              paymentInfo={paymentInfo}
-            />
+            <PaymentInfo key={paymentInfo.paymentT} paymentInfo={paymentInfo} />
           ))}
         </CardContent>
       </Card>

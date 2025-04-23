@@ -1,5 +1,8 @@
 import { useSelector } from 'react-redux';
-import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
+import {
+  selectConferenceIdx,
+  selectConferenceName,
+} from '@/redux/slices/pcoSlice';
 import React, { useCallback, useMemo, useState } from 'react';
 import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 import { PATH } from '@/paths';
@@ -17,7 +20,11 @@ import { TableSearchParams } from '@/api/types/tableSearchParams';
 import { useParams, useRouter } from 'next/navigation';
 import { Box, Button, Card, Stack } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { getRegisteredUsers, getRegistrationType } from '@/api/attendeeApi';
+import {
+  downloadAllUsers,
+  getRegisteredUsers,
+  getRegistrationType,
+} from '@/api/attendeeApi';
 import { RegisterAttendeeListTypeTossFilters } from '@/app/(afterLogin)/[confStringIdx]/user/attendee/register/list/RegisterAttendeeListTypeTossFilters';
 import { DownloadIcon } from '@/components/icons/DownloadIcon';
 import { numberWithComma } from '@/lib/numberWithComma';
@@ -27,6 +34,7 @@ import { setRegistrationStatusChipColor } from '@/lib/chipColors';
 import { logger } from '@/lib/logger/defaultLogger';
 import { InitSearchParam } from '@/lib/InitSearchParams';
 import { PageTitle } from '@/components/core/PageTitle';
+import { dateFormat, dayjs } from '@/lib/dayjs';
 
 type RegisterAttendeeListTypeTossTypes = NonNullable<unknown>;
 
@@ -40,7 +48,8 @@ export interface RegisterAttendeeListTypeTossSearchParamsType
   paymentSource?: string;
   wuserStatus?: 'prospective' | 'active' | 'delete'; // 회원 상태
   hasMemo?: 'y' | 'n';
-  regifeeIdx: number; // 등록구분
+  // regifeeIdx: number; // 등록구분
+  productName: string;
 }
 
 const RegisterAttendeeListTypeToss =
@@ -48,11 +57,12 @@ const RegisterAttendeeListTypeToss =
   ({}: RegisterAttendeeListTypeTossTypes) => {
     const { confStringIdx } = useParams();
     const conferenceIdx = useSelector(selectConferenceIdx);
+    const conferenceName: string = useSelector(selectConferenceName) as string;
     const router = useRouter();
 
     const [registrationType, setRegistrationType] = useState<
       {
-        value: number;
+        value: string;
         label: string;
       }[]
     >([]);
@@ -237,6 +247,11 @@ const RegisterAttendeeListTypeToss =
     );
     // endregion ****************************** 열 구성 설정 ******************************
 
+    const handleExcelDownload = () => {
+      const date = dateFormat(dayjs(), 'YYMMDD');
+      downloadAllUsers(conferenceName, date);
+    };
+
     const { data: getRegistrationTypeData } = useQuery({
       queryKey: ['getRegistrationType', conferenceIdx],
       queryFn: () =>
@@ -244,8 +259,10 @@ const RegisterAttendeeListTypeToss =
           .then((result) => {
             if (result && result.content) {
               const newData = result?.content?.map((item) => ({
-                label: `${item.isPreRegistration ? '(사전)' : '(현장)'} ${item.regifeeName}`,
-                value: item.regifeeIdx,
+                // label: `${item.isPreRegistration ? '(사전)' : '(현장)'} ${item.regifeeName}`,
+                // value: item.regifeeIdx,
+                label: item,
+                value: item,
               }));
               setRegistrationType(newData);
               logger.debug('getRegistrationTypeData', getRegistrationTypeData);
@@ -325,8 +342,9 @@ const RegisterAttendeeListTypeToss =
                 }}
                 variant="outlined"
                 startIcon={<DownloadIcon size={20} fill="#6366F1" />}
+                onClick={() => handleExcelDownload()}
               >
-                엑셀 다운로드
+                모든 회원 다운로드
               </Button>
             </Stack>
             <TableBody<getRegisteredUsersResponse>

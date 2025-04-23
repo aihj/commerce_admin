@@ -9,7 +9,7 @@ import React from 'react';
 import { Label } from '@/components/core/Label';
 import { AttendeeRegisterPaymentsInfoResponse } from '@/api/types/attendeeTypes';
 import { numberWithComma } from '@/lib/numberWithComma';
-import { PAYMENT_STATUS } from '@/constants/registerStatus';
+import dayjs from 'dayjs';
 
 interface PaymentInfoProp {
   paymentInfo: AttendeeRegisterPaymentsInfoResponse;
@@ -22,27 +22,23 @@ const PaymentInfo = ({ paymentInfo }: PaymentInfoProp) => (
       aria-controls="panel1-content"
       sx={{ fontSize: '16px', fontWeight: 600 }}
     >
-      {paymentInfo.paymentCreateT.split(' ')[0]}
+      {paymentInfo.paymentT.split('T')[0]}{' '}
+      {paymentInfo?.paymentStatus === 'payment_completed'
+        ? '결제 완료'
+        : '결제 취소'}
     </AccordionSummary>
     <AccordionDetails>
       <Stack spacing={2} direction={'column'}>
         <div className="flex">
           <Label label="등록 구분/금액" />
           <span className="text-14 text-stone-700 leading-16">
-            {paymentInfo.regiFeeName} {numberWithComma(paymentInfo.amount)}
-          </span>
-        </div>
-        <div className="flex">
-          <Label label="결제 상태" />
-          <span className="text-14 text-stone-700 leading-16">
-            {paymentInfo?.paymentStatus &&
-              PAYMENT_STATUS[paymentInfo?.paymentStatus]}
+            {paymentInfo.productName} {numberWithComma(paymentInfo.orderAmount)}
           </span>
         </div>
         <div className="flex">
           <Label label="등록 일시/수단" />
           <span className="text-14 text-stone-700 leading-16">
-            {`${paymentInfo.paymentCreateT} / ${paymentInfo.paymentMethod}`}
+            {`${dayjs(paymentInfo.paymentT).format('YYYY-MM-DD hh:mm:ss')} / ${paymentInfo.paymentMethod}`}
           </span>
         </div>
       </Stack>

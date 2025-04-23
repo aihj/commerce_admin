@@ -246,6 +246,7 @@ export const downloadSendedUsers = (
       return response.data;
     }) // Receive the file as a Blob
     .then((blob) => {
+      console.log(blob);
       // Create a download link
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob); // Create an object URL for the Blob

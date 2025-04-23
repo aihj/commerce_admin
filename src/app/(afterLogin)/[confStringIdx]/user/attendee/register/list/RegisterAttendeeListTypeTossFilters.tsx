@@ -31,7 +31,7 @@ interface RegisterAttendeeListFiltersProps {
   setCSearchParamsFunc: (param: any) => any;
   deleteCSearchParams: () => any;
   registrationType: {
-    value: number;
+    value: string;
     label: string;
   }[];
 }
@@ -196,9 +196,9 @@ const RegisterAttendeeListTypeTossFilters = ({
 
           <FilterButton
             displayValue={
-              cSearchParams?.regifeeIdx &&
+              cSearchParams?.productName &&
               registrationType.filter(
-                (item) => item.value === cSearchParams.regifeeIdx
+                (item) => item.value === cSearchParams.productName
               )[0].label
             }
             label="등록구분"
@@ -214,7 +214,7 @@ const RegisterAttendeeListTypeTossFilters = ({
                 data={registrationType}
               />
             }
-            value={cSearchParams?.regifeeIdx}
+            value={cSearchParams?.productName}
           />
 
           <FilterButton

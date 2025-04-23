@@ -9,8 +9,11 @@ import Stack from '@mui/material/Stack';
 import { PATH } from '@/paths';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { getUsers } from '@/api/attendeeApi';
-import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
+import { downloadAllUsers, getUsers } from '@/api/attendeeApi';
+import {
+  selectConferenceIdx,
+  selectConferenceName,
+} from '@/redux/slices/pcoSlice';
 import { useSelector } from 'react-redux';
 import TableBody from '@/components/core/table/TableBody';
 import {
@@ -30,6 +33,8 @@ import { Chip } from '@/components/core/Chip';
 import { setUserStatusChipColor } from '@/lib/chipColors';
 import { InitSearchParam } from '@/lib/InitSearchParams';
 import { PageTitle } from '@/components/core/PageTitle';
+import dayjs from 'dayjs';
+import { dateFormat } from '@/lib/dayjs';
 
 export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
   birthDateStartT?: string;
@@ -42,6 +47,7 @@ export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
 const JoinAttendeeList = () => {
   const { confStringIdx } = useParams();
   const conferenceIdx: number = useSelector(selectConferenceIdx) as number;
+  const conferenceName: string = useSelector(selectConferenceName) as string;
   const router = useRouter();
 
   const initSearchParam = InitSearchParam(
@@ -200,6 +206,12 @@ const JoinAttendeeList = () => {
     [columnHelper, moveUserDetail]
   );
   // endregion ****************************** 열 구성 설정 ******************************
+
+  const handleExcelDownload = () => {
+    const date = dateFormat(dayjs(), 'YYMMDD');
+    downloadAllUsers(conferenceName, date);
+  };
+
   const { isLoading, error, data } = useQuery({
     queryKey: ['getJoinAttendeeDt', cSearchParams],
     queryFn: () => getUsers(cSearchParams as JoinAttendeeListSearchParamsType),
@@ -262,8 +274,9 @@ const JoinAttendeeList = () => {
               }}
               variant="outlined"
               startIcon={<DownloadIcon size={20} fill="#6366F1" />}
+              onClick={() => handleExcelDownload()}
             >
-              엑셀 다운로드
+              모든 회원 다운로드
             </Button>
           </Stack>
           <TableBody<getUsersResponse>

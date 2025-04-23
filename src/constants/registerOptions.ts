@@ -2,12 +2,14 @@ interface RegisterOptionsType {
   affiliation?: string; // 소속명
   license?: string; // 면허번호
   major_subject?: string; // 전공과목
+  interest?: string; // 관심분야
 }
 
 enum RegisterOptions {
   affiliation = 'affiliation',
   license = 'license',
   major_subject = 'major_subject',
+  interest = 'interest',
 }
 
 interface RegisterDetailOptionsState {
