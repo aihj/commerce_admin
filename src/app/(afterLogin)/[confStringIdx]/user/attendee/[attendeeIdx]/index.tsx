@@ -5,7 +5,6 @@ import { PageTitle } from '@/components/core/PageTitle';
 import { Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import Swal from 'sweetalert2';
-import { ScrollMenu } from '@/components/ScrollMenu';
 import {
   getAttendeeBasicInfo,
   getAttendeeRegisterDetailOptionInfo,
@@ -43,22 +42,22 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
   const registerRef = useRef<HTMLElement>(null);
   const paymentRef = useRef<HTMLElement>(null);
 
-  const handleMenuClick = (menu: string) => {
-    if (menu === 'basic') {
-      basicRef.current?.scrollIntoView({ behavior: 'smooth' });
-    } else if (menu === 'termAgree') {
-      termAgreeRef.current?.scrollIntoView({ behavior: 'smooth' });
-    } else if (menu === 'registerDetail') {
-      console.log('registerDetailRef.current', registerDetailRef.current);
-      registerDetailRef.current?.scrollIntoView({ behavior: 'smooth' });
-    } else if (menu === 'register') {
-      registerRef.current?.scrollIntoView({ behavior: 'smooth' });
-    } else if (menu === 'payment') {
-      paymentRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  // const handleMenuClick = (menu: string) => {
+  //   if (menu === 'basic') {
+  //     basicRef.current?.scrollIntoView({ behavior: 'smooth' });
+  //   } else if (menu === 'termAgree') {
+  //     termAgreeRef.current?.scrollIntoView({ behavior: 'smooth' });
+  //   } else if (menu === 'registerDetail') {
+  //     console.log('registerDetailRef.current', registerDetailRef.current);
+  //     registerDetailRef.current?.scrollIntoView({ behavior: 'smooth' });
+  //   } else if (menu === 'register') {
+  //     registerRef.current?.scrollIntoView({ behavior: 'smooth' });
+  //   } else if (menu === 'payment') {
+  //     paymentRef.current?.scrollIntoView({ behavior: 'smooth' });
+  //   }
+  // };
 
-  // // 학회 세부 옵션 정보 (시작)
+  // 학회 세부 옵션 정보 (시작)
   const [registerDetailOptions, setRegisterDetailOptions] = useState<
     RegisterDetailOptionsState[] | null
   >();
@@ -279,6 +278,7 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
   ) {
     return 'getAttendeeBasicInfoError';
   }
+
   // 전체 api 공통으로 사용
 
   return (
@@ -295,7 +295,7 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
           {/* TODO breadcrumbs */}
           <PageTitle title="회원 상세" />
         </div>
-        <ScrollMenu menus={menus} handleMenuClick={handleMenuClick} />
+        {/* <ScrollMenu menus={menus} handleMenuClick={handleMenuClick} /> */}
         <BasicInfo
           ref={basicRef}
           attendeeIdx={attendeeIdx}
