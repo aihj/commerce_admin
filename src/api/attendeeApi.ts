@@ -171,7 +171,7 @@ export const updateAttendeeBasicInfo = (
   params: BasicInfoForm
 ): Promise<ResponseMessageVo<null>> => {
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/attendee/join-info`, params)
+    .post(`/api/pco/admin/attendee/join`, params)
     .then((response) => {
       logger.debug('<updateAttendeeBasicInfo> response.data : ', response.data);
       return response.data;
@@ -228,11 +228,9 @@ export const attendeePaymentManualStatusChange = (
     });
 };
 
-export const getRegistrationType = (
-  conferenceIdx: number
-): Promise<ResponseMessageVo<string[]>> => {
+export const getRegistrationType = (): Promise<ResponseMessageVo<string[]>> => {
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/basic-plan`, { conferenceIdx })
+    .get(`/api/pco/admin/attendee/basic-plan`)
     .then((response) => {
       // logger.debug('<getRegistrationType> response.data : ', response.data);
       return response.data;

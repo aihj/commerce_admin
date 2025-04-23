@@ -28,7 +28,7 @@ export const getTotalUserAmount = (
 ): Promise<ResponseMessageVo<any>> => {
   logger.debug('<getTotalUserAmount> params ', searchParam);
   return adminAxiosInstance
-    .post(`/api/pco/admin/total/top/message/attendee/filtered-count`, {
+    .post(`/api/pco/admin/message/attendee/filtered-count`, {
       searchParam,
     })
     .then((response) => {

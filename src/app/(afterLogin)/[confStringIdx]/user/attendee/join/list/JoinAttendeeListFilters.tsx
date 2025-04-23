@@ -9,7 +9,6 @@ import { JoinAttendeeListSearchParamsType } from './page';
 import {
   BIRTH_YEAR_RANGE,
   GENDERS,
-  REGISTRATION_STATUS,
   WUSER_STATUS,
 } from '@/constants/filterSelectOptions';
 import TableTextFilterPopover from '@/components/core/table/filter/TableTextFilterPopover';
@@ -120,17 +119,17 @@ const JoinAttendeeListFilters = ({
 
           <FilterButton
             displayValue={
-              cSearchParams?.wuserStatus &&
+              cSearchParams?.wuserRoleStatus &&
               WUSER_STATUS.filter(
-                (item) => item.value === cSearchParams.wuserStatus
+                (item) => item.value === cSearchParams.wuserRoleStatus
               )[0].label
             }
             label="회원상태"
             onFilterApply={(value) => {
-              onChangeSelect({ name: 'wuserStatus', value });
+              onChangeSelect({ name: 'wuserRoleStatus', value });
             }}
             onFilterDelete={() => {
-              onChangeSelect({ name: 'wuserStatus', value: null });
+              onChangeSelect({ name: 'wuserRoleStatus', value: null });
             }}
             popover={
               <TableOneSelectFilterPopover
@@ -138,29 +137,7 @@ const JoinAttendeeListFilters = ({
                 data={WUSER_STATUS}
               />
             }
-            value={cSearchParams?.wuserStatus}
-          />
-          <FilterButton
-            displayValue={
-              cSearchParams?.registrationStatus &&
-              REGISTRATION_STATUS.filter(
-                (item) => item.value === cSearchParams.registrationStatus
-              )[0].label
-            }
-            label="등록상태"
-            onFilterApply={(value) => {
-              onChangeSelect({ name: 'registrationStatus', value });
-            }}
-            onFilterDelete={() => {
-              onChangeSelect({ name: 'registrationStatus', value: null });
-            }}
-            popover={
-              <TableOneSelectFilterPopover
-                title="등록상태 선택"
-                data={REGISTRATION_STATUS}
-              />
-            }
-            value={cSearchParams?.registrationStatus}
+            value={cSearchParams?.wuserRoleStatus}
           />
 
           <FilterButton

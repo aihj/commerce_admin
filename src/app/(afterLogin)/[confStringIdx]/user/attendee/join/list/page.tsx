@@ -40,8 +40,8 @@ export interface JoinAttendeeListSearchParamsType extends TableSearchParams {
   birthDateStartT?: string;
   birthDateEndT?: string;
   gender?: string;
-  registrationStatus?: 'not_registered' | 'pre' | 'onsite'; // 등록 상태
-  wuserStatus?: USER_STATUS; // 회원 상태
+  regiStatus?: 'not_registered' | 'pre' | 'onsite'; // 등록 상태
+  wuserRoleStatus?: USER_STATUS; // 회원 상태
 }
 
 const JoinAttendeeList = () => {

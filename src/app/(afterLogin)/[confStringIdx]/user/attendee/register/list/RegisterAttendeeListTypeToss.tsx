@@ -43,10 +43,9 @@ export interface RegisterAttendeeListTypeTossSearchParamsType
   birthDateStartT?: string | undefined;
   birthDateEndT?: string;
   gender?: 'F' | 'N';
-  registrationStatus?: REGISTRATION_STATUS; // 등록 상태
-  paymentStatus?: string;
-  paymentSource?: string;
-  wuserStatus?: 'prospective' | 'active' | 'delete'; // 회원 상태
+  regiStatus?: REGISTRATION_STATUS; // 등록 상태
+  paymentMethod?: string;
+  wuserRoleStatus?: 'prospective' | 'active' | 'delete'; // 회원 상태
   hasMemo?: 'y' | 'n';
   // regifeeIdx: number; // 등록구분
   productName: string;
@@ -255,7 +254,7 @@ const RegisterAttendeeListTypeToss =
     const { data: getRegistrationTypeData } = useQuery({
       queryKey: ['getRegistrationType', conferenceIdx],
       queryFn: () =>
-        getRegistrationType(conferenceIdx as number)
+        getRegistrationType()
           .then((result) => {
             if (result && result.content) {
               const newData = result?.content?.map((item) => ({

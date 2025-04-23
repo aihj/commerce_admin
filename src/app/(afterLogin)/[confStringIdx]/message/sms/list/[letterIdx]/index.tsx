@@ -137,11 +137,11 @@ const SMSSendDetail = ({ letterIdx }: SMSSendDetailProps) => {
           />
         );
       }
-      if (filters.registrationStatus) {
+      if (filters.regiStatus) {
         chips.push(
           <Chip
-            key="registrationStatus"
-            label={`${REGISTRATION_STATUS.filter((item) => item.value === filters.registrationStatus)[0].label}`}
+            key="regiStatus"
+            label={`${REGISTRATION_STATUS.filter((item) => item.value === filters.regiStatus)[0].label}`}
             type="soft"
             color={CHIP_COLOR.secondary}
           />

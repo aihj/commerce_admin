@@ -311,6 +311,13 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
           ref={termAgreeRef}
           terms={getAttendeeTermsInfoData?.content}
         />
+        {getAttendeeRegisterInfoData?.content ? (
+          <RegisterInfo
+            ref={registerRef}
+            registerInfo={getAttendeeRegisterInfoData?.content}
+          />
+        ) : null}
+
         {registerDetailOptions?.length ? (
           <RegisterDetailInfo
             ref={registerDetailRef}
@@ -320,12 +327,6 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
             handleRegisterDetailInfo={(
               data: AttendeeRegisterDetailInfoRequest
             ) => handleRegisterDetailInfo(data)}
-          />
-        ) : null}
-        {getAttendeeRegisterInfoData?.content ? (
-          <RegisterInfo
-            ref={registerRef}
-            registerInfo={getAttendeeRegisterInfoData?.content}
           />
         ) : null}
 

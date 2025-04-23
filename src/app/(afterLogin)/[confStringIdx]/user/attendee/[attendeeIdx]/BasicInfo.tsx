@@ -1,8 +1,7 @@
 'use client';
 
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import Swal from 'sweetalert2';
 import { DevTool } from '@hookform/devtools';
 import {
   Button,
@@ -45,19 +44,18 @@ const BasicInfo = forwardRef(
     {
       basicInfo,
       attendeeIdx,
-      conferenceIdx,
       handleBasicInfo,
-      handleDuplicatedEmail,
-      checkedEmail,
+      // handleDuplicatedEmail,
+      // checkedEmail,
     }: BasicInfoProp,
     ref
   ) => {
     const {
       control,
       handleSubmit,
-      watch,
-      formState: { errors, dirtyFields },
-      trigger,
+      // watch,
+      formState: { errors },
+      // trigger,
     } = useForm<BasicInfoForm>({ defaultValues: { attendeeIdx: attendeeIdx } });
 
     /**
@@ -65,39 +63,39 @@ const BasicInfo = forwardRef(
      * 값을 수정 후 중복확인 api를 호출했는지,
      * 수정 한 값이 기존 값과 동일한지를 확인하기 위한 state
      */
-    const [validEmail, setValidEmail] = useState<boolean>(true);
+    // const [validEmail, setValidEmail] = useState<boolean>(true);
 
     const onsubmit = (data: BasicInfoForm) => {
-      if (basicInfo?.email !== data.email) {
-        if (!checkedEmail || !validEmail) {
-          Swal.fire({
-            title: '이메일 확인',
-            text: '이메일 중복 체크 후 저장해 주세요.',
-          });
-          return;
-        } else {
-          handleBasicInfo(data);
-        }
-      } else {
-        handleBasicInfo(data);
-      }
+      // if (basicInfo?.email !== data.email) {
+      //   if (!checkedEmail || !validEmail) {
+      //     Swal.fire({
+      //       title: '이메일 확인',
+      //       text: '이메일 중복 체크 후 저장해 주세요.',
+      //     });
+      //     return;
+      //   } else {
+      //     handleBasicInfo(data);
+      //   }
+      // } else {
+      handleBasicInfo(data);
+      // }
     };
 
-    const handleCheckEmail = () => {
-      trigger('email').then((result) => {
-        if (result) {
-          const data = watch();
-          handleDuplicatedEmail({ conferenceIdx, email: data.email });
-        }
-      });
-    };
+    // const handleCheckEmail = () => {
+    //   trigger('email').then((result) => {
+    //     if (result) {
+    //       const data = watch();
+    //       handleDuplicatedEmail({ conferenceIdx, email: data.email });
+    //     }
+    //   });
+    // };
 
-    const handleValidEmail = (value: string) => {
-      setValidEmail(false);
-      if (value === basicInfo?.email) {
-        setValidEmail(true);
-      }
-    };
+    // const handleValidEmail = (value: string) => {
+    //   setValidEmail(false);
+    //   if (value === basicInfo?.email) {
+    //     setValidEmail(true);
+    //   }
+    // };
 
     return (
       <Card
@@ -128,10 +126,10 @@ const BasicInfo = forwardRef(
                   name="name"
                   rules={{
                     required: '이름을 입력해 주세요.',
-                    pattern: {
-                      value: /^[가-힣a-zA-Z\s]{2,}$/,
-                      message: '이름을 올바르게 입력해 주세요.',
-                    },
+                    // pattern: {
+                    //   value: /^[가-힣a-zA-Z\s]{2,}$/,
+                    //   message: '이름을 올바르게 입력해 주세요.',
+                    // },
                   }}
                   defaultValue={basicInfo?.name}
                   render={({ field }) => (
@@ -141,6 +139,7 @@ const BasicInfo = forwardRef(
                       error={Boolean(errors.name)}
                       helperText={errors.name?.message}
                       fullWidth
+                      disabled
                       {...field}
                     />
                   )}
@@ -253,10 +252,10 @@ const BasicInfo = forwardRef(
                   name="phone"
                   rules={{
                     required: '휴대폰 번호를 입력해 주세요.',
-                    pattern: {
-                      value: /^010\d{8}$/,
-                      message: '휴대폰 번호를 올바르게 입력해 주세요.',
-                    },
+                    // pattern: {
+                    //   value: /^010\d{8}$/,
+                    //   message: '휴대폰 번호를 올바르게 입력해 주세요.',
+                    // },
                   }}
                   defaultValue={basicInfo?.phone}
                   render={({ field }) => (
@@ -289,10 +288,10 @@ const BasicInfo = forwardRef(
                   name="email"
                   rules={{
                     required: '이메일을 입력해 주세요.',
-                    pattern: {
-                      value: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i,
-                      message: '이메일을 올바르게 입력해 주세요.',
-                    },
+                    // pattern: {
+                    //   value: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i,
+                    //   message: '이메일을 올바르게 입력해 주세요.',
+                    // },
                   }}
                   defaultValue={basicInfo?.email}
                   render={({ field }) => (
@@ -301,14 +300,15 @@ const BasicInfo = forwardRef(
                       error={Boolean(errors.email)}
                       helperText={errors.email?.message}
                       {...field}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                        handleValidEmail(e.target.value);
-                      }}
+                      disabled
+                      // onChange={(e) => {
+                      //   field.onChange(e.target.value);
+                      //   handleValidEmail(e.target.value);
+                      // }}
                     />
                   )}
                 />
-                <Button
+                {/* <Button
                   sx={{ minWidth: 120, maxHeight: 49 }}
                   onClick={() => handleCheckEmail()}
                   variant="contained"
@@ -317,7 +317,7 @@ const BasicInfo = forwardRef(
                   disabled={!dirtyFields.email || validEmail}
                 >
                   중복확인
-                </Button>
+                </Button> */}
               </Stack>
             </div>
             <div className="flex">

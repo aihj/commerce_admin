@@ -8,7 +8,7 @@ import {
   Select,
   Stack,
 } from '@mui/material';
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import {
   BIRTH_YEAR_RANGE,
   GENDERS,
@@ -27,8 +27,8 @@ export interface Filter {
   birthDateStartT?: string | ReactElement;
   birthDateEndT?: string;
   gender?: string;
-  wuserStatus?: string;
-  registrationStatus?: string;
+  wuserRoleStatus?: string;
+  regiStatus?: string;
   paymentStatus?: string;
 }
 
@@ -48,8 +48,8 @@ const Filters = ({
   const [birthDateStartT, setBirthDateStartT] = useState<string>('');
   const [birthDateEndT, setBirthDateEndT] = useState<string>('');
   const [gender, setGender] = useState<string>('');
-  const [wuserStatus, setWuserStatus] = useState<string>('');
-  const [registrationStatus, setRegistrationStatus] = useState<string>('');
+  const [wuserRoleStatus, setWuserRoleStatus] = useState<string>('');
+  const [regiStatus, setRegiStatus] = useState<string>('');
   const [paymentStatus, setPaymentStatus] = useState<string>('');
   const [allUser, setAllUser] = useState<boolean>(false);
 
@@ -61,8 +61,8 @@ const Filters = ({
     setBirthDateStartT('');
     setBirthDateEndT('');
     setGender('');
-    setWuserStatus('');
-    setRegistrationStatus('');
+    setWuserRoleStatus('');
+    setRegiStatus('');
     setPaymentStatus('');
     setAllUser(false);
     setFilteredChips([]);
@@ -85,11 +85,11 @@ const Filters = ({
     if (gender !== '') {
       setSearchParam((prev) => ({ ...prev, gender }));
     }
-    if (wuserStatus !== '') {
-      setSearchParam((prev) => ({ ...prev, wuserStatus }));
+    if (wuserRoleStatus !== '') {
+      setSearchParam((prev) => ({ ...prev, wuserRoleStatus }));
     }
-    if (registrationStatus !== '') {
-      setSearchParam((prev) => ({ ...prev, registrationStatus }));
+    if (regiStatus !== '') {
+      setSearchParam((prev) => ({ ...prev, regiStatus }));
     }
     if (paymentStatus !== '') {
       setSearchParam((prev) => ({ ...prev, paymentStatus }));
@@ -98,8 +98,8 @@ const Filters = ({
       birthDateStartT == '' &&
       birthDateEndT == '' &&
       gender == '' &&
-      wuserStatus == '' &&
-      registrationStatus == '' &&
+      wuserRoleStatus == '' &&
+      regiStatus == '' &&
       paymentStatus == ''
     ) {
       Swal.fire({
@@ -108,18 +108,24 @@ const Filters = ({
     }
   };
 
-  const handleDelete = useCallback(
-    (key: string) => {
-      const newChips = filteredChips?.filter((item) => item.key !== key);
-      if (newChips?.length === 1) {
-        // 총 {total}건만 남은 상황
-        setFilteredChips([]);
-      } else {
-        setFilteredChips(newChips);
-      }
-    },
-    [filteredChips]
-  );
+  const handleDelete = (key: string) => {
+    // console.log(filteredChips, 'filteredChips');
+    const newChips = filteredChips?.filter((item) => item.key !== key);
+    // console.log(key);
+    // console.log(
+    //   'filteredChips?.filter((item) => item.key !== key)',
+    //   filteredChips?.filter((item) => item.key !== key)
+    // );
+    // console.log(newChips);
+    if (newChips?.length === 1) {
+      // 총 {total}건만 남은 상황
+      setFilteredChips([]);
+    } else {
+      setFilteredChips(newChips);
+    }
+  };
+
+  console.log('filteredChips', filteredChips);
 
   const handleChips = (total: number) => {
     const chips = [];
@@ -190,30 +196,30 @@ const Filters = ({
           />
         );
       }
-      if (searchParam.wuserStatus) {
+      if (searchParam.wuserRoleStatus) {
         chips.push(
           <Chip
-            key="wuserStatus"
-            label={`${WUSER_STATUS.filter((item) => item.value === searchParam.wuserStatus)[0].label}`}
+            key="wuserRoleStatus"
+            label={`${WUSER_STATUS.filter((item) => item.value === searchParam.wuserRoleStatus)[0].label}`}
             type="soft"
             color={CHIP_COLOR.secondary}
             onDelete={() => {
-              setWuserStatus('');
-              handleDelete('wuserStatus');
+              setWuserRoleStatus('');
+              handleDelete('wuserRoleStatus');
             }}
           />
         );
       }
-      if (searchParam.registrationStatus) {
+      if (searchParam.regiStatus) {
         chips.push(
           <Chip
-            key="registrationStatus"
-            label={`${REGISTRATION_STATUS.filter((item) => item.value === searchParam.registrationStatus)[0].label}`}
+            key="regiStatus"
+            label={`${REGISTRATION_STATUS.filter((item) => item.value === searchParam.regiStatus)[0].label}`}
             type="soft"
             color={CHIP_COLOR.secondary}
             onDelete={() => {
-              setRegistrationStatus('');
-              handleDelete('registrationStatus');
+              setRegiStatus('');
+              handleDelete('regiStatus');
             }}
           />
         );
@@ -371,9 +377,9 @@ const Filters = ({
                   },
                 }}
                 onChange={(event) => {
-                  setWuserStatus(event.target.value);
+                  setWuserRoleStatus(event.target.value);
                 }}
-                value={wuserStatus}
+                value={wuserRoleStatus}
               >
                 <Option value="">선택</Option>
                 {WUSER_STATUS.filter((status) => status.value !== 'delete').map(
@@ -398,9 +404,9 @@ const Filters = ({
                   },
                 }}
                 onChange={(event) => {
-                  setRegistrationStatus(event.target.value);
+                  setRegiStatus(event.target.value);
                 }}
-                value={registrationStatus}
+                value={regiStatus}
               >
                 <Option value="">선택</Option>
                 {REGISTRATION_STATUS.map((item) => (
