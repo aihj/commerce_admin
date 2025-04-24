@@ -52,7 +52,8 @@ const parseCSV = (data: string) => {
     const newPhone = phone.replace(/[^0-9]/g, '');
 
     const isValid =
-      /^[가-힣]{2,}$/.test(newName) && /^(0\d{9}|0\d{10})$/.test(`${newPhone}`);
+      /^[가-힣a-zA-Z]{2,}$/.test(newName) &&
+      /^(0\d{9}|0\d{10})$/.test(`${newPhone}`);
     return {
       index: index + 1,
       name: newName,
