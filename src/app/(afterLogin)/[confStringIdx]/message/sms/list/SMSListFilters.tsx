@@ -153,9 +153,9 @@ const SMSListFilters = ({
 
       <FilterButton
         displayValue={
-          cSearchParams?.senderWuserIdx &&
+          cSearchParams?.contactNumberIdx &&
           senders.filter(
-            (item) => item.value === cSearchParams.senderWuserIdx
+            (item) => item.value === cSearchParams.contactNumberIdx
           )[0].label
         }
         label="발신번호"
