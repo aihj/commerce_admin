@@ -43,13 +43,13 @@ adminAxiosInstance.interceptors.request.use(
 );
 
 // 리프레시 토큰 API SES
-export function adminPostRefreshTokenSES(
+export function adminPostRefreshToken(
   accessToken: string,
   refreshToken: string,
   serviceType: string
 ) {
   return axios.post(
-    `${process.env.AUTH_BACKEND_URL}/refresh_token`,
+    `${process.env.NEXT_PUBLIC_AUTH_BACKEND_URL}/refresh_token`,
     {
       accessToken,
       refreshToken,
@@ -58,24 +58,6 @@ export function adminPostRefreshTokenSES(
     {
       headers: {
         Authorization: 'Bearer ' + accessToken,
-      },
-    }
-  );
-}
-
-// 리프레시 토큰 API
-function adminPostRefreshToken(session: Session) {
-  return axios.post(
-    `${process.env.NEXT_PUBLIC_AUTH_BACKEND_URL}/refresh_token`,
-    {
-      accessToken: session.user.refreshToken,
-      refreshToken: session.user.refreshToken,
-      serviceType: session.user.serviceType,
-    },
-    {
-      // TODO : header에는 입력할 필요가 없나..? 테스트
-      headers: {
-        Authorization: 'Bearer ' + session.user.accessToken,
       },
     }
   );
@@ -91,56 +73,18 @@ adminAxiosInstance.interceptors.response.use(
 
   // 비정상일 경우
   async (error) => {
-    const { config, response } = error;
+    const { response } = error;
     logger.error('[adminAxiosInstance.interceptors.response] error : ', error);
     logger.error(
       '[adminAxiosInstance.interceptors.response] response : ',
       response
     );
-    const session = (await getSession()) as Session;
     if (error?.code === 'ERR_CANCELED' || error?.code === 'ERR_NETWORK')
       return Promise.reject(error);
     /* 만료된 토큰일경우 */
     if (response.status === 1000) {
-      // 401에러 이면서 Unauthorized에러가 발생할 경우 리프레스 토큰으로 access token 값 갱신하기
+      // 토큰 만료시 로직은 next-auth에서 처리
       console.log('만료된 토큰입니다.');
-
-      const originRequest = config; // 기존 요청 값
-
-      //리프레시 토큰 api
-      try {
-        const response = await adminPostRefreshToken(session as Session).catch(
-          (error) => {
-            console.error('response interceptors error : ', error);
-            signOut();
-            return Promise.reject(error); // not a 401, simply fail the response
-          }
-        );
-
-        if (response.status === 200) {
-          console.log('리프레시 토큰 요청이 성공하였습니다.');
-
-          if (response.data.content) {
-            // 새로 받아온 accessToken 값 로컬 스토리에 덮어씌우기
-            session.user.accessToken = response.data.content.accessToken;
-          } else {
-            return Promise.reject(
-              '리프레시 토큰 요청 응답 값이 잘못되었습니다.'
-            );
-          }
-          // 진행중이던 요청 이어서하기(이것만으로 보내는 토큰 값이 변경 되지 않아 위의 request 인터셉터 추가)
-          originRequest.headers.Authorization = `Bearer ${response.data.content.accessToken}`;
-          return adminAxiosInstance(originRequest);
-        }
-        //리프레시 토큰 요청이 실패할때(리프레시 토큰도 만료되었을때 = 재로그인 안내)
-        else {
-          alert('잘못된 유저입니다. 다시 한번 로그인을 시도하세요.');
-          await signOut();
-        }
-      } catch (error) {
-        console.error('response interceptors error : ', error);
-        await signOut();
-      }
     }
     return Promise.reject(error); // not a 401, simply fail the response
   }

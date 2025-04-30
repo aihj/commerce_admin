@@ -3,39 +3,30 @@
 import * as React from 'react';
 import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { config } from '@/config';
 import { PATH } from '@/paths';
-import { AuthStrategy } from '@/lib/auth/strategy';
 import { logger } from '@/lib/logger/defaultLogger';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { UPDATE_USER } from '@/redux/slices/userSlice';
 import { User } from '@/types/user';
+import Swal from 'sweetalert2';
 
 export interface AuthGuardProps {
   children: React.ReactNode;
 }
 
 /* 올바른 권한을 가진 사람만 접근할 수 있게 도와줌 */
-export function AuthGuard({
-  children,
-}: AuthGuardProps): React.JSX.Element | null {
+const AuthGuard = ({ children }: AuthGuardProps): React.JSX.Element | null => {
   const router = useRouter();
   const user: User = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [isChecking, setIsChecking] = React.useState<boolean>(false);
 
   const checkPermissions = useCallback(async (): Promise<void> => {
     setIsChecking(true);
-    // logger.debug('[AuthGuard] <checkPermissions> session: ', session);
-    // logger.debug('[AuthGuard] <checkPermissions> user: ', user);
-    // window.session = session;
-    // window.user = user;
+
     if (session) {
-      if (session.user.error === 'refresh_token_update_failed') {
-        signOut();
-      }
       // 이미 로그인 한 사람이라면
       if (user.wuserIdx !== null && session.user.wuserIdx === user.wuserIdx) {
         setIsChecking(false);
@@ -45,10 +36,8 @@ export function AuthGuard({
       dispatch(
         // 리덕스에 유저 정보 저장
         UPDATE_USER({
-          wroleName: session.user.wroleName,
-          phone: session.user.phone,
-          email: session.user.email,
-          status: session.user.status,
+          wroleName: session.user.wroleNameList[0].wroleName,
+          status: session.user.wroleNameList[0].wuserRoleStatus,
           wuserIdx: session.user.wuserIdx,
           conferenceIdx: session.user.conferenceIdx,
         })
@@ -56,23 +45,18 @@ export function AuthGuard({
       setIsChecking(false);
       return;
     } else {
-      logger.debug('[AuthGuard]: session 존재 안함');
-    }
-
-    switch (config.auth.strategy) {
-      case AuthStrategy.jwt:
-      case AuthStrategy.NEXT_AUTH: {
-        logger.debug(
-          '[AuthGuard]: 유저가 로그인 하지 않았습니다. 로그인 페이지로 이동합니다.'
-        );
-        router.replace(PATH.AUTH.NEXT_AUTH.LOGIN);
-        setIsChecking(false);
-        return;
-      }
-      default: {
-        logger.error('[AuthGuard]: Unknown auth strategy');
-        setIsChecking(false);
-        return;
+      if (status !== 'loading') {
+        logger.debug('[AuthGuard]: session 존재 안함');
+        Swal.fire({
+          title: '자동 로그아웃',
+          text: '세션이 만료되었습니다. 다시 로그인 후 이용해 주세요.',
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            router.replace(PATH.AUTH.NEXT_AUTH.LOGIN);
+          }
+        });
       }
     }
   }, [dispatch, router, session, user]);
@@ -88,4 +72,6 @@ export function AuthGuard({
   }
 
   return <React.Fragment>{children}</React.Fragment>;
-}
+};
+
+export { AuthGuard };

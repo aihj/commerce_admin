@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios';
-import { adminPostRefreshTokenSES } from '../../../../api/authApi';
+import { adminPostRefreshToken } from '../../../../api/authApi';
 
 // const AUTH_BACKEND_URL =
 //   process.env.NEXT_PUBLIC_APP_ENV === 'development'
@@ -92,10 +92,7 @@ const handler = NextAuth({
       const currentTime = new Date().getTime(); // 현재 시간을 밀리초로 가져옴
       const timeRemaining =
         accessTokenExpirationTime - (currentTime + 10 * 60 * 1000); // 밀리초로 토큰 만료까지 남은 시간 계산 timeRemaining 1186905
-      console.log(
-        '<jwt> accessToken의 만료시간 10분전 1: timeRemaining',
-        timeRemaining
-      );
+      console.log('<jwt> accessToken의 유효시간', timeRemaining);
       console.log('<jwt> token.refreshToken', token.refreshToken);
       if (!token.refreshToken) {
         console.log('<jwt> token의 refresh 토큰 정보가 없네요?');
@@ -104,14 +101,14 @@ const handler = NextAuth({
       if (timeRemaining > 0 || isNaN(timeRemaining))
         return { ...token, ...user };
       if (timeRemaining <= 0) {
-        const newToken = await adminPostRefreshTokenSES(
+        const newToken = await adminPostRefreshToken(
           token.accessToken,
           token.refreshToken,
           token.serviceType
         )
           .then((result) => {
             console.log(
-              '<adminPostRefreshTokenSES> result.data.content : ',
+              '<adminPostRefreshToken> result.data.content : ',
               result.data.content
             );
             return {

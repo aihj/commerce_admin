@@ -4,13 +4,9 @@ import { RootState } from '../store';
 
 const initialState: User = {
   serviceType: process.env.NEXT_PUBLIC_AUTH_TYPE,
-  wroleName: '',
-  phone: '',
-  email: '',
-  password: '',
-  status: '',
   wuserIdx: null,
-  conferenceIdx: null,
+  wroleName: '',
+  wuserRoleStatus: '',
 };
 
 // Create a Redux slice for managing card data

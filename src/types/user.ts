@@ -1,29 +1,22 @@
-export interface User {
+export interface UserSession {
   accessToken?: string;
-  refreshToken?: string;
   serviceType: string | undefined;
-  wroleName: string;
-  wuserIdx: number | null;
-  phone?: string;
-  email?: string;
-  password?: string;
-  status?: string;
+  wroleNameList: {
+    wroleName: string;
+    wuserRoleStatus: string;
+  }[];
   error?: string;
-
-  // 학회의 경우
-  conferenceIdx?: string;
+  conferenceIdx: number | null;
+  wuserIdx: number | null;
+  accessTokenExpires: string;
 }
 
-export interface AttendeePaymentManualVo {
-  attendeePaymentIdx?: number;
-  indicatedAmount?: number;
-  amount: number;
-  paymentCreateT?: string;
-  manualStatus:
-    | 'payment-pending'
-    | 'payment-confirmed'
-    | 'cancel-request'
-    | 'cancel-completed';
+export interface User {
+  serviceType: string | undefined;
+  wuserStatus?: string;
+  wuserIdx: number | null;
+  wroleName: string;
+  wuserRoleStatus: string;
 }
 
 // 직접 입력 문자보내기용 유저 인터페이스
