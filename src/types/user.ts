@@ -1,6 +1,7 @@
 export interface UserSession {
-  accessToken?: string;
-  serviceType: string | undefined;
+  accessToken: string;
+  refreshToken: string;
+  serviceType: string;
   wroleNameList: {
     wroleName: string;
     wuserRoleStatus: string;

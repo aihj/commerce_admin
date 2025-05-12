@@ -73,7 +73,8 @@ adminAxiosInstance.interceptors.response.use(
 
   // 비정상일 경우
   async (error) => {
-    const { response } = error;
+    const session = (await getSession()) as Session;
+    const { config, response } = error;
     logger.error('[adminAxiosInstance.interceptors.response] error : ', error);
     logger.error(
       '[adminAxiosInstance.interceptors.response] response : ',
@@ -82,9 +83,45 @@ adminAxiosInstance.interceptors.response.use(
     if (error?.code === 'ERR_CANCELED' || error?.code === 'ERR_NETWORK')
       return Promise.reject(error);
     /* 만료된 토큰일경우 */
-    if (response.status === 1000) {
+    if (response.status === 401) {
       // 토큰 만료시 로직은 next-auth에서 처리
       console.log('만료된 토큰입니다.');
+
+      try {
+        const response = await adminPostRefreshToken(
+          session.user.accessToken,
+          session.user.refreshToken,
+          session.user.serviceType
+        ).catch((error) => {
+          console.error('response interceptors error : ', error);
+          signOut();
+          return Promise.reject(error); // not a 401, simply fail the response
+        });
+
+        if (response.status === 200) {
+          console.log('리프레시 토큰 요청이 성공하였습니다.');
+
+          if (response.data.content) {
+            // 새로 받아온 accessToken 값 로컬 스토리에 덮어씌우기
+            // session.user.accessToken = response.data.content.accessToken;
+          } else {
+            return Promise.reject(
+              '리프레시 토큰 요청 응답 값이 잘못되었습니다.'
+            );
+          }
+          // 진행중이던 요청 이어서하기(이것만으로 보내는 토큰 값이 변경 되지 않아 위의 request 인터셉터 추가)
+          config.headers.Authorization = `Bearer ${response.data.content.accessToken}`;
+          return adminAxiosInstance(config);
+        }
+        //리프레시 토큰 요청이 실패할때(리프레시 토큰도 만료되었을때 = 재로그인 안내)
+        else {
+          alert('잘못된 유저입니다. 다시 한번 로그인을 시도하세요.');
+          await signOut();
+        }
+      } catch (error) {
+        console.error('response interceptors error : ', error);
+        await signOut();
+      }
     }
     return Promise.reject(error); // not a 401, simply fail the response
   }
