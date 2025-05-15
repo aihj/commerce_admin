@@ -87,6 +87,8 @@ adminAxiosInstance.interceptors.response.use(
       // 토큰 만료시 로직은 next-auth에서 처리
       console.log('만료된 토큰입니다.');
 
+      const originRequest = config; // 기존 요청 값
+
       try {
         const response = await adminPostRefreshToken(
           session.user.accessToken,
@@ -110,8 +112,8 @@ adminAxiosInstance.interceptors.response.use(
             );
           }
           // 진행중이던 요청 이어서하기(이것만으로 보내는 토큰 값이 변경 되지 않아 위의 request 인터셉터 추가)
-          config.headers.Authorization = `Bearer ${response.data.content.accessToken}`;
-          return adminAxiosInstance(config);
+          originRequest.headers.Authorization = `Bearer ${response.data.content.accessToken}`;
+          return adminAxiosInstance(originRequest);
         }
         //리프레시 토큰 요청이 실패할때(리프레시 토큰도 만료되었을때 = 재로그인 안내)
         else {
