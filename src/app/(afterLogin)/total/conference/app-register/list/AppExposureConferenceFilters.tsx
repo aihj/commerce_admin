@@ -42,7 +42,7 @@ const AppExposureConferenceFilters = ({
             (item) => item.value === cSearchParams.conferenceApplyStatus
           )[0].label
         }
-        label="발송 상태"
+        label="등록 상태"
         onFilterApply={(value) => {
           onChangeSelect({ name: 'conferenceApplyStatus', value });
         }}

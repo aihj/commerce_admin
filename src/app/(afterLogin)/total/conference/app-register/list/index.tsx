@@ -286,7 +286,7 @@ const ConferenceAppRegisterList = () => {
           sx={{ alignItems: 'flex-start' }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <PageTitle title="문자 발송 목록" />
+            <PageTitle title="강좌 등록 요청 목록" />
           </Box>
         </Stack>
         <Card>
@@ -304,7 +304,7 @@ const ConferenceAppRegisterList = () => {
               row.conferenceIdx as number
             }
             isHover={true}
-            noDataMessage={'문자 발송 내역이 없습니다.'}
+            noDataMessage={'강좌 등록 내역이 없습니다.'}
           />
           <TablePagination<AppExposureConferenceFiltersType>
             cSearchParams={cSearchParams as AppExposureConferenceFiltersType}

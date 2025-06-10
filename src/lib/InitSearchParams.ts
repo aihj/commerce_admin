@@ -3,7 +3,7 @@ import { TableSearchParams } from '@/api/types/tableSearchParams';
 export const rowsPerPageOptions = [10, 20, 50, 100];
 
 const InitSearchParam = (
-  conferenceIdx: number,
+  conferenceIdx: number | null,
   sortType: string,
   sortDir?: 'desc' | 'asc',
   rowsPerPage?: number
