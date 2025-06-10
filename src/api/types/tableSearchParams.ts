@@ -1,7 +1,7 @@
 // export type TableSearchParams = { [key: string]: object };
 
 export type TableSearchParams = {
-  conferenceIdx: number;
+  conferenceIdx: number | null;
   currentPage: number;
   rowsPerPage: number;
 

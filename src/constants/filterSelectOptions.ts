@@ -62,3 +62,9 @@ export const IS_FAIL = [
   { value: true, label: '실패 건 있음' },
   { value: false, label: '실패 건 없음' },
 ];
+
+export const CONFERENCE_APPLY_STATUS = [
+  { value: 'apply', label: '대기' },
+  { value: 'active', label: '등록' },
+  { value: 'delete', label: '미등록' },
+];

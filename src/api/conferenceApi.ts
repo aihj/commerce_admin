@@ -19,6 +19,10 @@ import { adminAxiosInstance } from '@/api/authApi';
 import { ResponseMessageVo } from '@/api/types/responseMessageVo';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
 import { OptionVo, SettingVo } from '@/api/types/setting';
+import {
+  AppExposureConferenceDetailResponse,
+  AppExposureConferenceDT,
+} from '@/api/types/AppExposureConferenceTypes';
 
 // region *********************** Enterprise Conference 목록 가져오기 ***********************
 /**
@@ -227,5 +231,50 @@ export const processConferenceSettings = (data: any): Promise<SettingVo[]> => {
 export const getConferenceRegisterOptions = (): Promise<OptionVo[]> => {
   return adminAxiosInstance
     .get(`/api/pco/admin/attendee/option`)
+    .then((result) => result.data.content);
+};
+
+/**
+ * 앱 학회 노출 내역
+ * @returns
+ */
+export const getAppConferenceList = (
+  data: any
+): Promise<ResponseMessageVo<AppExposureConferenceDT[]>> => {
+  return adminAxiosInstance
+    .post(`/api/pco/admin/app-exposure-conference-dt`, {
+      ...data,
+    })
+    .then((response) => {
+      return response.data;
+    });
+};
+
+/**
+ * 앱 학회 노출 내역 상세
+ */
+export const getAppConferenceDetail = (
+  conferenceIdx: number
+): Promise<ResponseMessageVo<AppExposureConferenceDetailResponse>> => {
+  return adminAxiosInstance
+    .get(`/api/pco/admin/app-exposure-conference/${conferenceIdx}`)
+    .then((response) => {
+      return response.data;
+    });
+};
+
+// 앱에서 학회 노출 상태 변경하는 API
+export const changeAppExposureStatusAPI = ({
+  conferenceIdx,
+  desiredStatus,
+}: {
+  conferenceIdx: number;
+  desiredStatus: string;
+}): Promise<any> => {
+  return adminAxiosInstance
+    .post(`/api/pco/admin/app-exposure-conference/change-status`, {
+      conferenceIdx,
+      desiredStatus,
+    })
     .then((result) => result.data.content);
 };

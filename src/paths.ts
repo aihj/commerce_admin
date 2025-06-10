@@ -9,7 +9,7 @@ export const PATH = {
   TEST: '/test',
   // dashboard
   HOME: '/',
-  MEDI: {
+  TOTAL: {
     MANAGER: {
       LIST: '/manager/list',
       CREATE: '/manager',
@@ -26,10 +26,10 @@ export const PATH = {
         CREATE: '/enterprise-conferences/from',
         MODIFY: (invoiceId: number) => `/enterprise-conferences/${invoiceId}`,
       },
-      ALLIANCE: {
-        LIST: '/alliance-conferences',
-        CREATE: '/alliance-conferences/form',
-        MODIFY: (invoiceId: number) => `/alliance-conferences/${invoiceId}`,
+      APP_REGISTER: {
+        LIST: '/total/conference/app-register/list',
+        VIEW: (conferenceIdx: number) =>
+          `/total/conference/app-register/view/${conferenceIdx}`,
       },
     },
   },
