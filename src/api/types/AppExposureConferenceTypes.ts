@@ -15,6 +15,7 @@ export interface AppExposureConferenceDT {
   committeeName: string;
   conferencePreRegiStartT: string;
   conferenceDate: string;
+  conferenceRegistrationT: string;
   onlineOfflineSupportStatus: 'online_offline' | 'online_only' | 'offline_only';
   conferenceApplyStatus: 'active' | 'apply' | 'delete';
 }

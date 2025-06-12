@@ -98,7 +98,7 @@ const ConferenceAppRegisterList = () => {
           </DTCellBox>
         ),
       }),
-      columnHelper.accessor('conferenceDate', {
+      columnHelper.accessor('conferenceRegistrationT', {
         header: '등록 요청일시',
         cell: (info) => (
           <DTCellBox>
