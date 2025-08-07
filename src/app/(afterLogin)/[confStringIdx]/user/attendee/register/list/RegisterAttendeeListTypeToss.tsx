@@ -160,7 +160,9 @@ const RegisterAttendeeListTypeToss =
           header: '성별',
           cell: (info) => (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              {genderLabels[info.row.original.gender]}
+              {info.row.original.gender
+                ? genderLabels[info.row.original.gender]
+                : '-'}
             </Box>
           ),
           size: 60,
