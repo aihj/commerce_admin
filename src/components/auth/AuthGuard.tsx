@@ -35,9 +35,9 @@ const AuthGuard = ({ children }: AuthGuardProps): React.JSX.Element | null => {
       dispatch(
         // 리덕스에 유저 정보 저장
         UPDATE_USER({
-          wroleName: session.user.wroleNameList[0].wroleName,
-          status: session.user.wroleNameList[0].wuserRoleStatus,
+          wroleNameList: session.user.wroleNameList,
           wuserIdx: session.user.wuserIdx,
+          wuserStatus: session.user.wuserStatus,
           conferenceIdx: session.user.conferenceIdx,
         })
       );

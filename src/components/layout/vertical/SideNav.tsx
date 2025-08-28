@@ -14,7 +14,7 @@ import { isNavItemActive } from '@/lib/isNavItemActive';
 
 import { icons } from '../NavIcons';
 import { navColorStyles } from './styles';
-import { WorkspacesSwitch } from '@/components/layout/WorkspacesSwitch';
+// import { WorkspacesSwitch } from '@/components/layout/WorkspacesSwitch';
 import { PATH } from '@/paths';
 import { Logo } from '@/components/core/Logo';
 
@@ -47,6 +47,7 @@ export function SideNav({ items = [] }: SideNavProps): React.JSX.Element {
         overflow: 'scroll',
         scrollbarWidth: 'none',
         '&::-webkit-scrollbar': { display: 'none' },
+        display: { sm: 'none', lg: 'flex' },
       }}
     >
       <Stack spacing={2} sx={{ p: 2 }}>
@@ -59,7 +60,7 @@ export function SideNav({ items = [] }: SideNavProps): React.JSX.Element {
             <Logo color="light" height={46} width={120} />
           </Box>
         </div>
-        <WorkspacesSwitch />
+        {/* <WorkspacesSwitch /> */}
       </Stack>
 
       <Box

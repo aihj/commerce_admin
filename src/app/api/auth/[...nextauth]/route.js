@@ -132,6 +132,14 @@ const handler = NextAuth({
       }
     },
 
+    // 리다이렉트 정보
+    async redirect() {
+      const BASE_URL = process.env.NEXT_PUBLIC_NEXTAUTH_URL;
+      console.log('<redirect> BASE_URL', BASE_URL);
+      const url = `${BASE_URL}/`;
+      return url;
+    },
+
     // JWT에서 저장된 모든 정보는 세션 콜백에서 즉시 사용 가능
     async session({ session, token, user, trigger, newSession }) {
       console.log('<session> session', session);

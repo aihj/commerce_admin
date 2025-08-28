@@ -5,10 +5,13 @@ export interface UserSession {
   wroleNameList: {
     wroleName: string;
     wuserRoleStatus: string;
+    conferenceIdx: number | null;
+    conferenceStringIdx: string | null;
   }[];
   error?: string;
   conferenceIdx: number | null;
   wuserIdx: number | null;
+  wuserStatus?: string;
   accessTokenExpires: string;
 }
 
@@ -16,8 +19,12 @@ export interface User {
   serviceType: string | undefined;
   wuserStatus?: string;
   wuserIdx: number | null;
-  wroleName: string;
-  wuserRoleStatus: string;
+  wroleNameList: {
+    wroleName: string;
+    wuserRoleStatus: string;
+    conferenceIdx: number | null;
+    conferenceStringIdx: string | null;
+  }[];
 }
 
 // 직접 입력 문자보내기용 유저 인터페이스

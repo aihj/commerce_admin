@@ -4,9 +4,9 @@ import { RootState } from '../store';
 
 const initialState: User = {
   serviceType: process.env.NEXT_PUBLIC_AUTH_TYPE,
+  wuserStatus: '',
   wuserIdx: null,
-  wroleName: '',
-  wuserRoleStatus: '',
+  wroleNameList: [],
 };
 
 // Create a Redux slice for managing card data
@@ -27,5 +27,7 @@ export const { UPDATE_USER, LOGOUT_USER } = userSlice.actions;
 
 export const selectServiceType = (state: RootState) => state.user.serviceType;
 export const selectWUserIdx = (state: RootState) => state.user.wuserIdx;
+export const selectUserRoleNameList = (state: RootState) =>
+  state.user.wroleNameList;
 
 export default userSlice.reducer;

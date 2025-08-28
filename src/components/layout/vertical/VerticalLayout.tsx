@@ -30,7 +30,7 @@ export function VerticalLayout({
   let navItem = undefined;
   if (conferenceStringIdx) {
     navItem = eachPcoLayoutConfig(conferenceStringIdx, conferenceName).navItems;
-    if (user.wroleName === 'pco_admin_all_top') {
+    if (user.wroleNameList[0]?.wroleName === 'pco_admin_all_top') {
       // 최고 관리자의 경우 모든 학회 정보까지 보여주기
       navItem = navItem.concat(layoutConfig().navItems as any);
     }
