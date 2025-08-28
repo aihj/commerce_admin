@@ -177,7 +177,13 @@ const BasicInfo = ({
               <Controller
                 control={control}
                 name="gender"
-                defaultValue={basicInfo?.gender === 'F' ? '여성' : '남성'}
+                defaultValue={
+                  basicInfo?.gender === 'F'
+                    ? '여성'
+                    : basicInfo?.gender === 'M'
+                      ? '남성'
+                      : '-'
+                }
                 render={({ field }) => (
                   <TextField
                     label="성별"

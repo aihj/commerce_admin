@@ -82,7 +82,7 @@ export interface getUsersResponse {
   attendeeIdx: number;
   birthDate: string;
   email: string;
-  gender: GENDER;
+  gender: GENDER | null;
   name: string;
   phone: string;
   attendeeCreateT?: string;

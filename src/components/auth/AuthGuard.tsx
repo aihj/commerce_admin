@@ -9,7 +9,6 @@ import { useSession } from 'next-auth/react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { UPDATE_USER } from '@/redux/slices/userSlice';
 import { User } from '@/types/user';
-import Swal from 'sweetalert2';
 
 export interface AuthGuardProps {
   children: React.ReactNode;
@@ -47,16 +46,17 @@ const AuthGuard = ({ children }: AuthGuardProps): React.JSX.Element | null => {
     } else {
       if (status !== 'loading') {
         logger.debug('[AuthGuard]: session 존재 안함');
-        Swal.fire({
-          title: '자동 로그아웃',
-          text: '세션이 만료되었습니다. 다시 로그인 후 이용해 주세요.',
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            router.replace(PATH.AUTH.NEXT_AUTH.LOGIN);
-          }
-        });
+        // Swal.fire({
+        //   title: '자동 로그아웃',
+        //   text: '세션이 만료되었습니다. 다시 로그인 후 이용해 주세요.',
+        //   allowEscapeKey: false,
+        //   allowOutsideClick: false,
+        // }).then((result) => {
+        //   if (result.isConfirmed) {
+        //     router.replace(PATH.AUTH.NEXT_AUTH.LOGIN);
+        //   }
+        // });
+        router.replace(PATH.AUTH.NEXT_AUTH.LOGIN);
       }
     }
   }, [dispatch, router, session, user]);

@@ -137,7 +137,9 @@ const JoinAttendeeList = () => {
           <Box
             sx={{ display: 'flex', justifyContent: 'center', fontWeight: 500 }}
           >
-            {genderLabels[info.row.original.gender]}
+            {info.row.original.gender
+              ? genderLabels[info.row.original.gender]
+              : '-'}
           </Box>
         ),
         size: 20,
