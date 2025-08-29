@@ -7,6 +7,7 @@ import { logger } from '@/lib/logger/defaultLogger';
 import { dispatch } from '@/redux/store';
 import { LOGOUT_USER } from '@/redux/slices/userSlice';
 import { User } from '@/types/user';
+import { DELETE_PCO } from '@/redux/slices/pcoSlice';
 
 const LogoutButton = () => {
   const user: User = useAppSelector((state) => state.user);

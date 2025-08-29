@@ -43,7 +43,7 @@ const pcoSlice = createSlice({
   },
 });
 
-export const { UPDATE_PCO } = pcoSlice.actions;
+export const { UPDATE_PCO, DELETE_PCO } = pcoSlice.actions;
 
 export const selectConferenceIdx = (state: RootState) =>
   state.pco.conferenceIdx;
