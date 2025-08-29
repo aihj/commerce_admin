@@ -2,12 +2,8 @@
 
 import * as React from 'react';
 
-import { PATH } from '@/paths';
-import { logger } from '@/lib/logger/defaultLogger';
 import { useAppSelector } from '@/redux/hooks';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-// import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 export interface GuestGuardProps {
   children: React.ReactNode;
@@ -18,31 +14,15 @@ export function GuestGuard({
   children,
 }: GuestGuardProps): React.JSX.Element | null {
   const { data: session } = useSession();
-  const router = useRouter();
   const user = useAppSelector((state) => state.user);
   const [isChecking, setIsChecking] = React.useState<boolean>(true);
   // const { data: session } = useSession();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const checkPermissions = async (): Promise<void> => {
-    setIsChecking(true);
-    // logger.debug('[GuestGuard checkPermissions] : user : ', user);
-    // logger.debug('[GuestGuard checkPermissions] : session : ', session);
-
-    if (session === undefined) {
-      setIsChecking(false);
-      return;
-    }
-    if (session === null) {
-      setIsChecking(false);
-      return;
-    }
-
-    // 만약에 유저 권한이 있을 경우
+    // 과거 로그인 이력으로 next auth session이 쿠키에 남아있는 경우
     if (session) {
-      logger.debug('[GuestGuard]: User is logged in, redirecting to dashboard');
-
-      router.replace(PATH.HOME);
+      await signOut({ redirect: false });
       return;
     }
     setIsChecking(false);
