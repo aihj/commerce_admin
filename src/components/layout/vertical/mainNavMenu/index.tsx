@@ -19,6 +19,7 @@ const LogoutButton = () => {
     if (user.wuserIdx) {
       logger.error('Sign out', '계정 정보 삭제');
       dispatch(LOGOUT_USER());
+      dispatch(DELETE_PCO());
       // router.refresh();
     } else {
       logger.error(

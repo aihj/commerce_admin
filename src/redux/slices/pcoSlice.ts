@@ -37,6 +37,9 @@ const pcoSlice = createSlice({
     UPDATE_PCO(state, action: PayloadAction<any>) {
       return { ...state, ...action.payload };
     },
+    DELETE_PCO() {
+      return { ...initialState };
+    },
   },
 });
 

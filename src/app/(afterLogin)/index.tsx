@@ -7,11 +7,13 @@ import { selectUserRoleNameList } from '@/redux/slices/userSlice';
 import { PATH } from '@/paths';
 import { getPcoInfoForFirst } from '@/api/publicApi';
 import { UPDATE_PCO } from '@/redux/slices/pcoSlice';
+import { useSession } from 'next-auth/react';
 
 const Main = () => {
   const userRoleName = useSelector(selectUserRoleNameList);
   const router = useRouter();
   const dispatch = useDispatch();
+  const { update } = useSession();
 
   if (userRoleName.length !== 0) {
     if (
@@ -25,6 +27,11 @@ const Main = () => {
         .then((result) => {
           dispatch(UPDATE_PCO(result));
           return result;
+        })
+        .then(() => {
+          update({
+            conferenceIdx: userRoleName[0].conferenceIdx,
+          });
         })
         .then(() => {
           router.replace(
