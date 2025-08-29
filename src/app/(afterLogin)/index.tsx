@@ -13,37 +13,43 @@ const Main = () => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  if (userRoleName.length === 1 && userRoleName[0].wroleName.includes('each')) {
-    getPcoInfoForFirst({
-      conferenceIdx: userRoleName[0].conferenceIdx as number,
-      conferenceStringIdx: userRoleName[0].conferenceStringIdx as string,
-    })
-      .then((result) => {
-        dispatch(UPDATE_PCO(result));
-        return result;
+  if (userRoleName.length !== 0) {
+    if (
+      userRoleName.length === 1 &&
+      userRoleName[0].wroleName.includes('each')
+    ) {
+      getPcoInfoForFirst({
+        conferenceIdx: userRoleName[0].conferenceIdx as number,
+        conferenceStringIdx: userRoleName[0].conferenceStringIdx as string,
       })
-      .then(() => {
-        router.replace(
-          PATH.EACH.USER.ATTENDEE.REGISTER_LIST(
-            userRoleName[0].conferenceStringIdx as string
-          )
-        );
-      });
+        .then((result) => {
+          dispatch(UPDATE_PCO(result));
+          return result;
+        })
+        .then(() => {
+          router.replace(
+            PATH.EACH.USER.ATTENDEE.REGISTER_LIST(
+              userRoleName[0].conferenceStringIdx as string
+            )
+          );
+        });
 
-    return <></>;
-  } else {
-    return (
-      <Box
-        sx={{
-          maxWidth: 'var(--Content-maxWidth)',
-          m: 'var(--Content-margin)',
-          p: 'var(--Content-padding)',
-          width: 'var(--Content-width)',
-        }}
-      >
-        <MediMain />
-      </Box>
-    );
+      return <></>;
+    } else {
+      console.log('--?');
+      return (
+        <Box
+          sx={{
+            maxWidth: 'var(--Content-maxWidth)',
+            m: 'var(--Content-margin)',
+            p: 'var(--Content-padding)',
+            width: 'var(--Content-width)',
+          }}
+        >
+          <MediMain />
+        </Box>
+      );
+    }
   }
 };
 
