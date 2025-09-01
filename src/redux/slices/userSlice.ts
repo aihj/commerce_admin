@@ -19,7 +19,10 @@ const userSlice = createSlice({
       console.log(action.payload);
       return { ...state, ...action.payload };
     },
-    LOGOUT_USER: () => initialState,
+    LOGOUT_USER: () => {
+      console.log('initialState', initialState);
+      return { ...initialState };
+    },
   },
 });
 

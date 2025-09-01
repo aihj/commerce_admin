@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 import { useAppSelector } from '@/redux/hooks';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 export interface GuestGuardProps {
   children: React.ReactNode;
@@ -22,7 +22,7 @@ export function GuestGuard({
   const checkPermissions = async (): Promise<void> => {
     // 과거 로그인 이력으로 next auth session이 쿠키에 남아있는 경우
     if (session) {
-      await signOut({ redirect: false });
+      // await signOut({ redirect: false });
       return;
     }
     setIsChecking(false);
