@@ -11,7 +11,6 @@ import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
-import Link from '@mui/material/Link';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -120,7 +119,7 @@ export function SignInForm(): React.JSX.Element {
       </div>
       <Stack spacing={1}>
         <Typography variant="h5">로그인</Typography>
-        <Typography color="text.secondary" variant="body2">
+        {/* <Typography color="text.secondary" variant="body2">
           계정이 없습니까?
           <Link
             component={RouterLink}
@@ -130,7 +129,7 @@ export function SignInForm(): React.JSX.Element {
             {' '}
             회원가입하기
           </Link>
-        </Typography>
+        </Typography> */}
       </Stack>
       <Stack spacing={3}>
         <Stack spacing={2}>
@@ -221,7 +220,7 @@ export function SignInForm(): React.JSX.Element {
               </Button>
             </Stack>
           </form>
-          <div>
+          {/* <div>
             <Link
               component={RouterLink}
               href={PATH.AUTH.NEXT_AUTH.RESET_PASSWORD}
@@ -229,7 +228,7 @@ export function SignInForm(): React.JSX.Element {
             >
               Forgot password?
             </Link>
-          </div>
+          </div> */}
         </Stack>
       </Stack>
     </Stack>
