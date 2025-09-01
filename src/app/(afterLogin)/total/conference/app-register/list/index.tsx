@@ -24,8 +24,7 @@ import {
 } from '@/app/(afterLogin)/total/conference/app-register/list/AppExposureConferenceFilters';
 import { InitSearchParam } from '@/lib/InitSearchParams';
 import { TableSearchParams } from '@/api/types/tableSearchParams';
-import { CHIP_COLOR } from '@/components/core/Chip';
-import Chip from '@mui/material/Chip';
+import { CHIP_COLOR, Chip } from '@/components/core/Chip';
 const ConferenceAppRegisterList = () => {
   const queryClient = useQueryClient();
 
@@ -122,13 +121,12 @@ const ConferenceAppRegisterList = () => {
           // 상태에 따른 텍스트 및 색상 결정
           let statusText: string;
           let chipColor: CHIP_COLOR; // 기본 색상
-
           if (status === 'online_only') {
             statusText = '온라인';
             chipColor = CHIP_COLOR.success;
           } else if (status === 'online_offline') {
             statusText = '온라인 + 오프라인';
-            chipColor = CHIP_COLOR.primary;
+            chipColor = CHIP_COLOR.secondary;
           } else {
             statusText = '오프라인';
             chipColor = CHIP_COLOR.error;
@@ -152,32 +150,36 @@ const ConferenceAppRegisterList = () => {
 
           if (status === 'apply') {
             statusText = '대기';
-            chipColor = CHIP_COLOR.secondary;
+            chipColor = CHIP_COLOR.warning;
           } else if (status === 'active') {
             statusText = '등록';
             chipColor = CHIP_COLOR.success;
           } else {
-            statusText = '미등록';
+            statusText = '등록안함';
             chipColor = CHIP_COLOR.error;
           }
 
           return (
             <DTCellBox>
-              <Chip color={chipColor} label={statusText} />
+              <Chip type="soft" color={chipColor} label={statusText} />
             </DTCellBox>
           );
         },
       }),
       columnHelper.display({
-        header: '등록 상태',
+        header: '등록 선택',
         cell: (info) => {
           const status = info.row.original.conferenceApplyStatus;
           let buttons: any[];
           if (status === 'apply') {
             buttons = [
               <DTCellBox key="active">
-                <button
-                  style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+                <Button
+                  size="small"
+                  type="button"
+                  variant="text"
+                  color="secondary"
+                  sx={{ padding: '10px 16px' }}
                   onClick={() =>
                     changeAppExposureStatus({
                       conferenceIdx: info.row.original.conferenceIdx,
@@ -186,11 +188,14 @@ const ConferenceAppRegisterList = () => {
                   }
                 >
                   등록
-                </button>
-              </DTCellBox>,
-              <DTCellBox key="delete">
-                <button
-                  style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+                </Button>
+
+                <Button
+                  size="small"
+                  type="button"
+                  variant="text"
+                  color="secondary"
+                  sx={{ padding: '10px 16px' }}
                   onClick={() =>
                     changeAppExposureStatus({
                       conferenceIdx: info.row.original.conferenceIdx,
@@ -198,15 +203,19 @@ const ConferenceAppRegisterList = () => {
                     })
                   }
                 >
-                  미등록
-                </button>
+                  등록 안함
+                </Button>
               </DTCellBox>,
             ];
           } else if (status === 'active') {
             buttons = [
               <DTCellBox key="delete">
-                <button
-                  style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+                <Button
+                  size="small"
+                  type="button"
+                  variant="text"
+                  color="secondary"
+                  sx={{ padding: '10px 16px' }}
                   onClick={() =>
                     changeAppExposureStatus({
                       conferenceIdx: info.row.original.conferenceIdx,
@@ -214,15 +223,19 @@ const ConferenceAppRegisterList = () => {
                     })
                   }
                 >
-                  미등록
-                </button>
+                  등록 안함
+                </Button>
               </DTCellBox>,
             ];
           } else {
             buttons = [
               <DTCellBox key="delete">
-                <button
-                  style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+                <Button
+                  size="small"
+                  type="button"
+                  variant="text"
+                  color="secondary"
+                  sx={{ padding: '10px 16px' }}
                   onClick={() =>
                     changeAppExposureStatus({
                       conferenceIdx: info.row.original.conferenceIdx,
@@ -231,7 +244,7 @@ const ConferenceAppRegisterList = () => {
                   }
                 >
                   등록
-                </button>
+                </Button>
               </DTCellBox>,
             ];
           }

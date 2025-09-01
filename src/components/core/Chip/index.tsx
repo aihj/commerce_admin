@@ -7,7 +7,7 @@ export const enum CHIP_COLOR {
   neutral = 'neutral',
   secondary = 'secondary',
   info = 'info',
-  waring = 'waring',
+  warning = 'warning',
   pink = 'pink',
 }
 
@@ -33,8 +33,8 @@ const getStyle = (type: string, color: string) => {
         return `text-secondary-main bg-neutral-lightest`;
       case 'info':
         return `text-info-main bg-info-lightest`;
-      case 'waring':
-        return `text-waring-main bg-waring-lightest`;
+      case 'warning':
+        return `text-warning-main bg-warning-lightest`;
       case 'pink':
         return `text-pink-main bg-error-lightest`;
     }
@@ -52,8 +52,8 @@ const getStyle = (type: string, color: string) => {
         return `text-white bg-secondary-main`;
       case 'info':
         return `text-white bg-info-main`;
-      case 'waring':
-        return `text-white bg-waring-main`;
+      case 'warning':
+        return `text-white bg-warning-main`;
       case 'pink':
         return `text-white bg-pink-main`;
     }

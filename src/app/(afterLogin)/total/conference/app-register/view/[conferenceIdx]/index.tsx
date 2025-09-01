@@ -3,8 +3,11 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
-import { useQuery } from '@tanstack/react-query';
-import { getAppConferenceDetail } from '@/api/conferenceApi';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  changeAppExposureStatusAPI,
+  getAppConferenceDetail,
+} from '@/api/conferenceApi';
 import { logger } from '@/lib/logger/defaultLogger';
 import Table from '@mui/material/Table';
 import { useParams } from 'next/navigation';
@@ -15,8 +18,11 @@ import Box from '@mui/material/Box';
 import { PageTitle } from '@/components/core/PageTitle';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
+import { Button } from '@mui/material';
+import { CHIP_COLOR, Chip } from '@/components/core/Chip';
 
 const AppRegisterView = () => {
+  const queryClient = useQueryClient();
   const { conferenceIdx } = useParams();
   const { data, isPending, error } = useQuery<
     any,
@@ -33,6 +39,26 @@ const AppRegisterView = () => {
           logger.error('<getAppConferenceList error>', error);
         }),
   });
+
+  async function changeAppExposureStatus(param: {
+    conferenceIdx: number;
+    desiredStatus: string;
+  }) {
+    try {
+      const result = await changeAppExposureStatusAPI(param);
+      await queryClient.invalidateQueries({
+        queryKey: ['getAppConferenceDetail', conferenceIdx],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['getAppConferenceList'],
+      });
+      return result;
+    } catch (error) {
+      console.error('Mutation error:', error);
+      throw error;
+    }
+  }
+
   if (isPending || error) {
     return <PageLoading />;
   }
@@ -48,7 +74,17 @@ const AppRegisterView = () => {
   const getApplyStatus: Record<'active' | 'apply' | 'delete', string> = {
     active: '등록',
     apply: '대기',
-    delete: '등록 거절',
+    delete: '등록안함',
+  };
+
+  const getApplyChipColor = (status: 'active' | 'apply' | 'delete') => {
+    if (status === 'apply') {
+      return CHIP_COLOR.warning;
+    } else if (status === 'active') {
+      return CHIP_COLOR.success;
+    } else {
+      return CHIP_COLOR.error;
+    }
   };
   return (
     <Box
@@ -62,7 +98,7 @@ const AppRegisterView = () => {
       <div className="mb-24">
         <PageTitle title="강좌 등록 상세" />
       </div>
-      <Box display="flex" alignItems="center" gap={4}>
+      <Box display="flex" alignItems="center" gap={4} mb={2}>
         <Box display="flex" alignItems="center" gap={1}>
           <Typography variant="body2" color="textSecondary">
             등록요청일:
@@ -76,10 +112,15 @@ const AppRegisterView = () => {
             등록 상태:
           </Typography>
           <Typography variant="body1">
-            {getApplyStatus[data?.conferenceApplyStatus] ?? '-'}
+            <Chip
+              type="soft"
+              color={getApplyChipColor(data?.conferenceApplyStatus ?? 'delete')}
+              label={getApplyStatus[data?.conferenceApplyStatus ?? 'delete']}
+            />
           </Typography>
         </Box>
       </Box>
+
       <Table>
         <TableHead>
           <TableRow>
@@ -93,7 +134,7 @@ const AppRegisterView = () => {
             <TableCell>{data.conferenceName}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>주최/주관</TableCell>
+            <TableCell sx={{ width: '150px' }}>주최/주관</TableCell>
             <TableCell>{data.committeeName}</TableCell>
           </TableRow>
           <TableRow>
@@ -200,6 +241,77 @@ const AppRegisterView = () => {
           </TableRow>
         </TableBody>
       </Table>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        gap={2}
+        mt={2}
+      >
+        {data?.conferenceApplyStatus === 'apply' && ( // 대기 상태일 때 두 버튼 모두 노출
+          <>
+            <Button
+              type="submit"
+              variant="contained"
+              color="secondary"
+              onClick={() =>
+                changeAppExposureStatus({
+                  conferenceIdx: parseInt(conferenceIdx as string, 10),
+                  desiredStatus: 'delete',
+                })
+              }
+            >
+              등록 안 함
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={() =>
+                changeAppExposureStatus({
+                  conferenceIdx: parseInt(conferenceIdx as string, 10),
+                  desiredStatus: 'active',
+                })
+              }
+            >
+              등록하기
+            </Button>
+          </>
+        )}
+
+        {data?.conferenceApplyStatus === 'active' && ( // 등록 상태일 때 "등록 안 함"만 노출
+          <Button
+            type="submit"
+            variant="contained"
+            color="secondary"
+            onClick={() =>
+              changeAppExposureStatus({
+                conferenceIdx: parseInt(conferenceIdx as string, 10),
+                desiredStatus: 'delete',
+              })
+            }
+          >
+            등록 안 함
+          </Button>
+        )}
+
+        {data?.conferenceApplyStatus === 'delete' && ( // 등록 안 함 상태일 때 "등록하기"만 노출
+          <Button
+            sx={{ padding: '10px' }}
+            type="submit"
+            variant="contained"
+            color="primary"
+            onClick={() =>
+              changeAppExposureStatus({
+                conferenceIdx: parseInt(conferenceIdx as string, 10),
+                desiredStatus: 'active',
+              })
+            }
+          >
+            등록하기
+          </Button>
+        )}
+      </Box>
     </Box>
   );
 };
