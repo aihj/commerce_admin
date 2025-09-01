@@ -15,48 +15,51 @@ const Main = () => {
   const dispatch = useDispatch();
   const { update } = useSession();
 
-  if (userRoleName.length !== 0) {
-    if (
-      userRoleName.length === 1 &&
-      userRoleName[0].wroleName.includes('each')
-    ) {
-      getPcoInfoForFirst({
-        conferenceIdx: userRoleName[0].conferenceIdx as number,
-        conferenceStringIdx: userRoleName[0].conferenceStringIdx as string,
+  if (
+    userRoleName &&
+    userRoleName.length === 1 &&
+    userRoleName[0].wroleName.includes('each')
+  ) {
+    getPcoInfoForFirst({
+      conferenceIdx: userRoleName[0].conferenceIdx as number,
+      conferenceStringIdx: userRoleName[0].conferenceStringIdx as string,
+    })
+      .then((result) => {
+        dispatch(UPDATE_PCO(result));
+        return result;
       })
-        .then((result) => {
-          dispatch(UPDATE_PCO(result));
-          return result;
-        })
-        .then(() => {
-          update({
-            conferenceIdx: userRoleName[0].conferenceIdx,
-          });
-        })
-        .then(() => {
-          router.replace(
-            PATH.EACH.USER.ATTENDEE.REGISTER_LIST(
-              userRoleName[0].conferenceStringIdx as string
-            )
-          );
+      .then((result) => {
+        dispatch(UPDATE_PCO(result));
+        return result;
+      })
+      .then(() => {
+        update({
+          conferenceIdx: userRoleName[0].conferenceIdx,
         });
+      })
+      .then(() => {
+        router.replace(
+          PATH.EACH.USER.ATTENDEE.REGISTER_LIST(
+            userRoleName[0].conferenceStringIdx as string
+          )
+        );
+      });
 
-      return <></>;
-    } else {
-      console.log('--?');
-      return (
-        <Box
-          sx={{
-            maxWidth: 'var(--Content-maxWidth)',
-            m: 'var(--Content-margin)',
-            p: 'var(--Content-padding)',
-            width: 'var(--Content-width)',
-          }}
-        >
-          <MediMain />
-        </Box>
-      );
-    }
+    return <></>;
+  } else {
+    console.log('--?');
+    return (
+      <Box
+        sx={{
+          maxWidth: 'var(--Content-maxWidth)',
+          m: 'var(--Content-margin)',
+          p: 'var(--Content-padding)',
+          width: 'var(--Content-width)',
+        }}
+      >
+        <MediMain />
+      </Box>
+    );
   }
 };
 

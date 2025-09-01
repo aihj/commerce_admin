@@ -30,11 +30,15 @@ export function VerticalLayout({
   let navItem = undefined;
   if (conferenceStringIdx) {
     navItem = eachPcoLayoutConfig(conferenceStringIdx, conferenceName).navItems;
-    if (user.wroleNameList[0]?.wroleName === 'pco_admin_all_top') {
-      // 최고 관리자의 경우 모든 학회 정보까지 보여주기
-      navItem = navItem.concat(layoutConfig().navItems as any);
+    if (user.wroleNameList && user.wroleNameList.length) {
+      if (user.wroleNameList[0]?.wroleName === 'pco_admin_all_top') {
+        // 최고 관리자의 경우 모든 학회 정보까지 보여주기
+        navItem = navItem.concat(layoutConfig().navItems as any);
+      }
     }
-  } else navItem = layoutConfig().navItems;
+  } else {
+    navItem = layoutConfig().navItems;
+  }
   // endregion ************* 메뉴 화면 정의 *************
 
   return (

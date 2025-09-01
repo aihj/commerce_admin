@@ -29,9 +29,9 @@ export function SplitLayout({ children }: SplitLayoutProps): React.JSX.Element {
       >
         <Stack spacing={4} sx={{ maxWidth: '700px' }}>
           <Stack spacing={1}>
-            <Typography variant="h4">Welcome to Medistaff</Typography>
+            <Typography variant="h4">Medistaff PCO Admin</Typography>
             <Typography color="text.secondary">
-              해당 페이지는 메디스태프 관리자용 페이지 입니다.
+              메디스태프 학술대회 관리자용 페이지입니다.
             </Typography>
           </Stack>
         </Stack>
