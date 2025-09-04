@@ -205,6 +205,15 @@ const RegisterAttendeeListTypeToss =
           ),
           size: 110,
         }),
+        columnHelper.display({
+          header: '면허번호',
+          cell: (info) => (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              {info.row.original.license ?? '-'}
+            </Box>
+          ),
+          size: 110,
+        }),
 
         // TODO : 현재 해당값 없음
         // columnHelper.accessor('additionalPaidPrograms', {
