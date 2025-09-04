@@ -97,6 +97,7 @@ export interface getRegisteredUsersResponse {
   name: string;
   birthDate: string;
   gender: GENDER;
+  license: string;
   regiStatus: REGISTRATION_STATUS;
   registrationAt?: number;
   hasMemo: boolean; //  메모 존재 여부
