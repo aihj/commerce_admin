@@ -47,7 +47,6 @@ const Main = () => {
 
     return <></>;
   } else {
-    console.log('--?');
     return (
       <Box
         sx={{

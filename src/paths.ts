@@ -39,16 +39,6 @@ export const PATH = {
     CONFERENCE: {
       DETAIL: (confStringIdx: string) => `/${confStringIdx}/detail`,
     },
-    PROGRAM: {
-      CREATE: (confStringIdx: string) => `/${confStringIdx}/program`,
-      LIST: (confStringIdx: string) => `/${confStringIdx}/program/list`,
-      DETAIL: (confStringIdx: string, programId: number) =>
-        `/${confStringIdx}/program/${programId}`,
-      SESSION_GROUP: {
-        DETAIL: (confStringIdx: string, programId: number) =>
-          `/${confStringIdx}/program/session-groups/${programId}`,
-      },
-    },
     USER: {
       ATTENDEE: {
         JOIN_LIST: (confStringIdx: string) =>
@@ -59,12 +49,6 @@ export const PATH = {
         DETAIL: (confStringIdx: string, attendeeIdx: number) =>
           `/${confStringIdx}/user/attendee/${attendeeIdx}`,
       },
-      FACULTY: {
-        CREATE: (confStringIdx: string) => `/${confStringIdx}/user/faculty`,
-        MODIFY: (confStringIdx: string, facultyIdx: number) =>
-          `/${confStringIdx}/user/faculty/${facultyIdx}`,
-        LIST: (confStringIdx: string) => `/${confStringIdx}/user/faculty/list`,
-      },
       EXECUTIVES: {
         CREATE: (confStringIdx: string) => `/${confStringIdx}/user/executives`,
         MODIFY: (confStringIdx: string, facultyIdx: number) =>
@@ -73,6 +57,23 @@ export const PATH = {
           `/${confStringIdx}/user/executives/list`,
       },
     },
+    PROGRAM: {
+      // CREATE: (confStringIdx: string) => `/${confStringIdx}/program`,
+      // LIST: (confStringIdx: string) => `/${confStringIdx}/program/list`,
+      // DETAIL: (confStringIdx: string, programId: number) =>
+      //   `/${confStringIdx}/program/${programId}`,
+      // SESSION_GROUP: {
+      //   DETAIL: (confStringIdx: string, programId: number) =>
+      //     `/${confStringIdx}/program/session-groups/${programId}`,
+      // },
+      INDEX: (confStringIdx: string) => `/${confStringIdx}/program`,
+    },
+    // FACULTY: {
+    //   CREATE: (confStringIdx: string) => `/${confStringIdx}/user/faculty`,
+    //   MODIFY: (confStringIdx: string, facultyIdx: number) =>
+    //     `/${confStringIdx}/user/faculty/${facultyIdx}`,
+    //   LIST: (confStringIdx: string) => `/${confStringIdx}/user/faculty/list`,
+    // },
     PAYMENT: {
       LIST: (confStringIdx: string) => `/${confStringIdx}/payment/list`,
       SETTING: (confStringIdx: string) => `/${confStringIdx}/payment/setting`,
@@ -92,6 +93,14 @@ export const PATH = {
         SEND: (confStringIdx: string) => `/${confStringIdx}/message/email/send`,
         LIST: (confStringIdx: string) => `/${confStringIdx}/message/email/list`,
       },
+    },
+    FACULTY: {
+      LIST: (confStringIdx: string) => `/${confStringIdx}/faculty`,
+      ADD: (confStringIdx: string) => `/${confStringIdx}/faculty/add`,
+      DETAIL: (confStringIdx: string, facultyIdx: string) =>
+        `/${confStringIdx}/faculty/${facultyIdx}`,
+      EDIT: (confStringIdx: string, facultyIdx: number) =>
+        `/${confStringIdx}/faculty/${facultyIdx}/edit`,
     },
     GALLERY: {
       LIST: (confStringIdx: string) => `/${confStringIdx}/terms/terms-of-use`,

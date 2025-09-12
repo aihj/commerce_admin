@@ -20,7 +20,6 @@ const ImageCard = ({
   children,
   onClick,
 }: ImageCardTypes) => {
-  console.log('onClickLink', onClickLink);
   return (
     <Card sx={{ maxWidth: 345 }} onClick={onClick}>
       <Link href={onClickLink}>
