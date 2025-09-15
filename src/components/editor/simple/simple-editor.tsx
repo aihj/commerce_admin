@@ -11,6 +11,7 @@ import { ToolbarGroup } from './toolbar';
 import { ListButton } from './list-button';
 import { BoldIcon, BulletListIcon } from '@/components/icons';
 import { MarkButton } from './mark-button';
+import TrailingNode from '../extensions/trailing-node-extension';
 
 const Toolbar = () => {
   return (
@@ -54,7 +55,7 @@ const Editor = ({ contents, className, setEditor }: EditorProps) => {
           'aria-label': 'Main content area, start typing to enter text.',
         },
       },
-      extensions: [StarterKit],
+      extensions: [StarterKit, TrailingNode],
       content: contents,
       autofocus: false,
       onCreate: ({ editor }) => {

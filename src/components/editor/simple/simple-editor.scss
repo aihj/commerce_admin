@@ -38,6 +38,9 @@ body {
     outline: none;
     border-radius: 4px;
   }
+  p {
+    min-height: 20px;
+  }
   .tiptap {
     height: 270px;
     padding: 8px;
@@ -66,3 +69,7 @@ body {
     gap: 16px;
   }
 }
+
+// .ProseMirror-trailingBreak {
+//   height: 24px;
+// }

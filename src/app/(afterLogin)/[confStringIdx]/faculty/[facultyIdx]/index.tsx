@@ -20,6 +20,8 @@ import { PATH } from '@/paths';
 import { Loading } from '@/components/core/Loading';
 import { Alert } from '@/components/core/Alert';
 
+import '@/components/editor/simple/simple-editor.scss';
+
 interface FacultyDetailProps {
   facultyIdx: string;
 }

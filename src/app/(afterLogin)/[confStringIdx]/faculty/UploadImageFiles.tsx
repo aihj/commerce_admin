@@ -158,7 +158,7 @@ const UploadImageFiles = ({
               <Divider sx={{ my: '4px' }} />
             </>
           ))}
-          {files.length === 0 && imageUrl !== '' ? (
+          {files.length === 0 && imageUrl && imageUrl !== '' ? (
             <>
               <div className="flex justify-between px-8 items-center">
                 <div className="w-110 h-110">
@@ -173,7 +173,6 @@ const UploadImageFiles = ({
                 <div className="flex gap-16">
                   <IconButton
                     onClick={() => {
-                      // handleRemove(file);
                       setImageUrl?.('');
                     }}
                     sx={{

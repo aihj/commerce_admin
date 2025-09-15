@@ -52,7 +52,7 @@ const FacultyProfile = ({
           <div className="w-full text-left">
             <span className="Title-18-Bold">CV</span>
             <div
-              className={`!pt-4 p-12 text-14 leading-20 facultyLi`}
+              className={`!pt-4 p-12 text-14 leading-20 facultyLi editor`}
               // style={{ width: 900 }}
               dangerouslySetInnerHTML={{
                 __html: cv ?? '{전체 cv}',
@@ -62,7 +62,7 @@ const FacultyProfile = ({
         </>
       ) : (
         <div
-          className="min-h-44 text-16 text-gray-600 leading-22 facultyLi"
+          className="min-h-44 text-16 text-gray-600 leading-22 facultyLi editor"
           dangerouslySetInnerHTML={{ __html: cv ?? '{간편 cv}' }}
         ></div>
       )}
