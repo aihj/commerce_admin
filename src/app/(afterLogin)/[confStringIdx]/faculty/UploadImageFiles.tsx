@@ -108,7 +108,7 @@ const UploadImageFiles = ({
             </Button>
           </FileDropzone>
           <ul className="text-12 text-gray-700 list-inside list-disc">
-            <li>.jpg, jpeg, png 파일 1개</li>
+            <li>.jpg, .jpeg, .png 파일 1개</li>
             <li>해상도 110*110 권장</li>
           </ul>
         </Stack>
