@@ -41,7 +41,7 @@ const AddFaculty = () => {
       ...data,
       simpleCv: simpleCvEditor?.getHTML() ?? '',
       cv: fullCvEditor?.getHTML() ?? '',
-      isDeletedProfile: false,
+      isDeleteProfile: false,
     };
     setIsPending(true);
     addFaculty(formData)

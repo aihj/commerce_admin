@@ -29,7 +29,7 @@ export interface FacultyFormData {
 }
 
 export interface GetFacultyRequest extends FacultyFormData {
-  isDeletedProfile: boolean;
+  isDeleteProfile: boolean;
 }
 
 export interface GetFacultyResponse {
