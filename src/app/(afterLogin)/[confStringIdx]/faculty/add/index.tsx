@@ -26,12 +26,14 @@ const AddFaculty = () => {
     null
   );
   const [fullCvEditor, setFullCvEditor] = useState<TiptapEditor | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
 
   const {
     control,
     formState: { errors },
     handleSubmit,
     setValue,
+    reset,
   } = useForm<FacultyFormData>({
     defaultValues: { status: FACULTY_STATUS.inactive },
   });
@@ -55,7 +57,17 @@ const AddFaculty = () => {
             cancelButtonText: '등록 안함',
           }).then((result) => {
             if (result.isConfirmed) {
-              router.refresh();
+              reset({
+                name: '',
+                affiliation: '',
+                position: '',
+                profile: undefined,
+                simpleCv: '',
+                cv: '',
+              });
+              simpleCvEditor?.commands.setContent('');
+              fullCvEditor?.commands.setContent('');
+              setFiles([]);
             } else {
               router.push(PATH.EACH.FACULTY.LIST(conferenceStringIdx));
             }
@@ -110,6 +122,8 @@ const AddFaculty = () => {
                 setFullCvEditor={(editor: TiptapEditor) =>
                   setFullCvEditor(editor)
                 }
+                files={files}
+                setFiles={(value: File[]) => setFiles(value)}
               />
               <div className="mt-24 text-right">
                 <Button

@@ -59,14 +59,12 @@ body {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 @media screen and (max-width: 480px) {
   .simple-editor-content .tiptap.ProseMirror {
     display: flex;
     flex-direction: column;
-    gap: 16px;
   }
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Control,
   Controller,
@@ -31,6 +31,8 @@ interface FacultyFormProps {
   fullCvContents?: string;
   profileUrl?: string;
   setProfileUrl?: (value: string) => void;
+  files?: File[];
+  setFiles?: (value: File[]) => void;
 }
 
 const FacultyForm = ({
@@ -43,11 +45,11 @@ const FacultyForm = ({
   fullCvContents,
   profileUrl,
   setProfileUrl,
+  files,
+  setFiles,
 }: FacultyFormProps) => {
-  const [files, setFiles] = useState<File[]>([]);
-
   useEffect(() => {
-    if (files.length) {
+    if (files?.length) {
       setValue('profile', files[0]);
     }
   }, [files]);
@@ -229,12 +231,12 @@ const FacultyForm = ({
           >
             <Label label="프로필" minWidth={100} bold />
             <UploadImageFiles
-              files={files}
-              handleFiles={(newFiles: File[]) => setFiles(newFiles)}
+              files={files ?? []}
+              handleFiles={(newFiles: File[]) => setFiles?.(newFiles)}
               imageUrl={profileUrl}
               setImageUrl={(value: string) => setProfileUrl?.(value)}
             />
-            {files.length === 0 && profileUrl !== '' ? <div></div> : null}
+            {files?.length === 0 && profileUrl !== '' ? <div></div> : null}
           </Box>
         </div>
       </div>
