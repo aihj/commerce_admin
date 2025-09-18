@@ -19,7 +19,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { selectConferenceIdx } from '@/redux/slices/pcoSlice';
 import { logger } from '@/lib/logger/defaultLogger';
 import { UserDuplicatedInfoRequest } from '@/api/types/publicTypes';
-import { checkDuplicatedEmail } from '@/api/publicApi';
+import { checkDuplicatedEmail, checkDuplicatedPhone } from '@/api/publicApi';
 import { BasicInfo, BasicInfoForm } from './BasicInfo';
 import { TermsAgreeInfo } from './TermsAgreeInfo';
 import { RegisterDetailInfo } from './RegisterDetailInfo';
@@ -41,6 +41,13 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
   const registerDetailRef = useRef<HTMLElement>(null);
   const registerRef = useRef<HTMLElement>(null);
   const paymentRef = useRef<HTMLElement>(null);
+
+  // const [menus, setMenus] = useState<
+  //   {
+  //     title: string;
+  //     type: string;
+  //   }[]
+  // >([]);
 
   // const handleMenuClick = (menu: string) => {
   //   if (menu === 'basic') {
@@ -103,11 +110,13 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
   // // 학회 세부 옵션 정보 (끝)
 
   const [checkedEmail, setCheckedEmail] = useState<boolean>(false);
+  const [checkedPhone, setCheckedPhone] = useState<boolean>(false);
 
   const {
     isLoading: getAttendeeBasicInfoIsLoading,
     error: getAttendeeBasicInfoError,
     data: getAttendeeBasicInfoData,
+    refetch: getAttendeeBasicInfoRefetch,
   } = useQuery({
     queryKey: ['getAttendeeBasicInfo', attendeeIdx],
     queryFn: () => getAttendeeBasicInfo(attendeeIdx),
@@ -151,6 +160,10 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
           Swal.fire({
             title: '저장 완료',
             text: '회원정보가 수정되었습니다.',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              getAttendeeBasicInfoRefetch();
+            }
           });
         }
       })
@@ -198,12 +211,38 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
       })
       .catch((error) => {
         logger.error('<handleDuplicatedEmail> error', error);
-        if (
-          error.response.data.code.split('.')[3] === 'duplicate_email_attendee'
-        ) {
+        if (error.response.data.code.includes('duplicate')) {
           Swal.fire({
             title: '중복확인 실패',
             text: '이미 사용중인 이메일 입니다.',
+          });
+        } else {
+          Swal.fire({
+            title: '중복확인 실패',
+            text: '다시 시도하거나 관리자에게 문의해 주세요.',
+          });
+        }
+      });
+  };
+
+  const handleDuplicatedPhone = (data: UserDuplicatedInfoRequest) => {
+    setCheckedPhone(false);
+    checkDuplicatedPhone(data)
+      .then((result) => {
+        if (result.status === 200) {
+          setCheckedPhone(true);
+          Swal.fire({
+            title: '중복확인 완료',
+            text: '사용 가능한 휴대폰 번호 입니다.',
+          });
+        }
+      })
+      .catch((error) => {
+        logger.error('<handleDuplicatedPhone> error', error);
+        if (error.response.data.code.includes('duplicate')) {
+          Swal.fire({
+            title: '중복확인 실패',
+            text: '이미 사용중인 휴대폰 번호 입니다.',
           });
         } else {
           Swal.fire({
@@ -258,7 +297,12 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
   //     ];
   //   }
   //   setMenus(newMenu);
-  // }, [getAttendeeTermsInfo]);
+  // }, [
+  //   getAttendeeTermsInfo,
+  //   registerDetailOptions,
+  //   getAttendeeBasicInfoData,
+  //   getAttendeeRegisterPaymentsInfoData,
+  // ]);
 
   // 전체 api 공통으로 사용 TODO <PageLoading />
   if (
@@ -306,6 +350,10 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
           handleDuplicatedEmail={(data: UserDuplicatedInfoRequest) =>
             handleDuplicatedEmail(data)
           }
+          checkedPhone={checkedPhone}
+          handleDuplicatedPhone={(data: UserDuplicatedInfoRequest) =>
+            handleDuplicatedPhone(data)
+          }
         />
         <TermsAgreeInfo
           ref={termAgreeRef}
@@ -317,7 +365,6 @@ const UserDetail = ({ attendeeIdx }: UserDetailProps) => {
             registerInfo={getAttendeeRegisterInfoData?.content}
           />
         ) : null}
-
         {registerDetailOptions?.length ? (
           <RegisterDetailInfo
             ref={registerDetailRef}
