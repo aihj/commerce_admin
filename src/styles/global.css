@@ -145,10 +145,18 @@
   --color-secondary-light: #f3f4f6;
   --color-secondary-main: #384250;
   --color-secondary-darkest: #111927;
+
+  --color-gray-400: #7e8085;
+  --color-gray-300: #eceef0;
+  --color-gray-200: #f4f5f6;
 }
 
 *:focus-visible {
   outline: 2px solid var(--mui-palette-primary-main);
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
 
 html {

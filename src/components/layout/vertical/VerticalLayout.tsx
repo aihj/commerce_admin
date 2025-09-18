@@ -4,7 +4,11 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
-import { layoutConfig, eachPcoLayoutConfig } from '../config';
+import {
+  학술대회별기본메뉴,
+  학술대회별최고관리자메뉴,
+  학회비종속최고관리자메뉴,
+} from '../config';
 import { MainNav } from './MainNav';
 import { SideNav } from './SideNav';
 import { User } from '@/types/user';
@@ -14,6 +18,19 @@ import {
   selectConferenceName,
   selectConferenceStringIdx,
 } from '@/redux/slices/pcoSlice';
+import { NavItemConfig } from '@/types/nav';
+
+const appendMenuItems = (
+  menu: NavItemConfig,
+  additionalItems: NavItemConfig[]
+) => {
+  if (menu.items) {
+    return {
+      ...menu, // key, title 유지
+      items: [...menu.items, ...additionalItems], // 하위 items만 추가
+    };
+  }
+};
 
 export interface VerticalLayoutProps {
   children?: React.ReactNode;
@@ -27,17 +44,28 @@ export function VerticalLayout({
   const conferenceName = useSelector(selectConferenceName);
 
   // region ************* 메뉴 화면 정의 *************
-  let navItem = undefined;
+  let navItem: NavItemConfig[] = [];
+  const 학회통합최고관리자 =
+    user.wroleNameList &&
+    user.wroleNameList[0]?.wroleName === 'pco_admin_all_top';
+
   if (conferenceStringIdx) {
-    navItem = eachPcoLayoutConfig(conferenceStringIdx, conferenceName).navItems;
-    if (user.wroleNameList && user.wroleNameList.length) {
-      if (user.wroleNameList[0]?.wroleName === 'pco_admin_all_top') {
-        // 최고 관리자의 경우 모든 학회 정보까지 보여주기
-        navItem = navItem.concat(layoutConfig().navItems as any);
-      }
+    if (학회통합최고관리자) {
+      const newItems = appendMenuItems(
+        학술대회별기본메뉴(conferenceStringIdx, conferenceName)[0],
+        학술대회별최고관리자메뉴(conferenceStringIdx)
+      );
+
+      navItem = [newItems, ...학회비종속최고관리자메뉴] as NavItemConfig[];
+    } else {
+      navItem = 학술대회별기본메뉴(conferenceStringIdx, conferenceName);
     }
   } else {
-    navItem = layoutConfig().navItems;
+    if (학회통합최고관리자) {
+      navItem = 학회비종속최고관리자메뉴;
+    } else {
+      navItem = [];
+    }
   }
   // endregion ************* 메뉴 화면 정의 *************
 

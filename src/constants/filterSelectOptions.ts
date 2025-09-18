@@ -1,3 +1,4 @@
+import { FACULTY_STATUS, facultyStatusLabels } from '@/api/types/facultyTypes';
 import { TASK_STATUS, taskStatusLabels } from '@/api/types/messageTypes';
 
 export const GENDERS = [
@@ -67,4 +68,15 @@ export const CONFERENCE_APPLY_STATUS = [
   { value: 'apply', label: '대기' },
   { value: 'active', label: '등록' },
   { value: 'delete', label: '미등록' },
+];
+
+export const FACULTY_STATUS_SEARCH_OPTIONS = [
+  {
+    value: FACULTY_STATUS.active,
+    label: facultyStatusLabels[FACULTY_STATUS.active],
+  },
+  {
+    value: FACULTY_STATUS.inactive,
+    label: facultyStatusLabels[FACULTY_STATUS.inactive],
+  },
 ];

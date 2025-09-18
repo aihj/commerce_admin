@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 export interface ResponseMessageVo<T = any> {
-  content?: T | T[];
+  content?: T;
   enMessage?: string;
   error?: string;
   message?: string;

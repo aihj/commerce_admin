@@ -4,6 +4,8 @@ import * as React from 'react';
 
 import { useAppSelector } from '@/redux/hooks';
 import { useSession } from 'next-auth/react';
+import { DELETE_PCO } from '@/redux/slices/pcoSlice';
+import { useDispatch } from 'react-redux';
 
 export interface GuestGuardProps {
   children: React.ReactNode;
@@ -14,6 +16,7 @@ export function GuestGuard({
   children,
 }: GuestGuardProps): React.JSX.Element | null {
   const { data: session } = useSession();
+  const dispatch = useDispatch();
   const user = useAppSelector((state) => state.user);
   const [isChecking, setIsChecking] = React.useState<boolean>(true);
   // const { data: session } = useSession();
@@ -24,6 +27,8 @@ export function GuestGuard({
     if (session) {
       // await signOut({ redirect: false });
       return;
+    } else {
+      dispatch(DELETE_PCO());
     }
     setIsChecking(false);
   };
