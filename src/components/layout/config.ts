@@ -98,18 +98,18 @@ export const 학술대회별최고관리자메뉴 = (confStringIdx: string) => {
         },
       ],
     },
-    {
-      key: 'EACH/PROGRAM',
-      title: '프로그램 관리',
-      icon: 'tent',
-      items: [
-        {
-          key: 'EACH/PROGRAM/INDEX',
-          title: '문자 보내기',
-          href: PATH.EACH.PROGRAM.INDEX(confStringIdx),
-        },
-      ],
-    },
+    // {
+    //   key: 'EACH/PROGRAM',
+    //   title: '프로그램 관리',
+    //   icon: 'tent',
+    //   items: [
+    //     {
+    //       key: 'EACH/PROGRAM/INDEX',
+    //       title: '문자 보내기',
+    //       href: PATH.EACH.PROGRAM.INDEX(confStringIdx),
+    //     },
+    //   ],
+    // },
   ];
 
   return navItems;

@@ -53,7 +53,7 @@ export function VerticalLayout({
     if (학회통합최고관리자) {
       const newItems = appendMenuItems(
         학술대회별기본메뉴(conferenceStringIdx, conferenceName)[0],
-        학술대회별최고관리자메뉴(conferenceStringIdx, conferenceName)
+        학술대회별최고관리자메뉴(conferenceStringIdx)
       );
 
       navItem = [newItems, ...학회비종속최고관리자메뉴] as NavItemConfig[];
