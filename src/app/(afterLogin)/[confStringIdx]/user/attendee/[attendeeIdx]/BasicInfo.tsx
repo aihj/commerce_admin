@@ -64,7 +64,7 @@ const BasicInfo = forwardRef<HTMLElement, BasicInfoProp>(
       watch,
     } = useForm<BasicInfoForm>({ defaultValues: { attendeeIdx: attendeeIdx } });
 
-    const 학회최고관리자 = useUserRole();
+    const 학회최고관리자 = useUserRole().topRole;
     const conferenceIdx = useSelector(selectConferenceIdx);
 
     // basicInfo 의 값이 갱신되더라고 컨트롤러에서 defaultValue로 지정한 값이 한타임 느리게 업데이트 되는 이슈가 있어 useEffect로 보완
@@ -241,7 +241,6 @@ const BasicInfo = forwardRef<HTMLElement, BasicInfoProp>(
                       label="성별"
                       // select
                       fullWidth
-                      disabled
                       sx={{ p: 0 }}
                       {...field}
                     >
