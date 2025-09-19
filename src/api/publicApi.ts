@@ -56,7 +56,12 @@ export const checkDuplicatedEmail = (
   return axios
     .post(
       `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/public/pco/user/email-duplicate`,
-      params
+      params,
+      {
+        headers: {
+          conferenceIdx: params.conferenceIdx,
+        },
+      }
     )
     .then((response) => {
       logger.debug('<checkDuplicatedEmail> response.data : ', response.data);
