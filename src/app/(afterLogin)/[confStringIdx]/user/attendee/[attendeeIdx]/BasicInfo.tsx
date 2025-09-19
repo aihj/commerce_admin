@@ -241,6 +241,7 @@ const BasicInfo = forwardRef<HTMLElement, BasicInfoProp>(
                       label="성별"
                       // select
                       fullWidth
+                      disabled
                       sx={{ p: 0 }}
                       {...field}
                     >
