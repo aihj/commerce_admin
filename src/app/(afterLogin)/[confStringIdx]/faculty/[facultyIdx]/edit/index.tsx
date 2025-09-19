@@ -49,6 +49,7 @@ const FacultyEdit = ({ facultyIdx }: FacultyEditProps) => {
   const [simpleCv, setSimpleCv] = useState<string>('');
   const [fullCv, setFullCv] = useState<string>('');
   const [profileUrl, setProfileUrl] = useState<string>('');
+  const [files, setFiles] = useState<File[]>([]);
 
   const { isPending: dataIsPending } = useQuery({
     queryKey: ['getFaculty', facultyIdx],
@@ -157,6 +158,8 @@ const FacultyEdit = ({ facultyIdx }: FacultyEditProps) => {
                 fullCvContents={fullCv}
                 profileUrl={profileUrl}
                 setProfileUrl={(value: string) => setProfileUrl(value)}
+                files={files}
+                setFiles={(value: File[]) => setFiles(value)}
               />
               <div className="mt-24 text-right">
                 <Button
