@@ -8,6 +8,8 @@ export const getAdminOpenStatusActivePcoList = (): Promise<
     conferenceName: string;
     conferenceStartT: string;
     conferenceEndT: string;
+    conferencePreRegiStartT: string;
+    conferencePreRegiEndT: string;
   }[]
 > => {
   return adminAxiosInstance

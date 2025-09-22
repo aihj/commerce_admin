@@ -19,8 +19,8 @@ export const BIRTH_YEAR_RANGE = Array.from(Array(125)).map((_, i) => {
 export const REGISTRATION_STATUS = [
   { value: 'preRegistered', label: '사전 등록' },
   { value: 'onSiteRegistered', label: '현장 등록' },
-  { value: 'cancelled', label: '등록 취소' },
-  { value: 'unregistered', label: '미등록' },
+  // { value: 'cancelled', label: '등록 취소' },
+  // { value: 'unregistered', label: '미등록' },
 ];
 
 export const PAYMENT_STATUS = [

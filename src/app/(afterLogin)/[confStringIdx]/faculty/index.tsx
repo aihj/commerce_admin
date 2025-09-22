@@ -52,6 +52,7 @@ const FacultyList = () => {
           return (
             <DTCellBox>
               <Button
+                color="secondary"
                 sx={{
                   border: 0,
                   textDecoration: 'underline',
@@ -123,7 +124,7 @@ const FacultyList = () => {
             </DTCellBox>
           );
         },
-        size: 60,
+        size: 100,
       }),
       columnHelper.accessor('position', {
         header: '직책',
@@ -134,7 +135,7 @@ const FacultyList = () => {
             </DTCellBox>
           );
         },
-        size: 60,
+        size: 100,
       }),
       columnHelper.accessor('status', {
         header: '노출 여부',
