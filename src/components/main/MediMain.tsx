@@ -18,23 +18,22 @@ const MediMain = () => {
   // window.adminOpenStatusActivePcoList = adminOpenStatusActivePcoList;
 
   if (!adminOpenStatusActivePcoList || isLoading) return '';
+  console.log(adminOpenStatusActivePcoList);
   return (
-    <article>
-      {adminOpenStatusActivePcoList?.map((item) => {
-        return (
-          <ImageCard
-            key={item.conferenceIdx}
-            imageUrl={item.thumbnailImageUrl as string}
-            title={item.conferenceName}
-            onClickLink={PATH.EACH.MAIN(item.conferenceStringIdx)}
-            onClick={() => update({ conferenceIdx: item.conferenceIdx })}
-          >
-            <p>
-              {item.conferenceStartT} ~ {item.conferenceEndT}
-            </p>
-          </ImageCard>
-        );
-      })}
+    <article className="flex flex-col gap-24">
+      {adminOpenStatusActivePcoList?.map((item) => (
+        <ImageCard
+          key={item.conferenceIdx}
+          imageUrl={item.thumbnailImageUrl as string}
+          title={item.conferenceName}
+          onClickLink={PATH.EACH.MAIN(item.conferenceStringIdx)}
+          onClick={() => update({ conferenceIdx: item.conferenceIdx })}
+          startDate={item.conferenceStartT}
+          endDate={item.conferenceEndT}
+          preRegiStartT={item.conferencePreRegiStartT}
+          preRegiEndT={item.conferencePreRegiEndT}
+        />
+      ))}
     </article>
   );
 };
