@@ -540,7 +540,10 @@ const SMSForm = ({
       <form
         onSubmit={handleSubmit(onSubmit)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+          if (
+            e.key === 'Enter' &&
+            (e.target as HTMLElement).tagName !== 'TEXTAREA'
+          ) {
             e.preventDefault();
           }
         }}

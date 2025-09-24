@@ -326,7 +326,7 @@ export const getSMSLastSendedTime = (
  * @returns
  */
 export const getSenders = (): Promise<
-  ResponseMessageVo<getSendersResponse>
+  ResponseMessageVo<getSendersResponse[]>
 > => {
   return axios
     .get(
