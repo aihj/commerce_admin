@@ -8,24 +8,57 @@ export interface LayoutConfig {
 // TODO : 생각해보니 권한마다가 아니라 경로마다임 confStringIdx를 포함할경우에는
 // TODO : 이모티콘 뭘로 할지 정하는건 필요함
 
-export const 학회비종속최고관리자메뉴 = [
+export const 기본메뉴 = [
   {
     key: 'MEDI/PCO',
     title: '최고 관리자',
     items: [
       {
         key: 'MEDI/PCO',
-        title: '학회 관리',
+        title: '주문 관리',
+        icon: 'tent',
+        items: [
+          {
+            key: 'TOTAL/ORDER/LIST',
+            title: '주문 목록',
+            icon: 'tent',
+            href: PATH.TOTAL.ORDER.LIST,
+          },
+        ],
+      },
+      {
+        key: 'MEDI/PCO',
+        title: '상품 관리',
         icon: 'tent',
         items: [
           {
             key: 'TOTAL/CONFERENCE/APP_REGISTER/LIST',
-            title: '학회 강좌 목록',
+            title: '상품 목록',
             icon: 'tent',
-            href: PATH.TOTAL.CONFERENCE.APP_REGISTER.LIST,
+            href: PATH.TOTAL.PRODUCT.LIST,
           },
         ],
       },
+      // {
+      //   key: 'MEDI/PCO',
+      //   title: '정산',
+      //   icon: 'tent',
+      //   items: [
+
+      //     {
+      //       key: 'TOTAL/CONFERENCE/APP_REGISTER/LIST',
+      //       title: '정산 내역',
+      //       icon: 'tent',
+      //       href: '',
+      //     },
+      //     {
+      //       key: 'TOTAL/CONFERENCE/APP_REGISTER/LIST',
+      //       title: '세금 계산서 발행 내역',
+      //       icon: 'tent',
+      //       href: '',
+      //     },
+      //   ],
+      // },
     ],
   },
 ];

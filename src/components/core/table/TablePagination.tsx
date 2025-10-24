@@ -21,41 +21,50 @@ const TablePagination = <T extends object>({
   // window.cSearchParams = cSearchParams;
 
   const onRowsPerPageChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const rowsPerPage = Number(event.target.value);
       logger.debug(
-        '<onRowsPerPageChange> event.target.value : ',
-        event.target.value
+        '<onRowsPerPageChange> rowsPerPage : ',
+        rowsPerPage
       );
-
-      setCSearchParamsFunc({ rowsPerPage: event.target.value });
+      console.log('onRowsPerPageChange called with rowsPerPage:', rowsPerPage);
+      setCSearchParamsFunc({ rowsPerPage });
     },
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [setCSearchParamsFunc]
   );
 
   const onPageChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, _page: number) => {
-      let page = event.target.value;
-      // 이 조건이 있으면 event.target.value가 ''이 되는 시점에 페이지네이션이 제대로 동작하지 않음
-      // 이 조건이 왜 있는지, event.target.value가 ''이 되는 시점은 언제인지 명확하지 않아서 주석처리로 남김
-      // if (event.target.value === undefined)
-      page = _page;
+    (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => {
       logger.debug('<onPageChange> page : ', page);
-      setCSearchParamsFunc({ currentPage: page || 0 });
+      console.log('onPageChange called with page:', page);
+      setCSearchParamsFunc({ currentPage: page });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [setCSearchParamsFunc]
   );
-  if (!cSearchParams || totalCount === undefined) return null;
+  if (!cSearchParams || totalCount === undefined) {
+    console.log('TablePagination: cSearchParams 또는 totalCount가 없음', { cSearchParams, totalCount });
+    return null;
+  }
+  
+  // 타입 안전성을 위해 타입 단언 사용
+  const currentPage = (cSearchParams as any).currentPage ?? 0;
+  const rowsPerPage = (cSearchParams as any).rowsPerPage ?? 10;
+  
+  console.log('TablePagination 렌더링:', {
+    totalCount,
+    currentPage,
+    rowsPerPage,
+    count: totalCount,
+  });
+  
   return (
     <TablePaginationMui
       component="div"
       count={totalCount}
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}
-      page={cSearchParams.currentPage}
-      rowsPerPage={cSearchParams.rowsPerPage}
+      page={currentPage}
+      rowsPerPage={rowsPerPage}
       rowsPerPageOptions={rowsPerPageOptions}
     />
   );

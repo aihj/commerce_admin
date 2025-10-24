@@ -26,11 +26,26 @@ export const PATH = {
         CREATE: '/enterprise-conferences/from',
         MODIFY: (invoiceId: number) => `/enterprise-conferences/${invoiceId}`,
       },
-      APP_REGISTER: {
-        LIST: '/total/conference/app-register/list',
-        VIEW: (conferenceIdx: number) =>
-          `/total/conference/app-register/view/${conferenceIdx}`,
-      },
+      // APP_REGISTER: {
+      //   LIST: '/total/conference/app-register/list',
+      //   VIEW: (conferenceIdx: number) =>
+      //     `/total/conference/app-register/view/${conferenceIdx}`,
+      // },
+      // ORDER: {
+      //   LIST: '/total/conference/order/list',
+      //   VIEW: (conferenceIdx: number) =>
+      //     `/total/conference/order/view/${conferenceIdx}`,
+      // },
+    },
+
+    PRODUCT: {
+      LIST: '/total/product/list',
+      VIEW: (productIdx: number) => `/total/product/view/${productIdx}`,
+    },
+
+    ORDER: {
+      LIST: '/total/order/list',
+      VIEW: (orderIdx: number) => `/total/order/view/${orderIdx}`,
     },
   },
   // 각 학회마다 경로가 다를 경우

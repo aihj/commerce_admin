@@ -28,21 +28,31 @@ const handler = NextAuth({
         },
         password: { label: 'password', type: 'password' },
         serviceType: { label: 'serviceType', type: 'text' },
-        conferenceIdx: { label: 'conferenceIdx', type: 'number' },
+        // conferenceIdx: { label: 'conferenceIdx', type: 'number' },
       },
 
       async authorize(credentials) {
+        
         try {
+          
           console.log('<authorize> credentials', credentials);
           const user = await axios
             .post(
               `${process.env.NEXT_PUBLIC_AUTH_BACKEND_URL}/request_token`,
-              credentials
+              credentials,
+              {
+                headers: {
+                  'wserviceName': 'medistaff_admin',
+                  'Content-Type': 'application/json',
+                  'Accept': '*/*',
+                },
+              }
             )
             .then((response) => {
               console.log('<authorize> success');
               console.log(response.data);
               if (response.data.content.accessToken) {
+
                 return response.data.content;
               } else {
                 throw new Error(response.data.message);

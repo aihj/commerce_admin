@@ -14,7 +14,7 @@ interface LayoutProps {
 }
 
 export const metadata: Metadata = {
-  title: 'PCO Admin',
+  title: 'Commerce Admin',
   icons: {
     icon: 'https://appfile.medistaff.co.kr/pco/home/pco-medistaff-favicon.ico',
   },

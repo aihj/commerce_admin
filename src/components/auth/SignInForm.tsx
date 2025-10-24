@@ -25,6 +25,7 @@ import { signIn, useSession } from 'next-auth/react';
 import { phoneRegex } from '@/zod';
 import { logger } from '@/lib/logger/defaultLogger';
 import Swal from 'sweetalert2';
+import { DevTool } from '@hookform/devtools';
 
 // ----------------------------------------------------------------------------------
 export type SignInFormValues = {
@@ -36,14 +37,14 @@ export type SignInFormValues = {
   conferenceIdx: number | null;
 };
 const schema = zod.object({
-  // email: zod
-  //   .string()
-  //   .min(1, { message: '이메일은 필수로 입력하셔야 합니다.' })
-  //   .email(),
-  phone: zod
+  email: zod
     .string()
-    .min(1, { message: '전화번호는 필수로 입력하셔야 합니다.' })
-    .regex(phoneRegex, '잘못된 전화번호 형식입니다.'),
+    .min(1, { message: '이메일은 필수로 입력하셔야 합니다.' })
+    .email(),
+  // phone: zod
+  //   .string()
+  //   .min(1, { message: '전화번호는 필수로 입력하셔야 합니다.' })
+  //   .regex(phoneRegex, '잘못된 전화번호 형식입니다.'),
   password: zod.string().min(1, { message: '패스워드는 필수값입니다.' }),
   serviceType: zod.string().min(1, { message: '서비스 타입은 필수값입니다.' }),
 });
@@ -133,6 +134,7 @@ export function SignInForm(): React.JSX.Element {
       </Stack>
       <Stack spacing={3}>
         <Stack spacing={2}>
+          <DevTool control={control}/>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={2}>
               <input

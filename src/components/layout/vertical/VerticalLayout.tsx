@@ -5,9 +5,7 @@ import Box from '@mui/material/Box';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
 import {
-  학술대회별기본메뉴,
-  학술대회별최고관리자메뉴,
-  학회비종속최고관리자메뉴,
+  기본메뉴
 } from '../config';
 import { MainNav } from './MainNav';
 import { SideNav } from './SideNav';
@@ -41,32 +39,37 @@ export function VerticalLayout({
 }: VerticalLayoutProps): React.JSX.Element {
   const user: User = useAppSelector((state) => state.user);
   const conferenceStringIdx = useSelector(selectConferenceStringIdx);
+  console.log('conferenceStringIdx', conferenceStringIdx);
   const conferenceName = useSelector(selectConferenceName);
 
   // region ************* 메뉴 화면 정의 *************
   let navItem: NavItemConfig[] = [];
-  const 학회통합최고관리자 =
-    user.wroleNameList &&
-    user.wroleNameList[0]?.wroleName === 'pco_admin_all_top';
+  navItem = 기본메뉴;
+  // const 학회통합최고관리자 =
+  //   user.wroleNameList &&
+  //   user.wroleNameList[0]?.wroleName === 'pco_admin_all_top';
+    
 
-  if (conferenceStringIdx) {
-    if (학회통합최고관리자) {
-      const newItems = appendMenuItems(
-        학술대회별기본메뉴(conferenceStringIdx, conferenceName)[0],
-        학술대회별최고관리자메뉴(conferenceStringIdx)
-      );
+  // if (conferenceStringIdx) {
+  //   if (학회통합최고관리자) {
+  //     const newItems = appendMenuItems(
+  //       학술대회별기본메뉴(conferenceStringIdx, conferenceName)[0],
+  //       학술대회별최고관리자메뉴(conferenceStringIdx)
+  //     );
 
-      navItem = [newItems, ...학회비종속최고관리자메뉴] as NavItemConfig[];
-    } else {
-      navItem = 학술대회별기본메뉴(conferenceStringIdx, conferenceName);
-    }
-  } else {
-    if (학회통합최고관리자) {
-      navItem = 학회비종속최고관리자메뉴;
-    } else {
-      navItem = [];
-    }
-  }
+  //     navItem = [newItems, ...학회비종속최고관리자메뉴] as NavItemConfig[];
+  //   } else {
+  //     navItem = 학술대회별기본메뉴(conferenceStringIdx, conferenceName);
+  //   }
+  // } else {
+  //   if (학회통합최고관리자) {
+  //     navItem = 학회비종속최고관리자메뉴;
+  //   } else {
+  //     navItem = [];
+  //   }
+
+  //   navItem = 학회비종속최고관리자메뉴;
+  // }
   // endregion ************* 메뉴 화면 정의 *************
 
   return (

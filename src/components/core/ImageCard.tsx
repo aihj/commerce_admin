@@ -9,7 +9,7 @@ import { CHIP_COLOR, Chip } from './Chip';
 dayjs.extend(isBetween);
 
 type ImageCardTypes = {
-  imageUrl: string;
+  orderStatus: string;
   title: string;
   onClickLink: string;
   // children: ReactNode;
@@ -21,7 +21,7 @@ type ImageCardTypes = {
 };
 
 const ImageCard = ({
-  imageUrl,
+  orderStatus,
   onClickLink,
   title,
   // children,
@@ -37,21 +37,22 @@ const ImageCard = ({
     <Card onClick={onClick} sx={{ maxWidth: 500 }}>
       <Link href={onClickLink}>
         {/*<CardActionArea component={Link} >*/}
-        {imageUrl && (
+        {/* {orderStatus && (
           <CardMedia
             component="img"
             height="140"
-            image={imageUrl}
+            // image={orderStatus}
             alt="green iguana"
           />
-        )}
+        )} */}
         <CardContent sx={{ p: '24px !important' }}>
           <div className="flex flex-col gap-16">
             <span className="Title-22-Bold">{title}</span>
+            <span className="Label-16-SemiBold">{orderStatus}</span>
             <div>
               {preRegiStartT && preRegiEndT ? (
                 <div className="flex gap-8 items-center">
-                  <dt className="Label-16-Regular">사전 등록 기간: </dt>
+                  <dt className="Label-16-Regular">판매 기간: </dt>
                   <dd className="flex gap-8">
                     <span className="Label-16-SemiBold">
                       {`${dayjs(preRegiStartT).format('YYYY-MM-DD')} ~ ${dayjs(preRegiEndT).format('YYYY-MM-DD')}`}
@@ -67,7 +68,7 @@ const ImageCard = ({
                 </div>
               ) : null}
               <div className="flex gap-8 items-center">
-                <dt className="Label-16-Regular">행사일: </dt>
+                <dt className="Label-16-Regular">주문일: </dt>
                 <dd className="flex gap-8">
                   <span className="Label-16-SemiBold">
                     {dayjs(startDate).format('YYYY-MM-DD') ===

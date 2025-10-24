@@ -3,6 +3,7 @@ import { ImageCard } from '@/components/core/ImageCard';
 import { getAdminOpenStatusActivePcoList } from '@/api/mediAdminApi';
 import { PATH } from '@/paths';
 import { useSession } from 'next-auth/react';
+import { getAllOrders } from '@/api/orderApi';
 
 const MediMain = () => {
   const { update } = useSession();
@@ -12,26 +13,26 @@ const MediMain = () => {
     // error,
     data: adminOpenStatusActivePcoList,
   } = useQuery({
-    queryKey: ['getAdminOpenStatusActivePcoList'],
-    queryFn: () => getAdminOpenStatusActivePcoList(),
+    queryKey: ['getAllOrders'],
+    queryFn: () => getAllOrders(),
   });
   // window.adminOpenStatusActivePcoList = adminOpenStatusActivePcoList;
 
   if (!adminOpenStatusActivePcoList || isLoading) return '';
-  console.log(adminOpenStatusActivePcoList);
+  console.log('pcoList', adminOpenStatusActivePcoList);
   return (
     <article className="flex flex-col gap-24">
       {adminOpenStatusActivePcoList?.map((item) => (
         <ImageCard
-          key={item.conferenceIdx}
-          imageUrl={item.thumbnailImageUrl as string}
-          title={item.conferenceName}
-          onClickLink={PATH.EACH.MAIN(item.conferenceStringIdx)}
-          onClick={() => update({ conferenceIdx: item.conferenceIdx })}
-          startDate={item.conferenceStartT}
-          endDate={item.conferenceEndT}
-          preRegiStartT={item.conferencePreRegiStartT}
-          preRegiEndT={item.conferencePreRegiEndT}
+          key={item.orderIdx}
+          orderStatus={item.orderStatus as string}
+          title={item.productName}
+          onClickLink={PATH.EACH.MAIN(item.orderIdx.toString())}
+          onClick={() => update({ orderIdx: item.orderIdx })}
+          startDate={item.createT}
+          endDate={item.createT}
+          preRegiStartT={item.createT}
+          preRegiEndT={item.createT}
         />
       ))}
     </article>

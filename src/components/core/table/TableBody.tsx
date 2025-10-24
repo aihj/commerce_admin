@@ -28,6 +28,8 @@ interface ReactTableProps<TRowModel extends object> {
   selected?: Set<RowId>; // 선택한 row의 고유번호
   onSelectAll?: (event: React.ChangeEvent) => void;
   onDeselectAll?: (event: React.ChangeEvent) => void; // ?????????????
+  onSelectOne?: (rowId: RowId) => void; // ✅ event, row 제거하고 rowId만
+  onDeselectOne?: (rowId: RowId) => void; // 
   uniqueRowId?: (row: TRowModel) => RowId;
   isHover?: boolean;
   noDataMessage?: string;
@@ -41,6 +43,8 @@ export const TableBody = <TRowModel extends object>({
   selected,
   onDeselectAll,
   onSelectAll,
+  onDeselectOne,
+  onSelectOne,
   uniqueRowId,
   isHover,
   noDataMessage,
@@ -145,20 +149,18 @@ export const TableBody = <TRowModel extends object>({
                       <TableCell padding="checkbox">
                         <Checkbox
                           checked={rowId ? rowSelected : false}
-                          // onChange={(event: React.ChangeEvent) => {
                           onChange={() => {
                             if (rowSelected) {
-                              // onDeselectOne?.(event, row);
+                              onDeselectOne?.(rowId); 
                             } else {
-                              alert(rowId);
-                              // onSelectOne?.(event, row);
+                              onSelectOne?.(rowId); 
                             }
                           }}
-                          // onClick={(event: React.MouseEvent) => {
+                          onClick={(event: React.MouseEvent) => {
                           // if (onClick) {
                           //   event.stopPropagation();
                           // }
-                          // }}
+                          }}
                         />
                       </TableCell>
                     ) : null}

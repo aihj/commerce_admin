@@ -42,7 +42,7 @@ export interface Config {
 
 export const config: Config = {
   site: {
-    name: 'Pco Admin',
+    name: 'Commerce Admin',
     description: '메디스태프 학회 관리자 페이지',
     colorScheme: 'light',
     themeColor: '#0088ff',
