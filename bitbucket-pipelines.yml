@@ -1,0 +1,113 @@
+image:
+  name: atlassian/default-image:2
+
+definitions:
+  services:
+    docker:
+      memory: 4096 # Docker 서비스에 4GB만 할당
+
+pipelines:
+  custom:
+    develop:
+      - step:
+          name: Development Deploy
+          script:
+            - echo "This is a Development deployment"
+
+      - step:
+          name: Docker build and push to AWS ECR
+          services:
+            - docker
+          image: atlassian/pipelines-awscli
+          size: 4x
+          caches:
+            - node
+          script:
+            # variables
+            - export ECR_REPOSITORY="pco-dev-admin-front-ecr"
+            - export APP_ENV="development"
+
+            - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ECR_REGISTRY
+
+            - IMAGE=$AWS_ECR_REGISTRY/$ECR_REPOSITORY
+            - TAG=$BITBUCKET_COMMIT
+
+            - export NODE_OPTIONS="--max-old-space-size=4096"
+            - docker build --memory=8g --memory-swap=16g --build-arg APP_ENV=$APP_ENV --build-arg IMAGE=$IMAGE --build-arg TAG=$TAG --no-cache --progress=plain -t $IMAGE:latest -t $IMAGE:$TAG .
+
+            - docker push $AWS_ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+
+      - step:
+          name: Deploy to AWS ECS, Code Deploy
+          image: atlassian/pipelines-awscli
+
+          script:
+            # variables
+            - export CLUSTER_NAME="pco-dev-admin-front-cluster"
+            - export SERVICE_NAME="pco-dev-admin-front-service"
+            - export DEPLOYMENT_GROUP="DgpECS-pco-dev-admin-front-cluster-pco-dev-admin-front-service"
+
+            - aws ecs deploy
+              --debug
+              --region $AWS_DEFAULT_REGION
+              --task-definition .aws/task-definition-dev.json
+              --cluster $CLUSTER_NAME
+              --service $SERVICE_NAME
+              --codedeploy-appspec appspec-dev.yml
+              --codedeploy-deployment-group $DEPLOYMENT_GROUP
+
+    production-deploy:
+      - step:
+          name: Check Branch
+          script:
+            - if [ "$BITBUCKET_BRANCH" != "master" ]; then
+              echo "This custom pipeline can only be run from the master branch.";
+              exit 1;
+              fi
+
+      - step:
+          name: Production Deploy
+          script:
+            - echo "This is a Production deployment"
+
+      - step:
+          name: Docker build and push to AWS ECR
+          services:
+            - docker
+          image: atlassian/pipelines-awscli
+          size: 4x
+          script:
+            # variables
+            - export ECR_REPOSITORY="pco-prod-admin-front-ecr"
+            - export APP_ENV="production"
+
+            - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ECR_REGISTRY
+
+            - IMAGE=$AWS_ECR_REGISTRY/$ECR_REPOSITORY
+            - TAG=$BITBUCKET_COMMIT
+
+            - export NODE_OPTIONS="--max-old-space-size=4096"
+
+            - docker build --memory=8g --memory-swap=16g --build-arg APP_ENV=$APP_ENV --build-arg IMAGE=$IMAGE --build-arg TAG=$TAG --no-cache --progress=plain -t $IMAGE:latest -t $IMAGE:$TAG .
+
+            - docker push $AWS_ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+
+      - step:
+          name: Deploy to AWS ECS, Code Deploy
+
+          image: atlassian/pipelines-awscli
+
+          script:
+            # variables
+            - export CLUSTER_NAME="pco-prod-admin-front-cluster"
+            - export SERVICE_NAME="pco-prod-admin-front-service"
+            - export DEPLOYMENT_GROUP="DgpECS-pco-prod-admin-front-cluster-pco-prod-admin-front-service"
+
+            - aws ecs deploy
+              --debug
+              --region $AWS_DEFAULT_REGION
+              --task-definition .aws/task-definition.json
+              --cluster $CLUSTER_NAME
+              --service $SERVICE_NAME
+              --codedeploy-appspec appspec.yml
+              --codedeploy-deployment-group $DEPLOYMENT_GROUP
