@@ -2,10 +2,7 @@
 
 import {
   Box,
-  FormGroup,
   TextField,
-  FormControlLabel,
-  Radio,
   Button,
   Card,
   Stack,
@@ -22,9 +19,8 @@ import {
   Chip as MuiChip,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ResetIcon } from '@/components/icons/ResetIcon'; 
+import { ResetIcon } from '@/components/icons/ResetIcon';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-// import { dayjs } from '@/lib/dayjs';
 import type { Dayjs } from 'dayjs';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
@@ -32,9 +28,7 @@ import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DTCellBox } from '@/components/DTCellBox';
 import { PATH } from '@/paths';
-// import useCustomSearchParams from '@/hooks/useCustomSearchParams';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-// import { logger } from '@/lib/logger/defaultLogger';
 import { Loading } from '@/components/core/Loading';
 import { PageTitle } from '@/components/core/PageTitle';
 import { useRouter } from 'next/navigation';
@@ -51,14 +45,15 @@ import {
   exportOrders,
   markDelivered,
   updateStatus,
+  OrderFilterRequest,
 } from '@/api/orderApi';
-import { getAllProducts }  from '@/api/productApi';
+import { getAllProducts } from '@/api/productApi';
 import { CHIP_COLOR, Chip } from '@/components/core/Chip';
 import dayjs from 'dayjs';
 import { taxInvoiceStatus } from '@/api/types/orderTypes';
 
 const ConferenceAppRegisterList = () => {
-  const [totalCount, setTotalCount] = useState<number>(20);
+
   const [userName, setUserName] = useState('');
   const [orderId, setOrderId] = useState('');
   const [openModal, setOpenModal] = useState(false);
@@ -79,14 +74,16 @@ const ConferenceAppRegisterList = () => {
     businessNumber: '',
     email: '',
     request: '',
-    status: 'none'
+    status: 'none',
   });
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [selectedCourier, setSelectedCourier] = useState('');
+
+  const [deliOrders, setDeliOrders] = useState<number[]>([]);
+  const [openDeliModal, setOpenDeliModal] = useState(false);
   const queryClient = useQueryClient();
 
-  
   const options1 = [
     '전체',
     '주문_완료',
@@ -101,8 +98,6 @@ const ConferenceAppRegisterList = () => {
 
   const router = useRouter();
 
-  
-
   const prune = (obj: Record<string, any>) => {
     const out: Record<string, any> = {};
     Object.entries(obj).forEach(([k, v]) => {
@@ -113,24 +108,16 @@ const ConferenceAppRegisterList = () => {
     });
     return out;
   };
-  // 앱 노출 여부 디테일 페이지로 이동하기
-
-  const moveOrderDetail = useCallback((orderIdx: number) => {
-    router.push(PATH.TOTAL.ORDER.VIEW(orderIdx));
-  }, []);
-  const moveProductDetail = useCallback((productIdx: number) => {
-    router.push(PATH.TOTAL.PRODUCT.VIEW(productIdx));
-  }, []);
 
   const [draft, setDraft] = useState<OrderFilterParams>({
     taxBusinessNo: '',
     taxEmail: '',
     taxMemo: '',
     taxRequestT: '',
-    sortType: 'o.create_t', 
+    sortType: 'o.create_t',
     sortDir: 'DESC',
     page: 0,
-    size: 50,
+    size: 10000,
   });
 
   const [appliedParams, setAppliedParams] = useState<
@@ -148,23 +135,24 @@ const ConferenceAppRegisterList = () => {
       appliedParams ? filterOrders(appliedParams) : getAllOrders(),
   });
 
-
   useEffect(() => {
 
-
-  console.log('selectedTaxOrderIdx', selectedTaxOrderIdx);
     if (openTaxModal && selectedTaxOrderIdx !== null) {
-      const order = data?.find((item: OrderListDTO) => Number(item.orderIdx) === selectedTaxOrderIdx);
+      const order = data?.find(
+        (item: OrderListDTO) => Number(item.orderIdx) === selectedTaxOrderIdx
+      );
       console.log('order', order);
       if (order) {
         setTax({
-          requestT: order.taxRequestT ? dayjs(order.taxRequestT).format('YYYY-MM-DD HH:mm:ss') : '',
+          requestT: order.taxRequestT
+            ? dayjs(order.taxRequestT).format('YYYY-MM-DD HH:mm:ss')
+            : '',
           businessNumber: order.taxBusinessNo,
           email: order.taxEmail,
           request: order.taxMemo,
           status: order.taxInvoiceStatus as 'none' | 'pending' | 'completed',
         });
-        console.log('tax',tax)
+        console.log('tax', tax);
       } else {
         setTax({
           requestT: '',
@@ -177,8 +165,7 @@ const ConferenceAppRegisterList = () => {
     }
   }, [openTaxModal, selectedTaxOrderIdx, data]);
 
-
-  console.log('tax',tax)
+  console.log('tax', tax);
   const onSearch = () => {
     const trimmedUserName = userName.trim();
     const trimmedOrderId = orderId.trim();
@@ -187,20 +174,20 @@ const ConferenceAppRegisterList = () => {
 
     const isTaxLabel = (s: string): s is TaxLabel => s in taxInvoiceStatus;
 
-
     const updated = {
       ...draft,
       // 텍스트 필드가 비었으면 null
       userName: trimmedUserName !== '' ? trimmedUserName : null,
       orderId: trimmedOrderId !== '' ? trimmedOrderId : null,
-      orderStatuses: selected.orderStatuses.includes('전체') ? null : selected.orderStatuses,
-      taxInvoiceStatuses:
-      selected.taxInvoiceStatuses.includes('전체')
+      orderStatuses: selected.orderStatuses.includes('전체')
+        ? null
+        : selected.orderStatuses,
+      taxInvoiceStatuses: selected.taxInvoiceStatuses.includes('전체')
         ? null
         : selected.taxInvoiceStatuses
-          .filter(isTaxLabel)
-          .map((k) => taxInvoiceStatus[k as TaxLabel]),
-      
+            .filter(isTaxLabel)
+            .map((k) => taxInvoiceStatus[k as TaxLabel]),
+
       startDate: startDate ? dayjs(startDate).format('YYYY-MM-DD') : null,
       endDate: endDate ? dayjs(endDate).format('YYYY-MM-DD') : null,
     };
@@ -222,20 +209,92 @@ const ConferenceAppRegisterList = () => {
     taxInvoiceStatuses: ['전체'],
   });
 
+  // 필터 상태 저장
+  const saveFilterState = useCallback(() => {
+    const filterState = {
+      draft,
+      selected,
+      userName,
+      orderId,
+      startDate: startDate ? startDate.toISOString() : null,
+      endDate: endDate ? endDate.toISOString() : null,
+      appliedParams,
+    };
+    sessionStorage.setItem('orderListFilterState', JSON.stringify(filterState));
+  }, [draft, selected, userName, orderId, startDate, endDate, appliedParams]);
 
-    
+  // 필터 상태 복원
+  const restoreFilterState = useCallback(() => {
+    const savedState = sessionStorage.getItem('orderListFilterState');
+    if (savedState) {
+      try {
+        const filterState = JSON.parse(savedState);
+        if (filterState.draft) {
+          setDraft(filterState.draft);
+        }
+        if (filterState.selected) {
+          setSelected(filterState.selected);
+        }
+        if (filterState.userName !== undefined) {
+          setUserName(filterState.userName);
+        }
+        if (filterState.orderId !== undefined) {
+          setOrderId(filterState.orderId);
+        }
+        if (filterState.startDate) {
+          setStartDate(dayjs(filterState.startDate));
+        }
+        if (filterState.endDate) {
+          setEndDate(dayjs(filterState.endDate));
+        }
+        if (filterState.appliedParams) {
+          setAppliedParams(filterState.appliedParams);
+        }
+        // 복원 후 삭제 (한 번만 복원)
+        sessionStorage.removeItem('orderListFilterState');
+      } catch (error) {
+        console.error('Failed to restore filter state:', error);
+        sessionStorage.removeItem('orderListFilterState');
+      }
+    }
+  }, []);
+
+
+
+  console.log('appliedParams', appliedParams);
+  // 앱 노출 여부 디테일 페이지로 이동하기
+  const moveOrderDetail = useCallback((orderIdx: number) => {
+    saveFilterState();
+    router.push(PATH.TOTAL.ORDER.VIEW(orderIdx));
+  }, [router, saveFilterState]);
+  
+  const moveProductDetail = useCallback((productIdx: number) => {
+    saveFilterState();
+    router.push(PATH.TOTAL.PRODUCT.VIEW(productIdx));
+  }, [router, saveFilterState]);
+
+  // 페이지 마운트 시 필터 상태 복원
+  useEffect(() => {
+    restoreFilterState();
+  }, [restoreFilterState]);
+
   const idxList = useMemo(
     () => data?.map((item: OrderListDTO) => item.orderIdx) ?? [],
     [data]
   );
 
-
-  const { selected: selectedIdxList, selectAll, deselectAll, selectOne, deselectOne } = useSelection<number>(idxList);
+  const {
+    selected: selectedIdxList,
+    selectAll,
+    deselectAll,
+    selectOne,
+    deselectOne,
+  } = useSelection<number>(idxList);
   const selectedOrderIdxArray = useMemo(
     () => Array.from(selectedIdxList),
     [selectedIdxList]
   );
-  
+
   const { data: allProducts } = useQuery({
     queryKey: ['allProducts'],
     queryFn: () => getAllProducts(),
@@ -243,41 +302,59 @@ const ConferenceAppRegisterList = () => {
 
   const productNameList = useMemo(() => {
     if (!allProducts) return [];
-    return Array.from(new Set(allProducts.map((product) => product.productName).filter(Boolean)));
+    return Array.from(
+      new Set(allProducts.map((product) => product.productName).filter(Boolean))
+    );
   }, [allProducts]);
 
   const options0 = ['전체', ...productNameList];
 
- 
   const handleExport = async () => {
-    await exportOrders(idxList as unknown as number[]);
+    console.log('appliedParams', appliedParams);
+    await exportOrders(appliedParams as unknown as OrderFilterRequest);
   };
 
   const handleMarkDelivered = async () => {
-    if(selectedOrderIdxArray.length === 0) {
+    if (selectedOrderIdxArray.length === 0) {
       alert('선택된 주문이 없습니다');
       return;
     }
 
     // 조건에 맞는 orderIdx만 필터링 (배송중 또는 상품_준비중)
     const validOrder = selectedOrderIdxArray.filter((orderIdx) => {
-      const order = data?.find((item: OrderListDTO) => Number(item.orderIdx) === orderIdx);
-      return order?.orderStatus === '배송중' || order?.orderStatus === '상품_준비중';
+      const order = data?.find(
+        (item: OrderListDTO) => Number(item.orderIdx) === orderIdx
+      );
+      return (
+        order?.orderStatus === '배송중' || order?.orderStatus === '상품_준비중'
+      );
     });
 
     // 조건에 맞지 않는 주문이 있는 경우 알림
     if (validOrder.length < selectedOrderIdxArray.length) {
-      const invalidCount = selectedOrderIdxArray.length - validOrder.length;
-      alert(`주문 상태가 상품 준비중 또는 배송중인 주문만 배송완료 처리가 가능합니다.`);
+      alert(
+        `주문 상태가 상품 준비중 또는 배송중인 주문만 배송완료 처리가 가능합니다.`
+      );
       return;
     }
 
-    await markDelivered(validOrder);
-    alert(`배송 현황 조회 후 실제로 배송이 완료된 경우에 진행해주세요.
-      배송 완료로 처리후, 7일이 경과하면 구매 확정으로 전환됩니다.`)
-    await queryClient.invalidateQueries({
-      queryKey: ['orders'],
-    });
+     setDeliOrders(validOrder);
+     setOpenDeliModal(true);
+    
+  };
+
+  const confirmMarkDelivered = async () => {
+    try {
+      await markDelivered(deliOrders);
+      setOpenDeliModal(false);
+      alert(`배송 완료 처리되었습니다`);
+      await queryClient.invalidateQueries({
+        queryKey: ['orders'],
+      });
+    } catch (error) {
+      console.error('API 호출 오류:', error);
+      alert(`배송 완료 처리 중 오류가 발생했습니다.`);
+    }
   };
 
   // 공용 토글 함수
@@ -308,8 +385,6 @@ const ConferenceAppRegisterList = () => {
     });
   };
 
-
-
   const columnHelper = createColumnHelper<OrderListDTO>();
   const columns = useMemo(
     () => [
@@ -336,7 +411,9 @@ const ConferenceAppRegisterList = () => {
                   textUnderlinePosition: 'under',
                 }}
                 onClick={() => {
-                  moveOrderDetail(info.row.original.orderIdx as unknown as number);
+                  moveOrderDetail(
+                    info.row.original.orderIdx as unknown as number
+                  );
                 }}
                 title={`${info.getValue()}`}
               >
@@ -380,7 +457,9 @@ const ConferenceAppRegisterList = () => {
                   textUnderlinePosition: 'under',
                 }}
                 onClick={() => {
-                  moveProductDetail(info.row.original.productIdx);
+                  moveOrderDetail(
+                    info.row.original.orderIdx as unknown as number
+                  );
                 }}
                 title={`${info.row.original.productName}`}
               >
@@ -410,14 +489,13 @@ const ConferenceAppRegisterList = () => {
             <span>{info.getValue()}</span>
           </DTCellBox>
         ),
-       
       }),
 
       columnHelper.accessor('orderStatus', {
         header: '주문상태',
         cell: (info) => {
           const status = info.getValue() || '';
-          let statusText = status;
+          const statusText = status;
           let chipColor: CHIP_COLOR = CHIP_COLOR.neutral;
 
           // 주문상태에 따른 색상 매핑
@@ -466,7 +544,7 @@ const ConferenceAppRegisterList = () => {
             <DTCellBox>
               <Chip type="soft" color={chipColor} label={statusText} />
             </DTCellBox>
-          );  
+          );
         },
       }),
 
@@ -477,46 +555,49 @@ const ConferenceAppRegisterList = () => {
         cell: (info) => {
           const order = info.row.original;
           const tracking =
-            info.row.original.trackingNumber ?? info.row.original.trackingNumber;
+            info.row.original.trackingNumber ??
+            info.row.original.trackingNumber;
           const hasTracking = Boolean(tracking);
-          
+
           return (
             <DTCellBox>
               <Button
                 variant={hasTracking ? 'contained' : 'outlined'}
                 size="small"
-               
                 sx={
                   hasTracking
-                ? {
-                    backgroundColor: 'black',
-                    color: '#fff',
-                    // disabled 상태에서도 색상 유지
-                    '&.Mui-disabled': {
-                      backgroundColor: 'white',
-                      color: 'light-gray',
-                      borderColor: 'dark-gray',
-                      opacity: 1,
-                    },
-                  }
-                : {
-                    backgroundColor: 'white',
-                    color: 'black',
-                    borderColor: 'rgba(0, 0, 0, 0.23)',
-                    // disabled 상태 스타일
-                    '&.Mui-disabled': {
-                      backgroundColor: 'white',
-                      color: 'light-gray',
-                      borderColor: 'dark-gray',
-                      opacity: 1,
-                    },
-                  }
+                    ? {
+                        backgroundColor: 'black',
+                        color: '#fff',
+                        // disabled 상태에서도 색상 유지
+                        '&.Mui-disabled': {
+                          backgroundColor: 'white',
+                          color: 'light-gray',
+                          borderColor: 'dark-gray',
+                          opacity: 1,
+                        },
+                      }
+                    : {
+                        backgroundColor: 'white',
+                        color: 'black',
+                        borderColor: 'rgba(0, 0, 0, 0.23)',
+                        // disabled 상태 스타일
+                        '&.Mui-disabled': {
+                          backgroundColor: 'white',
+                          color: 'light-gray',
+                          borderColor: 'dark-gray',
+                          opacity: 1,
+                        },
+                      }
                 }
-                disabled={info.row.original.orderStatus === '주문_취소' || info.row.original.orderStatus == '환불_완료' || info.row.original.orderStatus == '구매_확정'}
+                disabled={
+                  info.row.original.orderStatus === '주문_취소' ||
+                  info.row.original.orderStatus == '환불_완료' ||
+                  info.row.original.orderStatus == '구매_확정'
+                }
                 onClick={() => {
-                 
                   setSelectedOrderIdx(info.row.original.orderIdx);
-                  setSelectedCourier(order.carrierName ?? '');  // ← 행 데이터 사용
+                  setSelectedCourier(order.carrierName ?? ''); // ← 행 데이터 사용
                   setTrackingNumber(tracking);
                   setOpenModal(true);
                 }}
@@ -536,7 +617,7 @@ const ConferenceAppRegisterList = () => {
           const order = info.row.original;
           const taxStatus = order.taxInvoiceStatus || 'none';
           const isCompleted = taxStatus === 'completed';
-          
+
           return (
             <DTCellBox>
               <Button
@@ -546,29 +627,29 @@ const ConferenceAppRegisterList = () => {
                 sx={
                   isCompleted
                     ? {
-                      backgroundColor: 'white',
-                      color: 'black',
-                      borderColor: 'rgba(0, 0, 0, 0.23)',
-                      
+                        backgroundColor: 'white',
+                        color: 'black',
+                        borderColor: 'rgba(0, 0, 0, 0.23)',
+
                         '&.Mui-disabled': {
                           backgroundColor: 'white',
                           color: 'light-gray',
                         },
                       }
                     : {
-                      backgroundColor: 'white',
-                      color: 'black',
-                      borderColor: 'rgba(0, 0, 0, 0.23)',
-
-                      '&.Mui-disabled': {
                         backgroundColor: 'white',
-                        color: 'light-gray',
-                      },
+                        color: 'black',
+                        borderColor: 'rgba(0, 0, 0, 0.23)',
+
+                        '&.Mui-disabled': {
+                          backgroundColor: 'white',
+                          color: 'light-gray',
+                        },
                       }
                 }
                 onClick={() => {
-                  setSelectedTaxOrderIdx(info.row.original.orderIdx);                  
-                  setOpenTaxModal(true);                  
+                  setSelectedTaxOrderIdx(info.row.original.orderIdx);
+                  setOpenTaxModal(true);
                 }}
               >
                 세금계산서 처리
@@ -582,7 +663,10 @@ const ConferenceAppRegisterList = () => {
     [columnHelper, moveOrderDetail, moveProductDetail]
   );
 
-  const handleUpdateTaxStatus = async (newTaxStatus: string, closeModal?: boolean) => {
+  const handleUpdateTaxStatus = async (
+    newTaxStatus: string,
+    closeModal?: boolean
+  ) => {
     try {
       await updateTaxStatus({
         orderIdx: selectedTaxOrderIdx!,
@@ -603,9 +687,8 @@ const ConferenceAppRegisterList = () => {
     }
   };
 
-
   // useEffect 추가 (컴포넌트 상단에)
-  
+
   console.log('data', data);
   return (
     <Box
@@ -614,8 +697,7 @@ const ConferenceAppRegisterList = () => {
         m: 'var(--Content-margin)',
         p: 'var(--Content-padding)',
         width: '100rem',
-        ml: '6rem'
-        
+        ml: '6rem',
       }}
     >
       {isPending && <Loading open={isPending} />}
@@ -630,7 +712,7 @@ const ConferenceAppRegisterList = () => {
           </Box>
         </Stack>
 
-        <Box sx={{ display: 'flex', ml: 2, gap: '1rem', }}>
+        <Box sx={{ display: 'flex', ml: 2, gap: '1rem' }}>
           <Box>
             <Typography variant="h6" sx={{ mb: 2 }}>
               상품
@@ -641,8 +723,7 @@ const ConferenceAppRegisterList = () => {
                 width: '12rem',
                 height: '8rem',
                 borderRadius: 1,
-                overflowY: 'scroll'
-    
+                overflowY: 'scroll',
               }}
             >
               {options0.map((option) => (
@@ -732,11 +813,10 @@ const ConferenceAppRegisterList = () => {
 
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
             <Box sx={{ flex: 1, width: '12rem' }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-            주문일(시작)
-            </Typography>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                주문일(시작)
+              </Typography>
               <DatePicker
-                
                 value={startDate}
                 onChange={(newValue) => setStartDate(newValue)}
                 format="YYYY-MM-DD"
@@ -749,11 +829,10 @@ const ConferenceAppRegisterList = () => {
               />
             </Box>
             <Box sx={{ flex: 1, width: '12rem' }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-            주문일(종료)
-            </Typography>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                주문일(종료)
+              </Typography>
               <DatePicker
-               
                 value={endDate}
                 onChange={(newValue) => setEndDate(newValue)}
                 format="YYYY-MM-DD"
@@ -766,9 +845,9 @@ const ConferenceAppRegisterList = () => {
               />
             </Box>
             <Box sx={{ width: '12rem' }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-            주문자
-            </Typography>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                주문자
+              </Typography>
               <TextField
                 placeholder="주문자 입력"
                 variant="outlined"
@@ -784,9 +863,9 @@ const ConferenceAppRegisterList = () => {
               />
             </Box>
             <Box sx={{ width: '12rem' }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-            주문번호
-            </Typography>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                주문번호
+              </Typography>
               <TextField
                 placeholder="주문번호 입력"
                 variant="outlined"
@@ -804,7 +883,15 @@ const ConferenceAppRegisterList = () => {
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', width: '92%', alignItems: 'center', gap: 1,  ml: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            width: '92%',
+            alignItems: 'center',
+            gap: 1,
+            ml: 2,
+          }}
+        >
           <Box
             sx={{
               flex: 1,
@@ -815,13 +902,19 @@ const ConferenceAppRegisterList = () => {
               alignItems: 'center',
               gap: 1,
               minHeight: '2.5rem',
-              
             }}
           >
-            <Typography variant="body2" sx={{  fontWeight: 'bold' }}>
+            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
               선택된 항목
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                flexWrap: 'wrap',
+              }}
+            >
               {selected.productNames
                 .filter((item) => item !== '전체')
                 .map((item) => (
@@ -873,7 +966,7 @@ const ConferenceAppRegisterList = () => {
               setUserName('');
               setOrderId('');
             }}
-            sx={{ 
+            sx={{
               border: '1px solid',
               borderColor: 'divider',
               '&:hover': {
@@ -899,13 +992,17 @@ const ConferenceAppRegisterList = () => {
             sx={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'flex-end',
+              justifyContent: 'space-between',
               gap: '0.5rem',
               padding: '1rem',
               paddingBottom: '0.5rem',
             }}
           >
-            <Button
+            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+              조회된 항목: {data?.length || 0}개
+            </Typography>
+            <Box sx={{ display: 'flex', gap: '0.5rem' }}>
+              <Button
               variant="outlined"
               sx={{
                 backgroundColor: 'white',
@@ -921,7 +1018,7 @@ const ConferenceAppRegisterList = () => {
                 },
               }}
               onClick={() => {
-                 handleExport();
+                handleExport();
               }}
             >
               주문서 엑셀 다운로드(조회된 모든 주문)
@@ -943,13 +1040,14 @@ const ConferenceAppRegisterList = () => {
                 },
               }}
               onClick={() => {
-                  handleMarkDelivered();
+                handleMarkDelivered();
               }}
             >
               일괄 배송완료 처리(선택 주문)
             </Button>
+            </Box>
           </Box>
-        
+
           <TableBody<OrderListDTO>
             data={data as OrderListDTO[]}
             columns={columns as ColumnDef<OrderListDTO>[]}
@@ -963,17 +1061,10 @@ const ConferenceAppRegisterList = () => {
             onDeselectAll={deselectAll}
             onSelectOne={(rowId) => {
               selectOne(rowId as number);
-            
-              const order = (data as OrderListDTO[] | undefined)?.find(
-                (item) => item.orderIdx === rowId
-              );
-            
             }}
             onDeselectOne={(rowId) => {
               deselectOne(rowId as number);
-             
             }}
-            
           />
         </Card>
         {/* 송장번호 등록 모달 */}
@@ -1007,9 +1098,8 @@ const ConferenceAppRegisterList = () => {
               variant="outlined"
               value={trackingNumber || ''}
               onChange={(e) => {
-              
-                setTrackingNumber(e.target.value);}}
-
+                setTrackingNumber(e.target.value);
+              }}
               sx={{ mt: 2 }}
             />
           </DialogContent>
@@ -1018,42 +1108,49 @@ const ConferenceAppRegisterList = () => {
             <Button
               onClick={async () => {
                 // 택배사 및 송장번호 검증
-                const trimmedTrackingNumber = String(trackingNumber || '').trim();
+                const trimmedTrackingNumber = String(
+                  trackingNumber || ''
+                ).trim();
                 const trimmedCourier = String(selectedCourier || '').trim();
-                
+
                 if (!trimmedCourier || !trimmedTrackingNumber) {
                   alert('선택된 택배사 또는 입력된 송장번호가 없습니다');
-                  return; 
+                  return;
                 }
-                
-                try {
 
-                  const order = data?.find((item: OrderListDTO) => Number(item.orderIdx) === selectedOrderIdx);
-                  const isFirst = !order?.trackingNumber || order?.trackingNumber.trim() === '';
-               
+                try {
+                  const order = data?.find(
+                    (item: OrderListDTO) =>
+                      Number(item.orderIdx) === selectedOrderIdx
+                  );
+                  const isFirst =
+                    !order?.trackingNumber ||
+                    order?.trackingNumber.trim() === '';
 
                   await updateCarrierInfo({
                     orderIdx: selectedOrderIdx!,
                     carrier: trimmedCourier,
                     trackingNumber: trimmedTrackingNumber,
                   });
-                 
-                  if(isFirst) {
+
+                  if (isFirst) {
                     await updateStatus(selectedOrderIdx!, '배송중');
-                    alert(`송장번호가 저장되었으며 주문 상태가 배송중으로 변경되었습니다`);
-                  }else {
+                    alert(
+                      `송장번호가 저장되었으며 주문 상태가 배송중으로 변경되었습니다`
+                    );
+                  } else {
                     alert('송장번호가 변경되었습니다.');
                   }
 
                   await queryClient.invalidateQueries({ queryKey: ['orders'] });
 
-                setOpenModal(false);
-                setTrackingNumber('');
-                setSelectedCourier('');
-              } catch (error) {
-                console.error('송장번호 저장 실패:', error);
-                alert('송장번호 저장 중 오류가 발생했습니다.');
-              }
+                  setOpenModal(false);
+                  setTrackingNumber('');
+                  setSelectedCourier('');
+                } catch (error) {
+                  console.error('송장번호 저장 실패:', error);
+                  alert('송장번호 저장 중 오류가 발생했습니다.');
+                }
               }}
               variant="contained"
             >
@@ -1072,64 +1169,111 @@ const ConferenceAppRegisterList = () => {
           <DialogTitle>세금계산서 처리</DialogTitle>
           <DialogContent>
             <FormControl fullWidth sx={{ mt: 2 }}>
-
-            <Stack spacing={1} sx={{ ml: 1.5 }}>
-              <Box sx={{ display: 'flex' }}>
-                <Box sx={{ minWidth: '150px' }}>요청일시</Box>
-                <Box> {tax.requestT}</Box>
-              </Box>
-              <Box sx={{ display: 'flex' }}>
-                <Box sx={{ minWidth: '150px' }}>사업자 등록번호</Box>
-                <Box> {tax.businessNumber}</Box>
-              </Box>
-              <Box sx={{ display: 'flex' }}>
+              <Stack spacing={1} sx={{ ml: 1.5 }}>
+                <Box sx={{ display: 'flex' }}>
+                  <Box sx={{ minWidth: '150px' }}>요청일시</Box>
+                  <Box> {tax.requestT}</Box>
+                </Box>
+                <Box sx={{ display: 'flex' }}>
+                  <Box sx={{ minWidth: '150px' }}>사업자 등록번호</Box>
+                  <Box> {tax.businessNumber}</Box>
+                </Box>
+                <Box sx={{ display: 'flex' }}>
                   <Box sx={{ minWidth: '150px' }}>이메일 주소</Box>
                   <Box> {tax.email}</Box>
-              </Box>
-              <Box sx={{ display: 'flex' }
-            }>
-                <Box sx={{ minWidth: '150px' }}>요청 사항</Box>
-                <Box> {tax.request}</Box>
-              </Box>
-            </Stack>
+                </Box>
+                <Box sx={{ display: 'flex' }}>
+                  <Box sx={{ minWidth: '150px' }}>요청 사항</Box>
+                  <Box> {tax.request}</Box>
+                </Box>
+              </Stack>
 
               <InputLabel sx={{ mt: 2 }}>처리 상태</InputLabel>
-             
-                <Select
-                  value={tax.status || 'none'}
-                  onChange={(e) => setTax({
+
+              <Select
+                value={tax.status || 'none'}
+                onChange={(e) =>
+                  setTax({
                     ...tax,
                     status: e.target.value as 'none' | 'pending' | 'completed',
-                  })}
-                  label="처리 상태"
-                >
-                  <MenuItem value="none">요청없음</MenuItem>
-                  <MenuItem value="pending">대기</MenuItem>
-                  <MenuItem value="completed">완료</MenuItem>
-                </Select>
-              
-              
+                  })
+                }
+                label="처리 상태"
+              >
+                <MenuItem value="none">요청없음</MenuItem>
+                <MenuItem value="pending">대기</MenuItem>
+                <MenuItem value="completed">완료</MenuItem>
+              </Select>
             </FormControl>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpenTaxModal(false)}>취소</Button>
             <Button
-                variant="outlined"
-                size="small"
-                onClick={async () => {
-                  try {
-                    await handleUpdateTaxStatus(tax.status as 'none' | 'pending' | 'completed');
-                    setOpenTaxModal(false);
-                  } catch (error) {
-                  }
-                }}
-              >
-                저장
-              </Button>
+              variant="outlined"
+              size="small"
+              onClick={async () => {
+                try {
+                  await handleUpdateTaxStatus(
+                    tax.status as 'none' | 'pending' | 'completed'
+                  );
+                  alert(
+                    `세금계산서 처리 상태가 ${tax.status}으로 변경되었습니다`
+                  );
+                  setOpenTaxModal(false);
+                } catch (error) {
+                  console.error('API 호출 오류:', error);
+                  alert(`세금계산서 처리 상태 변경 중 오류가 발생했습니다.`);
+                }
+              }}
+            >
+              저장
+            </Button>
           </DialogActions>
         </Dialog>
       </Stack>
+
+
+      {/* 배송 완료 확인 모달 */}
+        <Dialog
+          open={openDeliModal}
+          onClose={() => setOpenDeliModal(false)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>
+            배송 완료 처리 확인
+            <IconButton
+              aria-label="close"
+              onClick={() => setOpenDeliModal(false)}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent>
+            <Typography variant="body1" sx={{ whiteSpace: 'pre-line', mb: 2 }}>
+              배송 현황 조회 후 실제로 배송이 완료된 경우에 진행해주세요.
+              {'\n'}
+              배송 완료로 처리후, 7일이 경과하면 구매 확정으로 전환됩니다.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDeliModal(false)}>
+              취소
+            </Button>
+            <Button onClick={confirmMarkDelivered} variant="contained" color="primary">
+              확인
+            </Button>
+          </DialogActions>
+        </Dialog>
     </Box>
+
+    
   );
 };
 

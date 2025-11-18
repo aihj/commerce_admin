@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import { Card } from '@mui/material';
-import { QuillFormTest } from '@/app/test/QuillFormTest';
 
 type TestTypeProps = NonNullable<unknown>;
 
@@ -25,9 +24,9 @@ export default function Test({}: TestTypeProps) {
           value = {JSON.stringify(value)}
         </>
       </Card>*/}
-      <Card>
+      {/* <Card>
         <QuillFormTest />
-      </Card>
+      </Card> */}
       {/*<MuiTest />*/}
       {/*<MuiFormTest /
       >*/}

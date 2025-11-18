@@ -32,9 +32,7 @@ const handler = NextAuth({
       },
 
       async authorize(credentials) {
-        
         try {
-          
           console.log('<authorize> credentials', credentials);
           const user = await axios
             .post(
@@ -42,9 +40,9 @@ const handler = NextAuth({
               credentials,
               {
                 headers: {
-                  'wserviceName': 'medistaff_admin',
+                  wserviceName: 'medistaff_admin',
                   'Content-Type': 'application/json',
-                  'Accept': '*/*',
+                  Accept: '*/*',
                 },
               }
             )
@@ -52,7 +50,6 @@ const handler = NextAuth({
               console.log('<authorize> success');
               console.log(response.data);
               if (response.data.content.accessToken) {
-
                 return response.data.content;
               } else {
                 throw new Error(response.data.message);

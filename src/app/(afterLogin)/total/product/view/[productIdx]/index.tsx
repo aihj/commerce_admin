@@ -6,34 +6,60 @@ import TableBody from '@mui/material/TableBody';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Table from '@mui/material/Table';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 import Box from '@mui/material/Box';
 import { PageTitle } from '@/components/core/PageTitle';
 import { dayjs } from '@/lib/dayjs';
 
 import * as React from 'react';
-import { Button, Select, MenuItem, TextField, Dialog, DialogTitle, DialogContent, IconButton, InputAdornment, Stack, Popover, Typography, Paper } from '@mui/material';
+import {
+  Button,
+  Select,
+  MenuItem,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
+  InputAdornment,
+  Stack,
+  Popover,
+  Typography,
+  Paper,
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { CHIP_COLOR, Chip } from '@/components/core/Chip';
 import { useState, useEffect, useRef } from 'react';
-import { UpdateSupplierRequest, 
-  getProductDetail, updateSupplier, 
-  updateStock, updateSale, updateProductStatus, 
-  deleteProductFile, uploadProductFile, getProductStatusHistory, getStockStatusHistory } from '@/api/productApi';
+import {
+  UpdateSupplierRequest,
+  getProductDetail,
+  updateSupplier,
+  updateStock,
+  updateSale,
+  updateProductStatus,
+  deleteProductFile,
+  uploadProductFile,
+  getProductStatusHistory,
+  getStockStatusHistory,
+} from '@/api/productApi';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { PRODUCT_CATEGORY } from '@/api/types/productTypes';
-
 
 const AppRegisterView = () => {
   const queryClient = useQueryClient();
 
-  const [isEditing, setIsEditing] = useState({ thumbnail: false, 
-    detail: false, status: false, sale: false, stock: false, supplier: false });
+  const [isEditing, setIsEditing] = useState({
+    thumbnail: false,
+    detail: false,
+    status: false,
+    sale: false,
+    stock: false,
+    supplier: false,
+  });
 
-  const [imagePreview, setImagePreview] = useState<{ thumbnail: string, detail: string }>({ thumbnail: '', detail: '' });
- 
   const [supplierData, setSupplierData] = useState({
     supplierName: '',
     managerName: '',
@@ -47,10 +73,10 @@ const AppRegisterView = () => {
     consumerPrice: 0,
     productPrice: 0,
     defaultShippingFee: 0,
-    remoteShippingFee: 0,  
+    remoteShippingFee: 0,
     jejuShippingFee: 0,
     launchStartT: '',
-    launchEndT: ''
+    launchEndT: '',
   });
 
   const [stockData, setStockData] = useState({
@@ -61,7 +87,6 @@ const AppRegisterView = () => {
   const [stockIncrement, setStockIncrement] = useState(''); // 증감량 state 추가
 
   const { productIdx } = useParams<{ productIdx: string }>();
-  
 
   // 💡 숫자로 변환
   const parsedIdx = productIdx ? parseInt(productIdx, 10) : undefined;
@@ -81,70 +106,59 @@ const AppRegisterView = () => {
   };
 
   const [status, setStatus] = useState<string>(data?.saleStatus || '');
- 
-    const [image, setImage] = useState<{ thumbnail: string; detail: string }>({
+
+  const [image, setImage] = useState<{ thumbnail: string; detail: string }>({
     thumbnail: extractFileName(data?.thumbUrl),
     detail: extractFileName(data?.detailUrl),
   });
 
-  const [imageFiles, setImageFiles] = useState<{ thumbnail: File | null, detail: File | null }>({
+  const [imageFiles, setImageFiles] = useState<{
+    thumbnail: File | null;
+    detail: File | null;
+  }>({
     thumbnail: null,
     detail: null,
   });
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<string>('');
-  const [historyAnchorEl, setHistoryAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [historyAnchorEl, setHistoryAnchorEl] =
+    useState<HTMLButtonElement | null>(null);
   // 1) 상태 선언 변경
   const [historyData, setHistoryData] = useState<{
     status?: string[];
     stock?: string[];
   }>({});
 
-  const[historyType, setHistoryType] = useState<'status' | 'stock'>('status');
+  const [historyType, setHistoryType] = useState<'status' | 'stock'>('status');
 
   useEffect(() => {
     if (data?.saleStatus) {
       setStatus(data.saleStatus);
     }
     if (data?.thumbUrl) {
-      setImage((prev) => ({ ...prev, thumbnail: extractFileName(data.thumbUrl) }));
-      setImagePreview((prev) => ({ ...prev, thumbnail: data.thumbUrl || '' }));
+      setImage((prev) => ({
+        ...prev,
+        thumbnail: extractFileName(data.thumbUrl),
+      }));
     }
     if (data?.detailUrl) {
-      setImage((prev) => ({ ...prev, detail: extractFileName(data.detailUrl) }));
-      setImagePreview((prev) => ({ ...prev, detail: data.detailUrl || '' }));
+      setImage((prev) => ({
+        ...prev,
+        detail: extractFileName(data.detailUrl),
+      }));
     }
 
-    if(data?.launchStartT) {
-      setSaleData((prev) => ({ ...prev, launchStartT: data.launchStartT || '' }));
+    if (data?.launchStartT) {
+      setSaleData((prev) => ({
+        ...prev,
+        launchStartT: data.launchStartT || '',
+      }));
     }
-    if(data?.launchEndT) {
+    if (data?.launchEndT) {
       setSaleData((prev) => ({ ...prev, launchEndT: data.launchEndT || '' }));
     }
-   
   }, [data]);
-
-
-
-  // async function changeAppExposureStatus(param: {
-  //   productIdx: number;
-  //   desiredStatus: string;
-  // }) {
-  //   try {
-  //     const result = await changeAppExposureStatusAPI(param);
-  //     await queryClient.invalidateQueries({
-  //       queryKey: ['getAppConferenceDetail', productIdx],
-  //     });
-  //     await queryClient.invalidateQueries({
-  //       queryKey: ['getAppConferenceList'],
-  //     });
-  //     return result;
-  //   } catch (error) {
-  //     console.error('Mutation error:', error);
-  //     throw error;
-  //   }
-  // }
 
   // if (isPending || error) {
   //   return <PageLoading />;
@@ -170,11 +184,9 @@ const AppRegisterView = () => {
     } else if (status === 'pending') {
       return CHIP_COLOR.success;
     } else {
-      return CHIP_COLOR.error;  
+      return CHIP_COLOR.error;
     }
   };
-
-  
 
   const menuOptions = [
     {
@@ -182,15 +194,17 @@ const AppRegisterView = () => {
       value: 'pending',
       excluded: ['판매중', '판매종료', '판매취소'],
     },
-    { label: '판매중', value: 'active', excluded: ['판매종료','판매취소'] },
-    { label: '판매종료', value: 'inactive', excluded: ['대기','판매취소'] },
-    { label: '판매취소', value: 'deleted', excluded: ['판매종료'] }
-   
+    { label: '판매중', value: 'active', excluded: ['판매종료', '판매취소'] },
+    { label: '판매종료', value: 'inactive', excluded: ['대기', '판매취소'] },
+    { label: '판매취소', value: 'deleted', excluded: ['판매종료'] },
   ];
 
-  const makeProductId = (productCategory: string | null | undefined, productIdx: number | undefined): string => {
+  const makeProductId = (
+    productCategory: string | null | undefined,
+    productIdx: number | undefined
+  ): string => {
     if (!productCategory || !productIdx) return '-';
-    
+
     const paddedIdx = String(productIdx).padStart(4, '0');
 
     return `${productCategory}${paddedIdx}`;
@@ -205,27 +219,23 @@ const AppRegisterView = () => {
       supplierData: UpdateSupplierRequest;
     }) => updateSupplier(productIdx, supplierData),
   });
-  
+
   const handleClick = async () => {
     if (isEditing.supplier) {
-    
       try {
         await updateSupplierData({ productIdx: productIdx!, supplierData });
-    
       } catch (e) {
         console.error('API 호출 오류:', e);
-       
       }
     } else {
-     
       setSupplierData({
         supplierName: data?.supplierName || '',
         managerName: data?.managerName || '',
         managerPhone: data?.managerPhone || '',
         returnAddr: data?.returnAddr || '',
       });
-    }  
-  
+    }
+
     setIsEditing((prev) => ({ ...prev, supplier: !prev.supplier }));
   };
 
@@ -236,45 +246,45 @@ const AppRegisterView = () => {
         alert('상품명을 입력해주세요.');
         return;
       }
-  
+
       if (saleData.productPrice <= saleData.costPrice) {
         alert('판매가는 공급가보다 높아야 합니다.');
         return;
       }
-  
+
       if (saleData.productPrice > saleData.consumerPrice) {
         alert('판매가는 소비자가보다 높을 수 없습니다.');
         return;
       }
-  
+
       if (saleData.consumerPrice < saleData.costPrice) {
         alert('소비자가는 공급가보다 낮을 수 없습니다.');
         return;
       }
-  
+
       if (dayjs(saleData.launchStartT).isAfter(dayjs(saleData.launchEndT))) {
         alert('판매 시작일은 종료일보다 빠르거나 같아야 합니다.');
         return;
       }
       console.log('saleData', saleData);
-  
+
       try {
         await updateSale(productIdx!, {
           ...saleData,
           productName: trimmedName,
         });
-        await queryClient.invalidateQueries({ queryKey: ['productDetail', parsedIdx] });
+        await queryClient.invalidateQueries({
+          queryKey: ['productDetail', parsedIdx],
+        });
         alert('저장 완료!');
         setSaleData((prev) => ({ ...prev, productName: trimmedName }));
         setIsEditing((prev) => ({ ...prev, sale: false }));
-
       } catch (error) {
         console.error('updateSale 실패:', error);
         alert('저장 중 오류가 발생했습니다.');
       }
       return;
     }
-  
 
     setSaleData({
       productName: data?.productName || '',
@@ -292,20 +302,23 @@ const AppRegisterView = () => {
 
   const handleStockClick = async () => {
     if (isEditing.stock) {
+      const remainingStockQuantity =
+        Number(data?.maxQuantity) - Number(data?.stockQuantity) || 0;
+      const newMaxQuantity = Number(stockData.maxQuantity) || 0;
 
-      const remainingStockQuantity = Number(data?.maxQuantity) - Number(data?.stockQuantity) || 0;
-      const newMaxQuantity = Number(stockData.maxQuantity) || 0;      
-     
-       
       if (newMaxQuantity < remainingStockQuantity) {
-        alert(`입력하신 재고수량은 최소 ${remainingStockQuantity}개여야 합니다`);
+        alert(
+          `입력하신 재고수량은 최소 ${remainingStockQuantity}개여야 합니다`
+        );
         return; // 저장하지 않고 함수 종료
       }
-      
+
       try {
         await updateStock(productIdx!, stockData.maxQuantity);
 
-        await queryClient.invalidateQueries({ queryKey: ['productDetail', parsedIdx] });
+        await queryClient.invalidateQueries({
+          queryKey: ['productDetail', parsedIdx],
+        });
       } catch (e) {
         console.error('API 호출 오류:', e);
         alert('재고 수량 저장 중 오류가 발생했습니다.');
@@ -321,17 +334,13 @@ const AppRegisterView = () => {
 
   const handleChange = async () => {
     setIsEditing((prev) => ({ ...prev, status: !prev.status }));
-  
+
     if (isEditing.status) {
       try {
         const selectedOption = menuOptions.find((opt) => opt.label === status);
         const statusLabel = selectedOption?.label || status;
-  
-        if (statusLabel === '판매중') {
-          const start = dayjs(saleData.launchStartT || data?.launchStartT);
-          const end = dayjs(saleData.launchEndT || data?.launchEndT);
-          const today = dayjs().startOf('day');
 
+        if (statusLabel === '판매중') {
           const fieldLabels: Partial<Record<keyof typeof saleData, string>> = {
             productName: '상품명',
             costPrice: '공급가',
@@ -343,22 +352,22 @@ const AppRegisterView = () => {
             launchStartT: '판매 시작일',
             launchEndT: '판매 종료일',
           };
-        
+
           const missingFields = Object.entries(fieldLabels)
-          .filter(([key]) => {
-            const value = data?.[key as keyof typeof saleData];
-            if (typeof value === 'string') return value.trim() === '';
-            if (typeof value === 'number') return Number.isNaN(value); // 0 도 누락 취급
-            return value === null || value === undefined;
-          })
-          .map(([, label]) => label);
-   
-        if (missingFields.length > 0) {
-          alert(`다음 항목을 입력해주세요: ${missingFields.join(', ')}`);
-          return;         }
-         
+            .filter(([key]) => {
+              const value = data?.[key as keyof typeof saleData];
+              if (typeof value === 'string') return value.trim() === '';
+              if (typeof value === 'number') return Number.isNaN(value); // 0 도 누락 취급
+              return value === null || value === undefined;
+            })
+            .map(([, label]) => label);
+
+          if (missingFields.length > 0) {
+            alert(`다음 항목을 입력해주세요: ${missingFields.join(', ')}`);
+            return;
+          }
         }
-  
+
         await updateProductStatus(productIdx!, statusLabel);
         alert(`${statusLabel}로 등록 상태가 변경되었습니다`);
       } catch (e) {
@@ -377,7 +386,6 @@ const AppRegisterView = () => {
 
   // 등록 버튼 클릭 시 파일 선택 다이얼로그 열기
   const handleRegisterClick = (kind: 'thumbnail' | 'detail') => {
-
     if (image[kind]) {
       alert('먼저 등록된 이미지를 삭제해주세요');
       return;
@@ -393,7 +401,10 @@ const AppRegisterView = () => {
   };
 
   // 파일 선택 후 처리
-  const handleFileChange = (kind: 'thumbnail' | 'detail', e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (
+    kind: 'thumbnail' | 'detail',
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -406,11 +417,7 @@ const AppRegisterView = () => {
     // File 객체 저장 (multipart 전송용)
     setImageFiles((prev) => ({ ...prev, [kind]: file }));
 
-    // 미리보기 URL 생성
-    const previewUrl = URL.createObjectURL(file);
-    setImagePreview((prev) => ({ ...prev, [kind]: previewUrl }));
-
-    // TextField에도 파일명 표시
+    // TextField에도 파일명 표
     setImage((prev) => ({ ...prev, [kind]: file.name }));
   };
 
@@ -421,9 +428,12 @@ const AppRegisterView = () => {
     }
 
     try {
-  
-      await uploadProductFile(parsedIdx!, imageFiles[kind]!, kind as 'thumbnail' | 'detail');
-      
+      await uploadProductFile(
+        parsedIdx!,
+        imageFiles[kind]!,
+        kind as 'thumbnail' | 'detail'
+      );
+
       alert('저장 완료!');
       setIsEditing((prev) => ({ ...prev, [kind]: !prev[kind] }));
     } catch (e) {
@@ -459,31 +469,31 @@ const AppRegisterView = () => {
   const handleStockIncrement = (isAdd: boolean) => {
     const increment = Number(stockIncrement);
     const currentStockQuantity = Number(stockData.stockQuantity) || 0;
-  
+
     // 줄이기일 때 재고 수량이 0이면 alert 표시
     if (!isAdd && currentStockQuantity <= 0) {
       alert('재고 수량이 0입니다. 더 이상 줄일 수 없습니다.');
       return;
     }
-  
-    const newMaxQuantity = isAdd 
-      ? Number(stockData.maxQuantity) + increment 
+
+    const newMaxQuantity = isAdd
+      ? Number(stockData.maxQuantity) + increment
       : Number(stockData.maxQuantity) - increment;
-    
-    const newStockQuantity = isAdd 
-      ? currentStockQuantity + increment 
+
+    const newStockQuantity = isAdd
+      ? currentStockQuantity + increment
       : currentStockQuantity - increment;
-  
+
     // 줄인 후에도 0보다 작아지면 alert 표시
     if (!isAdd && newStockQuantity < 0) {
       alert('재고 수량이 0입니다. 더 이상 줄일 수 없습니다.');
       return;
     }
-  
-    setStockData((prev) => ({ 
-      ...prev, 
-      maxQuantity: String(newMaxQuantity), 
-      stockQuantity: String(newStockQuantity) 
+
+    setStockData((prev) => ({
+      ...prev,
+      maxQuantity: String(newMaxQuantity),
+      stockQuantity: String(newStockQuantity),
     }));
   };
 
@@ -500,7 +510,7 @@ const AppRegisterView = () => {
       setHistoryData((prev) => ({ ...prev, status: [] }));
     }
   };
-  
+
   const handleStockHistoryClick = async (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
@@ -532,7 +542,6 @@ const AppRegisterView = () => {
       <div className="mb-24">
         <PageTitle title="상품 상세" />
       </div>
-      
 
       <Box sx={{ display: 'flex', gap: 4, alignItems: 'flex-start' }}>
         <Box sx={{ flex: 1 }}>
@@ -541,11 +550,17 @@ const AppRegisterView = () => {
             <TableBody>
               <TableRow>
                 <TableCell>상품ID</TableCell>
-                <TableCell>{makeProductId(data?.productCategory, data?.productIdx)}</TableCell>
+                <TableCell>
+                  {makeProductId(data?.productCategory, data?.productIdx)}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell sx={{ width: '150px' }}>상품 카테고리</TableCell>
-                <TableCell>{PRODUCT_CATEGORY[data?.productCategory as keyof typeof PRODUCT_CATEGORY] || ''}</TableCell>
+                <TableCell>
+                  {PRODUCT_CATEGORY[
+                    data?.productCategory as keyof typeof PRODUCT_CATEGORY
+                  ] || ''}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>등록 상태</TableCell>
@@ -563,12 +578,13 @@ const AppRegisterView = () => {
                       size="small"
                       sx={{ minWidth: 120, maxHeight: 40 }}
                       disabled={!isEditing.status}
-                      
                     >
                       {menuOptions
                         .filter((opt) => {
                           // 현재 status의 label을 찾아서 excluded와 비교
-                          const currentOption = menuOptions.find(opt => opt.label === data?.saleStatus);
+                          const currentOption = menuOptions.find(
+                            (opt) => opt.label === data?.saleStatus
+                          );
                           const currentLabel = currentOption?.label || '';
                           return !opt.excluded.includes(currentLabel);
                         })
@@ -599,11 +615,15 @@ const AppRegisterView = () => {
               </TableRow>
               <TableRow>
                 <TableCell>등록일</TableCell>
-                <TableCell>{dayjs(data?.createT).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
+                <TableCell>
+                  {dayjs(data?.createT).format('YYYY-MM-DD HH:mm:ss')}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>변경일</TableCell>
-                <TableCell>{dayjs(data?.updateT).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
+                <TableCell>
+                  {dayjs(data?.updateT).format('YYYY-MM-DD HH:mm:ss')}
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -619,21 +639,32 @@ const AppRegisterView = () => {
                       size="small"
                       variant="outlined"
                       disabled={!isEditing.thumbnail}
-                      sx={{ 
-                        minWidth: 300, 
+                      sx={{
+                        minWidth: 300,
                         minHieght: 50,
                         '& .MuiOutlinedInput-root': {
                           '&:hover fieldset': {
-                            borderColor: !isEditing.thumbnail && !!data?.thumbUrl ? 'primary.main' : undefined,
+                            borderColor:
+                              !isEditing.thumbnail && !!data?.thumbUrl
+                                ? 'primary.main'
+                                : undefined,
                           },
                           '&.Mui-focused fieldset': {
-                            borderColor: !isEditing.thumbnail && !!data?.thumbUrl ? 'primary.main' : undefined,
+                            borderColor:
+                              !isEditing.thumbnail && !!data?.thumbUrl
+                                ? 'primary.main'
+                                : undefined,
                           },
                         },
                       }}
                       placeholder="썸네일 이미지를 업로드 하세요"
                       value={image.thumbnail}
-                      onChange={(e) => setImage((prev) => ({ ...prev, thumbnail: e.target.value }))}
+                      onChange={(e) =>
+                        setImage((prev) => ({
+                          ...prev,
+                          thumbnail: e.target.value,
+                        }))
+                      }
                       onClick={() => {
                         if (data?.thumbUrl && !isEditing.thumbnail) {
                           handleImagePreview('thumbnail');
@@ -641,30 +672,40 @@ const AppRegisterView = () => {
                       }}
                       InputProps={{
                         readOnly: !isEditing.thumbnail && !!data?.thumbUrl,
-                        endAdornment: !isEditing.thumbnail && !!data?.thumbUrl ? (
-                          <InputAdornment position="end">
-                            <IconButton
-                              edge="end"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleImagePreview('thumbnail');
-                              }}
-                              sx={{
-                                color: 'primary.main',
-                                '&:hover': {
-                                  backgroundColor: 'action.hover',
-                                },
-                              }}
-                            >
-                              <VisibilityIcon fontSize="small" />
-                            </IconButton>
-                          </InputAdornment>
-                        ) : undefined,
+                        endAdornment:
+                          !isEditing.thumbnail && !!data?.thumbUrl ? (
+                            <InputAdornment position="end">
+                              <IconButton
+                                edge="end"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleImagePreview('thumbnail');
+                                }}
+                                sx={{
+                                  color: 'primary.main',
+                                  '&:hover': {
+                                    backgroundColor: 'action.hover',
+                                  },
+                                }}
+                              >
+                                <VisibilityIcon fontSize="small" />
+                              </IconButton>
+                            </InputAdornment>
+                          ) : undefined,
                         sx: {
-                          cursor: !isEditing.thumbnail && !!data?.thumbUrl ? 'pointer' : 'default',
-                          backgroundColor: !isEditing.thumbnail && !!data?.thumbUrl ? 'action.hover' : 'background.paper',
+                          cursor:
+                            !isEditing.thumbnail && !!data?.thumbUrl
+                              ? 'pointer'
+                              : 'default',
+                          backgroundColor:
+                            !isEditing.thumbnail && !!data?.thumbUrl
+                              ? 'action.hover'
+                              : 'background.paper',
                           '&:hover': {
-                            backgroundColor: !isEditing.thumbnail && !!data?.thumbUrl ? 'action.selected' : undefined,
+                            backgroundColor:
+                              !isEditing.thumbnail && !!data?.thumbUrl
+                                ? 'action.selected'
+                                : undefined,
                           },
                         },
                       }}
@@ -684,7 +725,7 @@ const AppRegisterView = () => {
                       size="small"
                       onClick={() =>
                         isEditing.thumbnail
-                          ? handleSave('thumbnail')       
+                          ? handleSave('thumbnail')
                           : handleRegisterClick('thumbnail')
                       }
                       sx={{ marginLeft: 'auto' }}
@@ -710,21 +751,32 @@ const AppRegisterView = () => {
                       size="small"
                       variant="outlined"
                       disabled={!isEditing.detail}
-                      sx={{ 
-                        minWidth: 300, 
+                      sx={{
+                        minWidth: 300,
                         minHieght: 40,
                         '& .MuiOutlinedInput-root': {
                           '&:hover fieldset': {
-                            borderColor: !isEditing.detail && !!data?.detailUrl ? 'primary.main' : undefined,
+                            borderColor:
+                              !isEditing.detail && !!data?.detailUrl
+                                ? 'primary.main'
+                                : undefined,
                           },
                           '&.Mui-focused fieldset': {
-                            borderColor: !isEditing.detail && !!data?.detailUrl ? 'primary.main' : undefined,
+                            borderColor:
+                              !isEditing.detail && !!data?.detailUrl
+                                ? 'primary.main'
+                                : undefined,
                           },
                         },
                       }}
                       placeholder="상세이미지를 업로드 하세요"
                       value={image.detail}
-                      onChange={(e) => setImage((prev) => ({ ...prev, detail: e.target.value }))}
+                      onChange={(e) =>
+                        setImage((prev) => ({
+                          ...prev,
+                          detail: e.target.value,
+                        }))
+                      }
                       onClick={() => {
                         if (data?.detailUrl && !isEditing.detail) {
                           handleImagePreview('detail');
@@ -732,30 +784,40 @@ const AppRegisterView = () => {
                       }}
                       InputProps={{
                         readOnly: !isEditing.detail && !!data?.detailUrl,
-                        endAdornment: !isEditing.detail && !!data?.detailUrl ? (
-                          <InputAdornment position="end">
-                            <IconButton
-                              edge="end"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleImagePreview('detail');
-                              }}
-                              sx={{
-                                color: 'primary.main',
-                                '&:hover': {
-                                  backgroundColor: 'action.hover',
-                                },
-                              }}
-                            >
-                              <VisibilityIcon fontSize="small" />
-                            </IconButton>
-                          </InputAdornment>
-                        ) : undefined,
+                        endAdornment:
+                          !isEditing.detail && !!data?.detailUrl ? (
+                            <InputAdornment position="end">
+                              <IconButton
+                                edge="end"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleImagePreview('detail');
+                                }}
+                                sx={{
+                                  color: 'primary.main',
+                                  '&:hover': {
+                                    backgroundColor: 'action.hover',
+                                  },
+                                }}
+                              >
+                                <VisibilityIcon fontSize="small" />
+                              </IconButton>
+                            </InputAdornment>
+                          ) : undefined,
                         sx: {
-                          cursor: !isEditing.detail && !!data?.detailUrl ? 'pointer' : 'default',
-                          backgroundColor: !isEditing.detail && !!data?.detailUrl ? 'action.hover' : 'background.paper',
+                          cursor:
+                            !isEditing.detail && !!data?.detailUrl
+                              ? 'pointer'
+                              : 'default',
+                          backgroundColor:
+                            !isEditing.detail && !!data?.detailUrl
+                              ? 'action.hover'
+                              : 'background.paper',
                           '&:hover': {
-                            backgroundColor: !isEditing.detail && !!data?.detailUrl ? 'action.selected' : undefined,
+                            backgroundColor:
+                              !isEditing.detail && !!data?.detailUrl
+                                ? 'action.selected'
+                                : undefined,
                           },
                         },
                       }}
@@ -775,7 +837,7 @@ const AppRegisterView = () => {
                       size="small"
                       onClick={() =>
                         isEditing.detail
-                          ? handleSave('detail')       
+                          ? handleSave('detail')
                           : handleRegisterClick('detail')
                       }
                       sx={{ marginLeft: 'auto' }}
@@ -902,8 +964,10 @@ const AppRegisterView = () => {
         </Box>
 
         <Box sx={{ flex: 1 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 2 }}>
-          <h4 style={{ fontWeight: 'bold' }}>판매 정보</h4>
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 2 }}
+          >
+            <h4 style={{ fontWeight: 'bold' }}>판매 정보</h4>
             <Button
               variant="outlined"
               size="small"
@@ -914,7 +978,7 @@ const AppRegisterView = () => {
             </Button>
           </Box>
           <Table sx={{ width: '100%', border: '1px solid #e0e0e0' }}>
-          <TableBody>
+            <TableBody>
               <TableRow>
                 <TableCell>상품명</TableCell>
                 <TableCell sx={{ py: isEditing.sale ? 1 : 'auto' }}>
@@ -1062,7 +1126,7 @@ const AppRegisterView = () => {
                   )}
                 </TableCell>
               </TableRow>
-              
+
               <TableRow>
                 <TableCell>판매 기간(시작)</TableCell>
                 <TableCell sx={{ py: isEditing.sale ? 1 : 'auto' }}>
@@ -1070,11 +1134,17 @@ const AppRegisterView = () => {
                     <DateTimePicker
                       format="YYYY-MM-DD HH"
                       views={['year', 'month', 'day', 'hours']}
-                      value={saleData.launchStartT ? dayjs(saleData.launchStartT) : null}
+                      value={
+                        saleData.launchStartT
+                          ? dayjs(saleData.launchStartT)
+                          : null
+                      }
                       onChange={(date) => {
                         setSaleData((prev) => ({
                           ...prev,
-                          launchStartT: date ? date.startOf('hour').format('YYYY-MM-DD HH') : '',
+                          launchStartT: date
+                            ? date.startOf('hour').format('YYYY-MM-DD HH')
+                            : '',
                         }));
                       }}
                       slotProps={{
@@ -1085,12 +1155,13 @@ const AppRegisterView = () => {
                         },
                       }}
                     />
+                  ) : saleData.launchStartT ? (
+                    dayjs(saleData.launchStartT).format('YYYY-MM-DD HH')
+                  ) : data?.launchStartT ? (
+                    dayjs(data.launchStartT).format('YY년 MM월 DD일 HH시')
                   ) : (
-                    saleData.launchStartT 
-                      ? dayjs(saleData.launchStartT).format('YYYY-MM-DD HH')
-                      : (data?.launchStartT ? dayjs(data.launchStartT).format('YY년 MM월 DD일 HH시') : '-')
+                    '-'
                   )}
-                  
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -1100,11 +1171,17 @@ const AppRegisterView = () => {
                     <DateTimePicker
                       format="YYYY-MM-DD HH"
                       views={['year', 'month', 'day', 'hours']}
-                      value={saleData.launchEndT ? dayjs(saleData.launchEndT).startOf('hour') : null}
+                      value={
+                        saleData.launchEndT
+                          ? dayjs(saleData.launchEndT).startOf('hour')
+                          : null
+                      }
                       onChange={(date) => {
                         setSaleData((prev) => ({
                           ...prev,
-                          launchEndT: date ? date.startOf('hour').format('YYYY-MM-DD HH') : '',
+                          launchEndT: date
+                            ? date.startOf('hour').format('YYYY-MM-DD HH')
+                            : '',
                         }));
                       }}
                       slotProps={{
@@ -1115,19 +1192,22 @@ const AppRegisterView = () => {
                         },
                       }}
                     />
+                  ) : saleData.launchEndT ? (
+                    dayjs(saleData.launchEndT).format('YYYY-MM-DD HH')
+                  ) : data?.launchEndT ? (
+                    dayjs(data.launchEndT).format('YY년 MM월 DD일 HH시')
                   ) : (
-                    saleData.launchEndT 
-                      ? dayjs(saleData.launchEndT).format('YYYY-MM-DD HH')
-                      : (data?.launchEndT ? dayjs(data.launchEndT).format('YY년 MM월 DD일 HH시') : '-')
+                    '-'
                   )}
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
 
-          
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 2 }}>
-          <h4 style={{ fontWeight: 'bold' }}>재고 정보</h4>
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mb: 2 }}
+          >
+            <h4 style={{ fontWeight: 'bold' }}>재고 정보</h4>
             <Button
               variant="outlined"
               size="small"
@@ -1147,18 +1227,26 @@ const AppRegisterView = () => {
           </Box>
           <Table sx={{ width: '100%', border: '1px solid #e0e0e0' }}>
             <TableBody>
-            <TableRow>
-                <TableCell sx={{ width: '150px' }}>재고 상태</TableCell>
-                <TableCell>{data?.maxQuantity && data.maxQuantity >= 1 ? '판매 가능' : '품절'}</TableCell>
-              </TableRow>
-              
               <TableRow>
-                <TableCell sx={{ width: '250px' }}>남은 재고 수량/총 재고수량(현재)</TableCell>
-                <TableCell>{data?.stockQuantity} / {data?.maxQuantity}</TableCell>
+                <TableCell sx={{ width: '150px' }}>재고 상태</TableCell>
+                <TableCell>
+                  {data?.maxQuantity && data.maxQuantity >= 1
+                    ? '판매 가능'
+                    : '품절'}
+                </TableCell>
+              </TableRow>
+
+              <TableRow>
+                <TableCell sx={{ width: '250px' }}>
+                  남은 재고 수량/총 재고수량(현재)
+                </TableCell>
+                <TableCell>
+                  {data?.stockQuantity} / {data?.maxQuantity}
+                </TableCell>
               </TableRow>
 
               {isEditing.stock && (
-              <TableRow>
+                <TableRow>
                   <TableCell>남은 재고 수량/총 재고수량(변경)</TableCell>
                   <TableCell sx={{ py: isEditing.stock ? 1 : 'auto' }}>
                     {isEditing.stock ? (
@@ -1166,7 +1254,11 @@ const AppRegisterView = () => {
                         <TextField
                           size="small"
                           variant="outlined"
-                          value={ stockData.stockQuantity + ' / ' +stockData.maxQuantity}
+                          value={
+                            stockData.stockQuantity +
+                            ' / ' +
+                            stockData.maxQuantity
+                          }
                           disabled={true}
                           onChange={(e) =>
                             setStockData((prev) => ({
@@ -1176,15 +1268,16 @@ const AppRegisterView = () => {
                           }
                           fullWidth
                         />
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          
+                        <Box
+                          sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                        >
                           <TextField
                             size="small"
                             variant="outlined"
                             value={stockIncrement}
                             onChange={(e) => setStockIncrement(e.target.value)}
                             placeholder="수량 입력"
-                            sx={{ width: '80px', maxHeight: 60}}
+                            sx={{ width: '80px', maxHeight: 60 }}
                             inputProps={{
                               style: { textAlign: 'center' },
                             }}
@@ -1215,7 +1308,7 @@ const AppRegisterView = () => {
                       stockData.maxQuantity || data?.maxQuantity
                     )}
                   </TableCell>
-              </TableRow>
+                </TableRow>
               )}
             </TableBody>
           </Table>
@@ -1247,30 +1340,35 @@ const AppRegisterView = () => {
         <DialogContent>
           <Box
             sx={{
+              position: 'relative',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
               minHeight: '400px',
+              width: '100%',
             }}
           >
-            <img
-              src={previewImage}
-              alt="미리보기"
-              style={{
-                maxWidth: '100%',
-                maxHeight: '100%',
-                objectFit: 'cover',
-              }}
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/images/placeholder-image.png';
-              }}
-            />
+            {previewImage && (
+              <Image
+                src={previewImage}
+                alt="미리보기"
+                fill
+                style={{
+                  objectFit: 'contain',
+                }}
+                unoptimized
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    '/images/placeholder-image.png';
+                }}
+              />
+            )}
           </Box>
         </DialogContent>
       </Dialog>
 
       {/* 이력조회 Popover */}
-      
+
       <Popover
         open={Boolean(historyAnchorEl)}
         anchorEl={historyAnchorEl}
@@ -1284,16 +1382,31 @@ const AppRegisterView = () => {
           horizontal: 'right',
         }}
       >
-        <Paper sx={{ p: 2, minWidth: 200, maxWidth: 300, maxHeight: 300, overflow: 'auto' }}>
+        <Paper
+          sx={{
+            p: 2,
+            minWidth: 200,
+            maxWidth: 300,
+            maxHeight: 300,
+            overflow: 'auto',
+          }}
+        >
           {historyType === 'status' && (
             <>
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 1, fontWeight: 'bold' }}
+              >
                 상태변경 이력
               </Typography>
               {historyData.status && historyData.status.length > 0 ? (
                 <Stack spacing={0.5}>
                   {historyData.status.map((item, index) => (
-                    <Typography key={index} variant="body2" sx={{ fontSize: '0.875rem' }}>
+                    <Typography
+                      key={index}
+                      variant="body2"
+                      sx={{ fontSize: '0.875rem' }}
+                    >
                       {item}
                     </Typography>
                   ))}
@@ -1308,13 +1421,20 @@ const AppRegisterView = () => {
 
           {historyType === 'stock' && (
             <>
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 1, fontWeight: 'bold' }}
+              >
                 재고 이력
               </Typography>
               {historyData.stock && historyData.stock.length > 0 ? (
                 <Stack spacing={0.5}>
                   {historyData.stock.map((item, index) => (
-                    <Typography key={index} variant="body2" sx={{ fontSize: '0.875rem' }}>
+                    <Typography
+                      key={index}
+                      variant="body2"
+                      sx={{ fontSize: '0.875rem' }}
+                    >
                       {item}
                     </Typography>
                   ))}

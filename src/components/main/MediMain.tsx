@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { ImageCard } from '@/components/core/ImageCard';
-import { getAdminOpenStatusActivePcoList } from '@/api/mediAdminApi';
 import { PATH } from '@/paths';
 import { useSession } from 'next-auth/react';
 import { getAllOrders } from '@/api/orderApi';
@@ -16,10 +15,8 @@ const MediMain = () => {
     queryKey: ['getAllOrders'],
     queryFn: () => getAllOrders(),
   });
-  // window.adminOpenStatusActivePcoList = adminOpenStatusActivePcoList;
-
   if (!adminOpenStatusActivePcoList || isLoading) return '';
-  console.log('pcoList', adminOpenStatusActivePcoList);
+
   return (
     <article className="flex flex-col gap-24">
       {adminOpenStatusActivePcoList?.map((item) => (

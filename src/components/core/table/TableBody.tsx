@@ -29,7 +29,7 @@ interface ReactTableProps<TRowModel extends object> {
   onSelectAll?: (event: React.ChangeEvent) => void;
   onDeselectAll?: (event: React.ChangeEvent) => void; // ?????????????
   onSelectOne?: (rowId: RowId) => void; // ✅ event, row 제거하고 rowId만
-  onDeselectOne?: (rowId: RowId) => void; // 
+  onDeselectOne?: (rowId: RowId) => void; //
   uniqueRowId?: (row: TRowModel) => RowId;
   isHover?: boolean;
   noDataMessage?: string;
@@ -151,16 +151,16 @@ export const TableBody = <TRowModel extends object>({
                           checked={rowId ? rowSelected : false}
                           onChange={() => {
                             if (rowSelected) {
-                              onDeselectOne?.(rowId); 
+                              onDeselectOne?.(rowId);
                             } else {
-                              onSelectOne?.(rowId); 
+                              onSelectOne?.(rowId);
                             }
                           }}
-                          onClick={(event: React.MouseEvent) => {
-                          // if (onClick) {
-                          //   event.stopPropagation();
-                          // }
-                          }}
+                          // onClick={(event: React.MouseEvent) => {
+                          //   // if (onClick) {
+                          //   //   event.stopPropagation();
+                          //   // }
+                          // }}
                         />
                       </TableCell>
                     ) : null}

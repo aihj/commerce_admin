@@ -4,8 +4,6 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-
-// import { logger } from '@/lib/logger/defaultLogger';
 import Table from '@mui/material/Table';
 import { useParams } from 'next/navigation';
 import Box from '@mui/material/Box';
@@ -13,7 +11,7 @@ import { PageTitle } from '@/components/core/PageTitle';
 import { dayjs } from '@/lib/dayjs';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
-import { getSession, signOut, useSession } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
 import { PATH } from '@/paths';
 
 import {
@@ -46,7 +44,6 @@ import {
 } from '@/api/orderApi';
 import { PRODUCT_CATEGORY } from '@/api/types/productTypes';
 import { recipientMethod } from '@/api/types/orderTypes';
-import axios from 'axios';
 
 const AppRegisterView = () => {
   const { orderIdx } = useParams<{ orderIdx: string }>();
@@ -66,18 +63,20 @@ const AppRegisterView = () => {
   const [openDeliModal, setOpenDeliModal] = useState(false);
   const [selectedCourier, setSelectedCourier] = useState('');
   const [trackingNumber, setTrackingNumber] = useState('');
-  const [historyAnchorEl, setHistoryAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [historyAnchorEl, setHistoryAnchorEl] =
+    useState<HTMLButtonElement | null>(null);
   const [historyData, setHistoryData] = useState<string[]>([]);
   const [isEditingMemo, setIsEditingMemo] = useState(false);
   const [memoText, setMemoText] = useState(data?.memo ?? '');
   const [refundModalOpen, setRefundModalOpen] = useState(false);
   const [refundReason, setRefundReason] = useState('');
   const [customReason, setCustomReason] = useState('');
-  const [refundAmount, setRefundAmount] = useState<number>(Number(data?.orderAmount) ?? 0);
-
+  const [refundAmount, setRefundAmount] = useState<number>(
+    Number(data?.orderAmount) ?? 0
+  );
 
   console.log('data', data);
- 
+
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -93,27 +92,24 @@ const AppRegisterView = () => {
     }
     if (refundModalOpen && data?.orderAmount) {
       const baseAmount = Number(data.orderAmount) || 0;
-      
+
       if (refundReason === '단순변심') {
-        const calculatedAmount = baseAmount - (data?.shippingFee ?? 0)*2;
+        const calculatedAmount = baseAmount - (data?.shippingFee ?? 0) * 2;
         setRefundAmount(calculatedAmount > 0 ? calculatedAmount : 0);
       } else if (refundReason && refundReason !== 'direct') {
         // 단순변심이 아닌 다른 사유일 경우 orderAmount 그대로
         setRefundAmount(baseAmount);
       }
     }
-    
-  }, [refundModalOpen,refundReason, data?.orderAmount, data?.shippingFee]);
-
+  }, [refundModalOpen, refundReason, data?.orderAmount, data?.shippingFee]);
 
   console.log('refundReason', refundReason);
-  
 
   const handleUpdateStatus = async (newStatus: string) => {
     console.log('newStatus', newStatus);
     try {
       await updateStatusManual(parsedIdx!, newStatus);
-     
+
       alert(`주문 상태가 ${newStatus}으로 변경되었습니다`);
     } catch (error) {
       console.error('상태 변경 오류:', error);
@@ -139,19 +135,22 @@ const AppRegisterView = () => {
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     setHistoryAnchorEl(event.currentTarget as HTMLButtonElement);
-  
+
     try {
       const history = await getOrderStatusHistory(parsedIdx!);
-      setHistoryData(history ?? []);   
+      setHistoryData(history ?? []);
     } catch (e) {
       console.error('이력 조회 오류:', e);
-      setHistoryData([]);              
+      setHistoryData([]);
     }
   };
 
-  const makeProductId = (productCategory: string | null | undefined, productIdx: number | undefined): string => {
+  const makeProductId = (
+    productCategory: string | null | undefined,
+    productIdx: number | undefined
+  ): string => {
     if (!productCategory || !productIdx) return '-';
-    
+
     const paddedIdx = String(productIdx).padStart(4, '0');
 
     return `${productCategory}${paddedIdx}`;
@@ -159,16 +158,19 @@ const AppRegisterView = () => {
 
   const handleMarkDelivered = async () => {
     if (!parsedIdx) return;
-  
+
     try {
-    
       setStatus('배송_완료');
-      setTempStatus('배송_완료'); 
+      setTempStatus('배송_완료');
       await markDelivered([parsedIdx]);
       // // 리스트/상세 쿼리 모두 무효화 → 재조회
       await queryClient.invalidateQueries({ queryKey: ['orders'] });
-      await queryClient.invalidateQueries({ queryKey: ['orderDetail', parsedIdx] });
-      await queryClient.invalidateQueries({ queryKey: ['orderStatusHistory', parsedIdx] });
+      await queryClient.invalidateQueries({
+        queryKey: ['orderDetail', parsedIdx],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['orderStatusHistory', parsedIdx],
+      });
     } catch (error) {
       console.error('배송 완료 처리 중 오류:', error);
       alert('배송 완료 처리 중 오류가 발생했습니다.');
@@ -176,7 +178,6 @@ const AppRegisterView = () => {
   };
 
   const menuOptions = [
-   
     {
       label: '주문_완료',
       value: '주문_완료',
@@ -225,7 +226,7 @@ const AppRegisterView = () => {
         '배송중',
         '주문_취소',
         '배송_완료',
-        '구매_확정'
+        '구매_확정',
       ],
     },
     {
@@ -238,45 +239,48 @@ const AppRegisterView = () => {
   async function handleRefund() {
     const session = await getSession();
     const token = session?.user?.accessToken;
-  
-    if (!token  || !session || session.expires && new Date(session.expires) < new Date()) {
+
+    if (
+      !token ||
+      !session ||
+      (session.expires && new Date(session.expires) < new Date())
+    ) {
       alert('세션이 만료되었습니다. 다시 로그인해주세요.');
-      await signOut({ callbackUrl: PATH.AUTH.NEXT_AUTH.LOGIN, redirect: true});
+      await signOut({ callbackUrl: PATH.AUTH.NEXT_AUTH.LOGIN, redirect: true });
       return;
     }
 
-  
     try {
       const orderAmount = Number(data?.orderAmount) || 0;
       const refundAmountNum = Number(refundAmount) || 0;
-  
+
       if (refundAmountNum > orderAmount) {
         alert('환불 금액이 결제 금액보다 큽니다');
-        return; 
+        return;
       }
-  
+
       await refundOrder(
         parsedIdx!,
         {
           cancelReason: refundReason,
           cancelAmount: refundAmountNum,
         },
-        token 
+        token
       );
-  
+
       setStatus('환불_완료');
-  
-      await queryClient.invalidateQueries({ queryKey: ['orderDetail', parsedIdx] });
+
+      await queryClient.invalidateQueries({
+        queryKey: ['orderDetail', parsedIdx],
+      });
       await queryClient.invalidateQueries({ queryKey: ['orders'] });
-  
-      alert("환불 처리가 완료되었습니다.");
+
+      alert('환불 처리가 완료되었습니다.');
       setRefundModalOpen(false);
-   
     } catch (error) {
-      
-      console.error("환불 처리 실패:", error);
-      
-      alert("환불 처리 중 오류가 발생했습니다.");
+      console.error('환불 처리 실패:', error);
+
+      alert('환불 처리 중 오류가 발생했습니다.');
     }
   }
 
@@ -285,24 +289,23 @@ const AppRegisterView = () => {
     const defaultFee = data?.defaultShippingFee ?? 0;
     const remoteFee = data?.remoteShippingFee ?? 0;
     const jejuFee = data?.jejuShippingFee ?? 0;
-  
+
     if (shippingFee === defaultFee) {
       return `배송비: ${shippingFee} (기본 배송비: ${defaultFee})`;
     }
-    
+
     if (shippingFee === defaultFee + remoteFee) {
       return `배송비: ${shippingFee} (기본 배송비 ${defaultFee}, 도서산간: ${remoteFee} 추가)`;
     }
-    
+
     if (shippingFee === defaultFee + jejuFee) {
       return `배송비: ${shippingFee} (기본 배송비 ${defaultFee}, 제주지역: ${jejuFee} 추가)`;
     }
-  
+
     // 기본값 (혹시 모를 경우)
     return `${shippingFee}`;
   };
 
-  
   return (
     <Box
       sx={{
@@ -315,7 +318,6 @@ const AppRegisterView = () => {
       <div className="mb-24">
         <PageTitle title="주문 상세" />
       </div>
-      
 
       <Box sx={{ display: 'flex', gap: 4, alignItems: 'flex-start' }}>
         <Box sx={{ flex: 1 }}>
@@ -324,7 +326,9 @@ const AppRegisterView = () => {
             <TableBody>
               <TableRow>
                 <TableCell>주문일시</TableCell>
-                <TableCell>{dayjs(data?.createT).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
+                <TableCell>
+                  {dayjs(data?.createT).format('YYYY-MM-DD HH:mm:ss')}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell sx={{ width: '150px' }}>주문번호</TableCell>
@@ -370,30 +374,30 @@ const AppRegisterView = () => {
                         ))}
                     </Select>
                     <Box sx={{ display: 'flex', gap: 1, marginLeft: 'auto' }}>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => {
-                        if (!isEditing) {
-                          setIsEditing(true);
-                          alert(
-                            '주의! 주문상태 수기변경은 신중히 진행하는 것을 권장드립니다.'
-                          );
-                        } else {
-                          handleUpdateStatus(tempStatus);
-                          setStatus(tempStatus);
-                        }
-                      }}
-                    >
-                      {isEditing ? '저장' : '수기 변경'}
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={handleHistoryClick}
-                    >
-                      이력조회
-                    </Button>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => {
+                          if (!isEditing) {
+                            setIsEditing(true);
+                            alert(
+                              '주의! 주문상태 수기변경은 신중히 진행하는 것을 권장드립니다.'
+                            );
+                          } else {
+                            handleUpdateStatus(tempStatus);
+                            setStatus(tempStatus);
+                          }
+                        }}
+                      >
+                        {isEditing ? '저장' : '수기 변경'}
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={handleHistoryClick}
+                      >
+                        이력조회
+                      </Button>
                     </Box>
                   </Box>
                 </TableCell>
@@ -406,11 +410,17 @@ const AppRegisterView = () => {
             <TableBody>
               <TableRow>
                 <TableCell>상품 카테고리</TableCell>
-                <TableCell>{PRODUCT_CATEGORY[data?.productCategory as keyof typeof PRODUCT_CATEGORY] || ''}</TableCell>
+                <TableCell>
+                  {PRODUCT_CATEGORY[
+                    data?.productCategory as keyof typeof PRODUCT_CATEGORY
+                  ] || ''}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell sx={{ width: '150px' }}>상품ID</TableCell>
-                <TableCell>{makeProductId(data?.productCategory, data?.productIdx)}</TableCell>
+                <TableCell>
+                  {makeProductId(data?.productCategory, data?.productIdx)}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>상품명</TableCell>
@@ -446,7 +456,11 @@ const AppRegisterView = () => {
             <TableBody>
               <TableRow>
                 <TableCell>요청 일시</TableCell>
-                <TableCell>{data?.taxRequestT ? dayjs(data?.taxRequestT).format('YYYY-MM-DD HH:mm:ss') : '-'}</TableCell>
+                <TableCell>
+                  {data?.taxRequestT
+                    ? dayjs(data?.taxRequestT).format('YYYY-MM-DD HH:mm:ss')
+                    : '-'}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell sx={{ width: '150px' }}>처리 상태</TableCell>
@@ -478,14 +492,15 @@ const AppRegisterView = () => {
                           setIsEditing(true);
                           if (status !== '구매_확정') {
                             alert(
-                              '구매 확정 상태에서만 세금 계산서 처리 상태를 변경할 수 있습니다.' + '\n' 
+                              '구매 확정 상태에서만 세금 계산서 처리 상태를 변경할 수 있습니다.' +
+                                '\n'
                             );
                           }
                         } else {
                           handleUpdateTaxStatus(tax);
                           setTax(tax);
                         }
-                      }}                     
+                      }}
                     >
                       {isEditing ? '저장' : '변경'}
                     </Button>
@@ -506,12 +521,7 @@ const AppRegisterView = () => {
               </TableRow>
             </TableBody>
           </Table>
-           
         </Box>
-
-        
-
-
 
         <Box sx={{ flex: 1 }}>
           <h4 style={{ fontWeight: 'bold' }}>결제 정보</h4>
@@ -527,39 +537,44 @@ const AppRegisterView = () => {
               </TableRow>
               <TableRow>
                 <TableCell>결제 일시</TableCell>
-                <TableCell>{dayjs(data?.createT).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
+                <TableCell>
+                  {dayjs(data?.createT).format('YYYY-MM-DD HH:mm:ss')}
+                </TableCell>
               </TableRow>
 
-              {status === '환불_완료' && (() => {          
-              
-              return (
-                <>
-                  <TableRow>
-                    <TableCell>환불 사유</TableCell>
-                    <TableCell>
-                    {data?.cancelReason || '-'}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>환불 제외 금액</TableCell>
-                    <TableCell>
-                      {data?.cancelAmount? data?.orderAmount - data?.cancelAmount: '' }
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>환불 금액</TableCell>
-                    <TableCell>
-                      {data?.cancelAmount? data?.cancelAmount : ''}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>환불 일시</TableCell>
-                    <TableCell>{dayjs(data?.canceledAt).format('YYYY-MM-DD HH:mm:ss')}</TableCell>
-                  </TableRow>
-                </>
-              );
-})()}
-
+              {status === '환불_완료' &&
+                (() => {
+                  return (
+                    <>
+                      <TableRow>
+                        <TableCell>환불 사유</TableCell>
+                        <TableCell>{data?.cancelReason || '-'}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>환불 제외 금액</TableCell>
+                        <TableCell>
+                          {data?.cancelAmount
+                            ? data?.orderAmount - data?.cancelAmount
+                            : ''}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>환불 금액</TableCell>
+                        <TableCell>
+                          {data?.cancelAmount ? data?.cancelAmount : ''}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>환불 일시</TableCell>
+                        <TableCell>
+                          {dayjs(data?.canceledAt).format(
+                            'YYYY-MM-DD HH:mm:ss'
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    </>
+                  );
+                })()}
             </TableBody>
           </Table>
 
@@ -588,7 +603,11 @@ const AppRegisterView = () => {
               </TableRow>
               <TableRow>
                 <TableCell>배송 요청사항</TableCell>
-                <TableCell>{recipientMethod[data?.recipientMethod as keyof typeof recipientMethod] || ''}</TableCell>
+                <TableCell>
+                  {recipientMethod[
+                    data?.recipientMethod as keyof typeof recipientMethod
+                  ] || ''}
+                </TableCell>
               </TableRow>
 
               <TableRow>
@@ -619,7 +638,9 @@ const AppRegisterView = () => {
                     <Button
                       variant="outlined"
                       size="small"
-                      disabled={status === '환불_완료' || status === '주문_취소'}
+                      disabled={
+                        status === '환불_완료' || status === '주문_취소'
+                      }
                       onClick={() => {
                         setOpenTrackingModal(true);
                         // 모달 열 때 현재 값으로 초기화
@@ -628,7 +649,6 @@ const AppRegisterView = () => {
                       }}
                     >
                       등록/변경
-                     
                     </Button>
                   </Box>
                 </TableCell>
@@ -641,165 +661,176 @@ const AppRegisterView = () => {
           </Table>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 3 }}>
-                <h4 style={{ fontWeight: 'bold', margin: 0 }}>메모</h4>
-             
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={async () => {
-                    if (!isEditingMemo) {
-                      setIsEditingMemo(true);
-                      return;
-                    }
+            <h4 style={{ fontWeight: 'bold', margin: 0 }}>메모</h4>
 
-                    try {
-                      await updateMemo(parsedIdx!, memoText.trim());
-                      alert('메모가 저장되었습니다.');
-                      setIsEditingMemo(false);
-                      await queryClient.invalidateQueries({ queryKey: ['orderDetail', parsedIdx] });
-                    } catch (error) {
-                      console.error('메모 저장 실패:', error);
-                      alert('메모 저장 중 오류가 발생했습니다.');
-                    }
-                  }}
-                >
-                  {isEditingMemo ? '저장' : '변경'}
-                </Button>
-              </Box>
-
-              <TextField
-                value={memoText}
-                onChange={(e) => setMemoText(e.target.value)}
-                placeholder="메모를 입력하세요"
-                fullWidth
-                multiline
-                minRows={4}
-                maxRows={8}
-                sx={{ mt: 1 }}
-                InputProps={{ readOnly: !isEditingMemo }}
-                disabled={!isEditingMemo}
-              />  
-            </Box>
-        </Box>
-
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          gap={2}
-          mt={2}
-        >
-         
             <Button
               variant="outlined"
-              color="error"
-              onClick={() => {
-                setRefundReason(''); 
-                setCustomReason('');
-                setRefundModalOpen(true);
-          
-              }}
-            >
-              환불 처리
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                if (status === '환불_완료' || status === '주문_취소' || status === '배송_완료' || status === '구매_확정') {
-                  alert('이미 환불 완료, 주문 취소, 배송 완료, 구매확정 처리된 주문은 배송완료 처리를 할 수 없습니다.');
+              size="small"
+              onClick={async () => {
+                if (!isEditingMemo) {
+                  setIsEditingMemo(true);
                   return;
                 }
-                setOpenDeliModal(true);
+
+                try {
+                  await updateMemo(parsedIdx!, memoText.trim());
+                  alert('메모가 저장되었습니다.');
+                  setIsEditingMemo(false);
+                  await queryClient.invalidateQueries({
+                    queryKey: ['orderDetail', parsedIdx],
+                  });
+                } catch (error) {
+                  console.error('메모 저장 실패:', error);
+                  alert('메모 저장 중 오류가 발생했습니다.');
+                }
               }}
             >
-              배송완료 처리
+              {isEditingMemo ? '저장' : '변경'}
             </Button>
+          </Box>
 
+          <TextField
+            value={memoText}
+            onChange={(e) => setMemoText(e.target.value)}
+            placeholder="메모를 입력하세요"
+            fullWidth
+            multiline
+            minRows={4}
+            maxRows={8}
+            sx={{ mt: 1 }}
+            InputProps={{ readOnly: !isEditingMemo }}
+            disabled={!isEditingMemo}
+          />
+        </Box>
+      </Box>
 
-            {/* 배송완료 처리 확인 모달 */}
-                <Dialog
-                  open={openDeliModal}
-                  onClose={() => setOpenDeliModal(false)}
-                  maxWidth="xs"
-                  fullWidth
-                >
-                  <DialogTitle>배송완료 처리</DialogTitle>
-                  <DialogContent>
-                    <Typography>
-                      배송 현황 조회 후 실제로 배송이 완료된 경우에 진행해주세요.   <br />
-                      배송 완료로 처리 후, 7일이 경과하면 구매 확정으로 전환됩니다.
-                    </Typography>
-                  </DialogContent>
-                  <DialogActions sx={{ justifyContent: 'center' }}>
-                  <Button onClick={() => setOpenDeliModal(false)}>취소</Button>
-                  <Button
-                    variant="contained"
-                    onClick={async () => {
-                      await handleMarkDelivered();
-                      setOpenDeliModal(false);
-                    }}
-                  >
-                    배송 완료 처리
-                  </Button>
-                </DialogActions>
-                </Dialog>
-          
-            <Dialog
-              open={refundModalOpen}
-              onClose={() => setRefundModalOpen(false)}
-              maxWidth="sm"
-              fullWidth
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        gap={2}
+        mt={2}
+      >
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={() => {
+            setRefundReason('');
+            setCustomReason('');
+            setRefundModalOpen(true);
+          }}
+        >
+          환불 처리
+        </Button>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            if (
+              status === '환불_완료' ||
+              status === '주문_취소' ||
+              status === '배송_완료' ||
+              status === '구매_확정'
+            ) {
+              alert(
+                '이미 환불 완료, 주문 취소, 배송 완료, 구매확정 처리된 주문은 배송완료 처리를 할 수 없습니다.'
+              );
+              return;
+            }
+            setOpenDeliModal(true);
+          }}
+        >
+          배송완료 처리
+        </Button>
+
+        {/* 배송완료 처리 확인 모달 */}
+        <Dialog
+          open={openDeliModal}
+          onClose={() => setOpenDeliModal(false)}
+          maxWidth="xs"
+          fullWidth
+        >
+          <DialogTitle>배송완료 처리</DialogTitle>
+          <DialogContent>
+            <Typography>
+              배송 현황 조회 후 실제로 배송이 완료된 경우에 진행해주세요. <br />
+              배송 완료로 처리 후, 7일이 경과하면 구매 확정으로 전환됩니다.
+            </Typography>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: 'center' }}>
+            <Button onClick={() => setOpenDeliModal(false)}>취소</Button>
+            <Button
+              variant="contained"
+              onClick={async () => {
+                try {
+                  await handleMarkDelivered();
+                  alert(`배송 완료 처리되었습니다`);
+                } catch (error) {
+                  console.error('API 호출 오류:', error);
+                  alert(`배송 완료 처리 중 오류가 발생했습니다.`);
+                }
+                setOpenDeliModal(false);
+              }}
             >
-              <DialogTitle>환불 처리</DialogTitle>
-              <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-                <FormControl fullWidth>
-                  <InputLabel>환불 사유</InputLabel>
-                  <Select
-                    label="환불 사유"
-                    value={refundReason}
-                    onChange={(e) => setRefundReason(e.target.value)}
-                  >
-                    <MenuItem value="단순변심">단순변심</MenuItem>
-                    <MenuItem value="배송지연">배송지연</MenuItem>
-                    <MenuItem value="오배송">오배송</MenuItem>
-                    <MenuItem value="품절">품절</MenuItem>
-                    <MenuItem value="상품불량">상품불량</MenuItem>
-                    <MenuItem value="direct">직접입력</MenuItem>
-                  </Select>
-                </FormControl>
+              배송 완료 처리
+            </Button>
+          </DialogActions>
+        </Dialog>
 
-                {refundReason === 'direct' && (
-                  <TextField
-                    label="직접입력"
-                    placeholder="환불 사유를 직접 입력하세요"
-                    multiline
-                    minRows={2}
-                    value={customReason}
-                    onChange={(e) => setCustomReason(e.target.value)}
-                  />
-                )}
-                
-                <TextField
-                  label="환불 금액"
-                  value={refundAmount}
-                  onChange={(e) => setRefundAmount(Number(e.target.value))}
-                  type="number"
-                  inputProps={{ min: 0 }}
-                />
-              </DialogContent>
+        <Dialog
+          open={refundModalOpen}
+          onClose={() => setRefundModalOpen(false)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>환불 처리</DialogTitle>
+          <DialogContent
+            sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}
+          >
+            <FormControl fullWidth>
+              <InputLabel>환불 사유</InputLabel>
+              <Select
+                label="환불 사유"
+                value={refundReason}
+                onChange={(e) => setRefundReason(e.target.value)}
+              >
+                <MenuItem value="단순변심">단순변심</MenuItem>
+                <MenuItem value="배송지연">배송지연</MenuItem>
+                <MenuItem value="오배송">오배송</MenuItem>
+                <MenuItem value="품절">품절</MenuItem>
+                <MenuItem value="상품불량">상품불량</MenuItem>
+                <MenuItem value="direct">직접입력</MenuItem>
+              </Select>
+            </FormControl>
 
-              <DialogActions>
-                <Button onClick={() => setRefundModalOpen(false)}>취소</Button>
-                <Button
-                  variant="contained"
-                  onClick={handleRefund}
-                >
-                  저장
-                </Button>
-              </DialogActions>
-            </Dialog>
+            {refundReason === 'direct' && (
+              <TextField
+                label="직접입력"
+                placeholder="환불 사유를 직접 입력하세요"
+                multiline
+                minRows={2}
+                value={customReason}
+                onChange={(e) => setCustomReason(e.target.value)}
+              />
+            )}
+
+            <TextField
+              label="환불 금액"
+              value={refundAmount}
+              onChange={(e) => setRefundAmount(Number(e.target.value))}
+              type="number"
+              inputProps={{ min: 0 }}
+            />
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={() => setRefundModalOpen(false)}>취소</Button>
+            <Button variant="contained" onClick={handleRefund}>
+              저장
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         {/* 송장번호 등록 모달 */}
         <Dialog
@@ -838,89 +869,101 @@ const AppRegisterView = () => {
           <DialogActions>
             <Button onClick={() => setOpenTrackingModal(false)}>취소</Button>
             <Button
-                onClick={async () => {
-                  // 택배사 및 송장번호 검증
-                  const trimmedTrackingNumber = String(trackingNumber || '').trim();
-                  const trimmedCourier = String(selectedCourier || '').trim();
-                  
-                  if (!trimmedCourier || !trimmedTrackingNumber) {
-                    alert('선택된 택배사 또는 입력된 송장번호가 없습니다');
-                    return; // 저장하지 않고 함수 종료
+              onClick={async () => {
+                // 택배사 및 송장번호 검증
+                const trimmedTrackingNumber = String(
+                  trackingNumber || ''
+                ).trim();
+                const trimmedCourier = String(selectedCourier || '').trim();
+
+                if (!trimmedCourier || !trimmedTrackingNumber) {
+                  alert('선택된 택배사 또는 입력된 송장번호가 없습니다');
+                  return; // 저장하지 않고 함수 종료
+                }
+
+                try {
+                  const isFirstRegistration =
+                    !data?.trackingNumber || data.trackingNumber.trim() === '';
+
+                  console.log('isFirstRegistration', isFirstRegistration);
+                  await updateCarrierInfo({
+                    orderIdx: parsedIdx!,
+                    carrier: selectedCourier,
+                    trackingNumber: trimmedTrackingNumber,
+                  });
+
+                  if (isFirstRegistration) {
+                    await updateStatus(parsedIdx!, '배송중');
+                    setStatus('배송중');
+                    setTempStatus('배송중');
                   }
-                  
-                  try {
 
-                    const isFirstRegistration = !data?.trackingNumber || data.trackingNumber.trim() === '';
+                  alert('송장번호가 저장되었습니다.');
 
-                    console.log('isFirstRegistration', isFirstRegistration);
-                    await updateCarrierInfo({
-                      orderIdx: parsedIdx!,
-                      carrier: selectedCourier,
-                      trackingNumber: trimmedTrackingNumber,
-                    });
+                  setDelivery(selectedCourier);
+                  setOpenTrackingModal(false);
 
-           
-                    if (isFirstRegistration ) {
-                      await updateStatus(parsedIdx!, '배송중');
-                      setStatus('배송중');
-                      setTempStatus('배송중');
-                    }
-
-                    alert('송장번호가 저장되었습니다.');
-
-                    setDelivery(selectedCourier);
-                    setOpenTrackingModal(false);
-
-                    await queryClient.invalidateQueries({ queryKey: ['orderDetail', parsedIdx] });
-                    await queryClient.invalidateQueries({ queryKey: ['orders'] });
-                      
-                  } catch (error) {
-                    console.error('송장번호 저장 실패:', error);
-                    alert('송장번호 저장 중 오류가 발생했습니다.');
-                  }
-                }}
-                variant="contained"
-              >
-                저장
-              </Button>
+                  await queryClient.invalidateQueries({
+                    queryKey: ['orderDetail', parsedIdx],
+                  });
+                  await queryClient.invalidateQueries({ queryKey: ['orders'] });
+                } catch (error) {
+                  console.error('송장번호 저장 실패:', error);
+                  alert('송장번호 저장 중 오류가 발생했습니다.');
+                }
+              }}
+              variant="contained"
+            >
+              저장
+            </Button>
           </DialogActions>
         </Dialog>
 
-
         <Popover
-        open={Boolean(historyAnchorEl)}
-        anchorEl={historyAnchorEl}
-        onClose={() => setHistoryAnchorEl(null)}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-      >
-        <Paper sx={{ p: 2, minWidth: 200, maxWidth: 300, maxHeight: 300, overflow: 'auto' }}>
-          <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
-            상태변경 이력
-          </Typography>
-
-          {historyData.length > 0 ? (
-            <Stack spacing={0.5}>
-              {historyData.map((item, index) => (
-                <Typography key={index} variant="body2" sx={{ fontSize: '0.875rem' }}>
-                  {item}
-                </Typography>
-              ))}
-            </Stack>
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              이력이 없습니다.
+          open={Boolean(historyAnchorEl)}
+          anchorEl={historyAnchorEl}
+          onClose={() => setHistoryAnchorEl(null)}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        >
+          <Paper
+            sx={{
+              p: 2,
+              minWidth: 200,
+              maxWidth: 300,
+              maxHeight: 300,
+              overflow: 'auto',
+            }}
+          >
+            <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
+              상태변경 이력
             </Typography>
-          )}
-        </Paper>
-        </Popover>
 
+            {historyData.length > 0 ? (
+              <Stack spacing={0.5}>
+                {historyData.map((item, index) => (
+                  <Typography
+                    key={index}
+                    variant="body2"
+                    sx={{ fontSize: '0.875rem' }}
+                  >
+                    {item}
+                  </Typography>
+                ))}
+              </Stack>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                이력이 없습니다.
+              </Typography>
+            )}
+          </Paper>
+        </Popover>
       </Box>
     </Box>
   );

@@ -1,6 +1,5 @@
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Link from 'next/link';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -36,15 +35,6 @@ const ImageCard = ({
   return (
     <Card onClick={onClick} sx={{ maxWidth: 500 }}>
       <Link href={onClickLink}>
-        {/*<CardActionArea component={Link} >*/}
-        {/* {orderStatus && (
-          <CardMedia
-            component="img"
-            height="140"
-            // image={orderStatus}
-            alt="green iguana"
-          />
-        )} */}
         <CardContent sx={{ p: '24px !important' }}>
           <div className="flex flex-col gap-16">
             <span className="Title-22-Bold">{title}</span>

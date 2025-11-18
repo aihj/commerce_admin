@@ -12,8 +12,6 @@ import {
   Typography,
   FormGroup,
   TextField,
-  Radio,
-  FormControlLabel,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -25,28 +23,22 @@ import { ResetIcon } from '@/components/icons/ResetIcon';
 import TableBody from '@/components/core/table/TableBody';
 import { TablePagination } from '@/components/core/table/TablePagination';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { DTCellBox } from '@/components/DTCellBox';
 import { PATH } from '@/paths';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-// import { logger } from '@/lib/logger/defaultLogger';
 import { Loading } from '@/components/core/Loading';
 import { PageTitle } from '@/components/core/PageTitle';
 import { useRouter } from 'next/navigation';
 import { dayjs } from '@/lib/dayjs';
-import { filterProducts,
+import {
+  filterProducts,
   ProductDTO,
   ProductFilterParams,
-  getAllProducts, createProduct,
-  ProductListResponse } from '@/api/productApi';
+  getAllProducts,
+  createProduct,
+} from '@/api/productApi';
 import CloseIcon from '@mui/icons-material/Close';
-// import {
-//   AppExposureConferenceFilters,
-//   AppExposureConferenceFiltersType,
-// } from '@/app/(afterLogin)/total/conference/app-register/list/AppExposureConferenceFilters';
-// import { InitSearchParam } from '@/lib/InitSearchParams';
-// import { TableSearchParams } from '@/api/types/tableSearchParams';
-// import { CHIP_COLOR, Chip } from '@/components/core/Chip';
 
 const ConferenceAppRegisterList = () => {
   const [selected, setSelected] = useState('전체');
@@ -99,59 +91,67 @@ const ConferenceAppRegisterList = () => {
   const hasFilters = useCallback((params: ProductFilterParams | undefined) => {
     if (!params) return false;
     const filterKeys: (keyof ProductFilterParams)[] = [
-      'productName',  
+      'productName',
       'productIdx',
       'productStatus',
       'saleStatus',
       'userId',
       'orderId',
     ];
-    return filterKeys.some(key => params[key] !== null && params[key] !== undefined);
+    return filterKeys.some(
+      (key) => params[key] !== null && params[key] !== undefined
+    );
   }, []);
-
-  
-
 
   // TablePagination을 위한 setCSearchParamsFunc
-  const setCSearchParamsFunc = useCallback((param: Partial<ProductFilterParams>) => {
-    const key = Object.keys(param)[0];
-    const updatedParam: Partial<ProductFilterParams> = { ...param };
-    
-    // rowsPerPage가 문자열로 오면 숫자로 변환
-    if ('rowsPerPage' in updatedParam && typeof updatedParam.rowsPerPage === 'string') {
-      updatedParam.rowsPerPage = Number(updatedParam.rowsPerPage);
-    }
-    
-    if (key !== 'currentPage') {
-      updatedParam.currentPage = 0;
-    }
-    
-    setAppliedParams((prev) => {
-      const newParams = { ...prev!, ...updatedParam };
-      // 디버깅을 위한 로그
-      console.log('setAppliedParams:', newParams);
-      return newParams;
-    });
-  }, []);
+  const setCSearchParamsFunc = useCallback(
+    (param: Partial<ProductFilterParams>) => {
+      const key = Object.keys(param)[0];
+      const updatedParam: Partial<ProductFilterParams> = { ...param };
+
+      // rowsPerPage가 문자열로 오면 숫자로 변환
+      if (
+        'rowsPerPage' in updatedParam &&
+        typeof updatedParam.rowsPerPage === 'string'
+      ) {
+        updatedParam.rowsPerPage = Number(updatedParam.rowsPerPage);
+      }
+
+      if (key !== 'currentPage') {
+        updatedParam.currentPage = 0;
+      }
+
+      setAppliedParams((prev) => {
+        const newParams = { ...prev!, ...updatedParam };
+        // 디버깅을 위한 로그
+        console.log('setAppliedParams:', newParams);
+        return newParams;
+      });
+    },
+    []
+  );
 
   const queryClient = useQueryClient();
 
-  const makeProductId = (productCategory: string | null | undefined, productIdx: number | undefined): string => {
+  const makeProductId = (
+    productCategory: string | null | undefined,
+    productIdx: number | undefined
+  ): string => {
     if (!productCategory || !productIdx) return '-';
-    
+
     const paddedIdx = String(productIdx).padStart(4, '0');
-    
+
     return `${productCategory}${paddedIdx}`;
   };
 
   // extractProductIdx 함수를 컴포넌트 레벨로 이동
-const extractProductIdx = (value: string): number | null => {
-  if (!value) return null;
-  const numbers = value.replace(/\D/g, '');
-  if (numbers === '') return null;
-  
-  const parsed = parseInt(numbers, 10);
-  return isNaN(parsed) ? null : parsed;
+  const extractProductIdx = (value: string): number | null => {
+    if (!value) return null;
+    const numbers = value.replace(/\D/g, '');
+    if (numbers === '') return null;
+
+    const parsed = parseInt(numbers, 10);
+    return isNaN(parsed) ? null : parsed;
   };
 
   const onSearch = () => {
@@ -160,7 +160,7 @@ const extractProductIdx = (value: string): number | null => {
 
     const updated = {
       ...draft, // draft의 saleStatus 등 모든 필터 정보 포함
-      currentPage: 0, 
+      currentPage: 0,
       productName: trimmedName !== '' ? trimmedName : null,
       productIdx: trimmedId !== '' ? extractProductIdx(trimmedId) : null,
     };
@@ -175,14 +175,14 @@ const extractProductIdx = (value: string): number | null => {
     setSelected('전체');
     setProductNameSearch('');
     setProductIdSearch('');
-    
+
     setDraft({
       currentPage: 0,
       rowsPerPage: 10,
       sortType: 'p.create_t',
       sortDir: 'DESC',
     });
-    
+
     setAppliedParams({
       currentPage: 0,
       rowsPerPage: 10,
@@ -207,43 +207,40 @@ const extractProductIdx = (value: string): number | null => {
       };
       setDraft(updatedDraft);
 
-
       return next;
     });
   };
 
-const { data, isPending } = useQuery<ProductDTO[]>({
-  queryKey,
-  queryFn: async () => {
-    const params = appliedParams!;
-    
-    // 필터가 없으면 getAllProducts로 전체 데이터 가져오기
-    if (!hasFilters(params)) {
-      const allProducts = await getAllProducts();
-      setTotalCount(allProducts.length);
-      
-      // 먼저 정렬
-      const sorted = [...allProducts].sort((a, b) => {
-        const aTime = new Date(a.createT).getTime();
-        const bTime = new Date(b.createT).getTime();
-        return params.sortDir === 'ASC' ? aTime - bTime : bTime - aTime;
-      });
-      
-      const start = (params.currentPage || 0) * (params.rowsPerPage || 10);
-      const end = start + (params.rowsPerPage || 10);
-      return sorted.slice(start, end);
-    } else {
-      // 필터가 있으면 filterProducts 사용
-      const result = await filterProducts(params);
-      setTotalCount(result.totalCount);
-      return result.content;
-    }
-  },
-});
+  const { data, isPending } = useQuery<ProductDTO[]>({
+    queryKey,
+    queryFn: async () => {
+      const params = appliedParams!;
+
+      // 필터가 없으면 getAllProducts로 전체 데이터 가져오기
+      if (!hasFilters(params)) {
+        const allProducts = await getAllProducts();
+        setTotalCount(allProducts.length);
+
+        // 먼저 정렬
+        const sorted = [...allProducts].sort((a, b) => {
+          const aTime = new Date(a.createT).getTime();
+          const bTime = new Date(b.createT).getTime();
+          return params.sortDir === 'ASC' ? aTime - bTime : bTime - aTime;
+        });
+
+        const start = (params.currentPage || 0) * (params.rowsPerPage || 10);
+        const end = start + (params.rowsPerPage || 10);
+        return sorted.slice(start, end);
+      } else {
+        // 필터가 있으면 filterProducts 사용
+        const result = await filterProducts(params);
+        setTotalCount(result.totalCount);
+        return result.content;
+      }
+    },
+  });
 
   console.log('data', data);
-
-
 
   const columnHelper = createColumnHelper<ProductDTO>();
   const columns = useMemo(
@@ -253,7 +250,12 @@ const { data, isPending } = useQuery<ProductDTO[]>({
         cell: (info) => {
           return (
             <DTCellBox>
-              <span>{makeProductId(info.row.original.productCategory, info.row.original.productIdx)}</span>
+              <span>
+                {makeProductId(
+                  info.row.original.productCategory,
+                  info.row.original.productIdx
+                )}
+              </span>
             </DTCellBox>
           );
         },
@@ -311,7 +313,10 @@ const { data, isPending } = useQuery<ProductDTO[]>({
         header: '판매기간',
         cell: (info) => (
           <DTCellBox>
-            <span>{dayjs(info.row.original.launchStartT).format('YYYY-MM-DD')} - {dayjs(info.row.original.launchEndT).format('YYYY-MM-DD')}</span>
+            <span>
+              {dayjs(info.row.original.launchStartT).format('YYYY-MM-DD')} -{' '}
+              {dayjs(info.row.original.launchEndT).format('YYYY-MM-DD')}
+            </span>
           </DTCellBox>
         ),
       }),
@@ -329,7 +334,7 @@ const { data, isPending } = useQuery<ProductDTO[]>({
         cell: (info) => {
           const stockQuantity = info.getValue();
           const status = stockQuantity >= 1 ? '판매가능' : '품절';
-          
+
           return (
             <DTCellBox>
               <span>{status}</span>
@@ -337,7 +342,7 @@ const { data, isPending } = useQuery<ProductDTO[]>({
           );
         },
       }),
-     
+
       columnHelper.accessor('saleStatus', {
         header: '등록 상태',
         cell: (info) => {
@@ -370,15 +375,6 @@ const { data, isPending } = useQuery<ProductDTO[]>({
     [columnHelper, moveAppExposureDetail]
   );
 
-  // const initSearchParam = InitSearchParam(
-  //   null,
-  //   'tbl_commerce_product.product_idx',
-  //   'desc',
-  //   20
-  // );
-  // const { cSearchParams, setCSearchParamsFunc, deleteCSearchParams } =
-  //   useCustomSearchParams<TableSearchParams>(initSearchParam);
-
   const handleRegister = async () => {
     try {
       await createProduct({
@@ -408,7 +404,7 @@ const { data, isPending } = useQuery<ProductDTO[]>({
         m: 'var(--Content-margin)',
         p: 'var(--Content-padding)',
         width: 'var(--Content-width)',
-        ml: '6rem'
+        ml: '6rem',
       }}
     >
       {isPending && <Loading open={isPending} />}
@@ -429,34 +425,40 @@ const { data, isPending } = useQuery<ProductDTO[]>({
               <Typography variant="h6" sx={{ mb: 2 }}>
                 등록 상태
               </Typography>
-          
-                 <FormControl fullWidth sx={{ width: '14vh' }}>
-                  <Select
-                    value={selected}
-                    onChange={(e) => handleClick(e.target.value)}
-                    displayEmpty
-                    size="small"
-                    sx={{
-                      backgroundColor: 'white',
-                    }}
-                  >
-                    {options.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-          
+
+              <FormControl fullWidth sx={{ width: '14vh' }}>
+                <Select
+                  value={selected}
+                  onChange={(e) => handleClick(e.target.value)}
+                  displayEmpty
+                  size="small"
+                  sx={{
+                    backgroundColor: 'white',
+                  }}
+                >
+                  {options.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Box>
-            
-            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+            <Box
+              sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}
+            >
               <FormGroup sx={{ flex: 1 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column', gap: 2}}>
-                    <Typography variant="h6" >
-                      상품명
-                    </Typography>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      flexDirection: 'column',
+                      gap: 2,
+                    }}
+                  >
+                    <Typography variant="h6">상품명</Typography>
                     <TextField
                       placeholder="상품명 입력"
                       variant="outlined"
@@ -471,10 +473,15 @@ const { data, isPending } = useQuery<ProductDTO[]>({
                       }}
                     />
                   </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column', gap: 2 }}>
-                    <Typography variant="h6" >
-                      상품ID
-                    </Typography>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      flexDirection: 'column',
+                      gap: 2,
+                    }}
+                  >
+                    <Typography variant="h6">상품ID</Typography>
                     <TextField
                       placeholder="상품ID 입력"
                       variant="outlined"
@@ -493,9 +500,15 @@ const { data, isPending } = useQuery<ProductDTO[]>({
               </FormGroup>
             </Box>
           </Box>
-          
-        
-          <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'flex-start'}}>
+
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 1,
+              alignItems: 'flex-start',
+            }}
+          >
             <Box
               sx={{
                 backgroundColor: '#f5f5f5',
@@ -507,10 +520,9 @@ const { data, isPending } = useQuery<ProductDTO[]>({
                 minHeight: '2.5rem',
                 width: '27rem',
                 mr: 1,
-                
               }}
             >
-              <Typography variant="body2" sx={{ fontWeight: 'bold',}}>
+              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                 선택된 항목
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -525,11 +537,11 @@ const { data, isPending } = useQuery<ProductDTO[]>({
                 )}
               </Box>
             </Box>
-            
+
             <IconButton
               color="secondary"
               onClick={handleRefresh}
-              sx={{ 
+              sx={{
                 border: '1px solid',
                 borderColor: 'divider',
                 '&:hover': {
@@ -550,90 +562,86 @@ const { data, isPending } = useQuery<ProductDTO[]>({
             </Button>
           </Box>
         </Box>
-        
-    <Card> 
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          ml: 2,
-          mb: 2,
-        }}
-      >
-         <TablePagination<ProductFilterParams>
-          cSearchParams={appliedParams!}
-          setCSearchParamsFunc={setCSearchParamsFunc}
-          totalCount={totalCount}
-        />
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => setOpenModal(true)}
-          sx={{mr:5}}
-        >
-          상품 등록
-        </Button>
-        <Dialog
-          open={openModal}
-          onClose={() => setOpenModal(false)}
-          maxWidth="xs"
-          fullWidth
-        >
-          <DialogTitle>상품 등록</DialogTitle>
-          <DialogContent>
-            <FormControl fullWidth>
-              <InputLabel>카테고리 선택</InputLabel>
-              <Select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                label="카테고리 선택"
-                sx={{ width: '20vh' }}
-              >
-                <MenuItem value="STD">상시판매</MenuItem>
-                <MenuItem value="EVT">이벤트</MenuItem>
-                <MenuItem value="MED">의료 소모품</MenuItem>
-                <MenuItem value="GBH">
-                  공동구매(병원장)
-                </MenuItem>
-              </Select>
 
-              <InputLabel>상품명</InputLabel>
-              <TextField
-                placeholder="상품명 입력"
-                variant="outlined"
-                size="small"
-                sx={{ mt: -1, width: '20vh' }}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </FormControl>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenModal(false)}>취소</Button>
+        <Card>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              ml: 2,
+              mb: 2,
+            }}
+          >
+            <TablePagination<ProductFilterParams>
+              cSearchParams={appliedParams!}
+              setCSearchParamsFunc={setCSearchParamsFunc}
+              totalCount={totalCount}
+            />
             <Button
-              onClick={handleRegister}
               variant="contained"
-              disabled={!selectedCategory || !name}
+              color="secondary"
+              onClick={() => setOpenModal(true)}
+              sx={{ mr: 5 }}
             >
-              등록
+              상품 등록
             </Button>
-          </DialogActions>
-        </Dialog>
-       
-      </Box>
+            <Dialog
+              open={openModal}
+              onClose={() => setOpenModal(false)}
+              maxWidth="xs"
+              fullWidth
+            >
+              <DialogTitle>상품 등록</DialogTitle>
+              <DialogContent>
+                <FormControl fullWidth>
+                  <InputLabel>카테고리 선택</InputLabel>
+                  <Select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    label="카테고리 선택"
+                    sx={{ width: '20vh' }}
+                  >
+                    <MenuItem value="STD">상시판매</MenuItem>
+                    <MenuItem value="EVT">이벤트</MenuItem>
+                    <MenuItem value="MED">의료 소모품</MenuItem>
+                    <MenuItem value="GBH">공동구매(병원장)</MenuItem>
+                  </Select>
 
+                  <InputLabel>상품명</InputLabel>
+                  <TextField
+                    placeholder="상품명 입력"
+                    variant="outlined"
+                    size="small"
+                    sx={{ mt: -1, width: '20vh' }}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </FormControl>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setOpenModal(false)}>취소</Button>
+                <Button
+                  onClick={handleRegister}
+                  variant="contained"
+                  disabled={!selectedCategory || !name}
+                >
+                  등록
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
 
-      <TableBody<ProductDTO>
-        data={data as ProductDTO[]}
-        columns={columns as ColumnDef<ProductDTO>[]}
-        selectable={false}
-        hideHead={false}
-        uniqueRowId={(row: ProductDTO) => row.productIdx as number}
-        isHover={true}
-        noDataMessage={'등록된 상품이 없습니다.'}
-      />
-</Card>
+          <TableBody<ProductDTO>
+            data={data as ProductDTO[]}
+            columns={columns as ColumnDef<ProductDTO>[]}
+            selectable={false}
+            hideHead={false}
+            uniqueRowId={(row: ProductDTO) => row.productIdx as number}
+            isHover={true}
+            noDataMessage={'등록된 상품이 없습니다.'}
+          />
+        </Card>
       </Stack>
     </Box>
   );

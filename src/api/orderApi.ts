@@ -2,7 +2,6 @@ import { adminAxiosTest } from '@/api/authApi';
 // import { ResponseMessageVo } from './types/responseMessageVo';
 import { logger } from '@/lib/logger/defaultLogger';
 
-
 export interface OrderListDTO {
   orderIdx: string;
   orderId: string;
@@ -19,8 +18,16 @@ export interface OrderListDTO {
   taxEmail: string;
   taxMemo: string;
   taxRequestT: string;
-  trackingNumber: string;  
+  trackingNumber: string;
   carrierName: string;
+
+  address: string;
+  addressDetail: string;
+  recipientName: string;
+  recipientPhone: string;
+  recipientDoorlock: string;
+  recipientMethod: string;
+  addressIdx: number;
 }
 
 export interface OrderDTO {
@@ -28,7 +35,7 @@ export interface OrderDTO {
   orderId: string;
   userName: string;
   userContactNumber: string;
-  createT: string; // ISO 8601 문자열 (예: "2025-10-25T07:21:47.652Z")
+  createT: string;
 
   paymentStatus: string;
   deliveryStatus: string;
@@ -68,6 +75,56 @@ export interface OrderDTO {
   trackingNumber: string;
   memo: string;
 }
+export interface OrderFilterParams {
+  productName?: string | null;
+  orderStatuses?: string[] | null;
+  taxInvoiceStatuses?: string[] | null;
+  taxBusinessNo: string;
+  taxEmail: string;
+  taxMemo: string;
+  taxRequestT: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  userName?: string | null;
+  orderId?: number | null;
+  page?: number; // 기본값 0
+  size?: number; // 기본값 10
+  sortType?: string; // 기본값 "o.order_idx"
+  sortDir?: SortDir; // 기본값 "DESC"
+}
+
+export type ApiResponseVo<T> = {
+  status: number;
+  code: string;
+  message: string;
+  content: T;
+  desc?: string | null;
+  error?: string | null;
+  importance?: number;
+  totalCount?: number | null;
+};
+
+export interface OrderFilterRequest {
+  productNames?: string[];
+  taxInvoiceStatuses?: string[];
+  orderId?: string;
+  userName?: string;
+  startDate?: string; // or Date
+  endDate?: string; // or Date
+  orderStatuses?: string[];
+  sortType?: string;
+  sortDir?: 'ASC' | 'DESC';
+  page?: number;
+  size?: number;
+}
+
+export type OrderStatusLabel =
+  | '상품_준비중'
+  | '주문_취소'
+  | '배송중'
+  | '배송_완료'
+  | '구매_확정'
+  | '환불_완료';
 
 type SortDir = 'ASC' | 'DESC';
 export const getAllOrders = (): Promise<OrderListDTO[]> => {
@@ -81,8 +138,6 @@ export const getOrderDetail = (orderIdx: number): Promise<OrderDTO> => {
     .get(`/api/public/orderItem/${orderIdx}`)
     .then((res) => res.data.content);
 };
-
-
 
 export interface UpdateStatusRequest {
   orderIdx: number;
@@ -100,41 +155,20 @@ export interface UpdateCarrierInfoRequest {
   trackingNumber: string;
 }
 
-// 정렬 방향 한정
-export type ApiResponseVo<T> = {
-  status: number;
-  code: string;
-  message: string;
-  content: T;
-  desc?: string | null;
-  error?: string | null;
-  importance?: number;
-  totalCount?: number | null;
-};
-
-
-export type OrderStatusLabel =
-  | '상품_준비중'
-  | '주문_취소'
-  | '배송중'
-  | '배송_완료'
-  | '구매_확정'
-  | '환불_완료';
-
+export interface RefundOrderRequest {
+  cancelReason: string;
+  cancelAmount?: number;
+}
 
 export async function updateStatus(orderIdx: number, status: string) {
-
   await adminAxiosTest.post(`/api/public/${orderIdx}/status`, null, {
-    params: { status: status },          
-   
+    params: { status: status },
   });
 }
 
 export async function updateStatusManual(orderIdx: number, status: string) {
-
   await adminAxiosTest.post(`/api/public/${orderIdx}/status/manual`, null, {
-    params: { status: status },          
-   
+    params: { status: status },
   });
 }
 
@@ -177,28 +211,6 @@ export const updateCarrierInfo = (
     });
 };
 
-
-
-
-export interface OrderFilterParams {
-  productName?: string | null;
-  orderStatuses?: string[] | null;
-  taxInvoiceStatuses?: string[] | null;
-  taxBusinessNo: string;
-  taxEmail: string;
-  taxMemo: string;
-  taxRequestT: string;
-  startDate?: string | null;
-  endDate?: string | null;
-  userName?: string | null;
-  orderId?: number | null;
-  page?: number; // 기본값 0
-  size?: number; // 기본값 10
-  sortType?: string; // 기본값 "o.order_idx"
-  sortDir?: SortDir; // 기본값 "DESC"
-}
-
-
 // undefined/null/빈문자열/빈배열 제거
 const prune = (obj: Record<string, any>) => {
   const out: Record<string, any> = {};
@@ -226,32 +238,31 @@ export const filterOrders = async (
   return res.data.content;
 };
 
-
-export const exportOrders = async (orderIds: number[]) => {
+export const exportOrders = async (filters: OrderFilterRequest) => {
   const res = await adminAxiosTest.post(
     '/api/public/orderList/export',
-    { orderIds },
-    { responseType: 'arraybuffer' }  
+    filters,
+    { responseType: 'arraybuffer' }
   );
 
   const today = new Date();
   const formatted =
-    today.getFullYear().toString().slice(2) + '.' +
-    String(today.getMonth() + 1).padStart(2, '0') + '.' +
+    today.getFullYear().toString().slice(2) +
+    '.' +
+    String(today.getMonth() + 1).padStart(2, '0') +
+    '.' +
     String(today.getDate()).padStart(2, '0');
-
 
   const fileName = `메디스태프_상품주문서_배송요청서_${formatted}.xlsx`;
 
-  const blob = new Blob(
-    [res.data],
-    { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
-  );
+  const blob = new Blob([res.data], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = fileName;   // ✅ 프론트에서 원하는 파일명 직접 적용
+  a.download = fileName;
   a.click();
   URL.revokeObjectURL(url);
 };
@@ -261,9 +272,8 @@ export const markDelivered = async (orderIds: number[]): Promise<string> => {
     '/api/public/mark-delivered',
     { orderIds }
   );
-  return res.data.content; 
+  return res.data.content;
 };
-
 
 export const getOrderStatusHistory = async (
   orderIdx: number
@@ -271,24 +281,17 @@ export const getOrderStatusHistory = async (
   const res = await adminAxiosTest.get<ApiResponseVo<string[]>>(
     `/api/public/orderItem/${orderIdx}/status-history`
   );
-  return res.data.content; 
+  return res.data.content;
 };
 
-export const updateMemo = async (
-  orderIdx: number, memo: string) => {
+export const updateMemo = async (orderIdx: number, memo: string) => {
   const res = await adminAxiosTest.post<ApiResponseVo<string>>(
     `/api/public/${orderIdx}/memo`,
     { memo },
     { headers: { 'Content-Type': 'application/json', accept: '*/*' } }
   );
-  return res.data.content; 
+  return res.data.content;
 };
-
-
-export interface RefundOrderRequest {
-  cancelReason: string;          // 취소 사유
-  cancelAmount?: number;         // 부분환불 금액 (비우면 전체환불)
-}
 
 export const refundOrder = async (
   orderIdx: number,
@@ -297,7 +300,9 @@ export const refundOrder = async (
 ): Promise<ApiResponseVo<any>> => {
   // 토큰 접두사 보정
   const auth = token
-    ? (token.startsWith('Bearer ') ? token : `Bearer ${token}`)
+    ? token.startsWith('Bearer ')
+      ? token
+      : `Bearer ${token}`
     : undefined;
 
   const res = await adminAxiosTest.post<ApiResponseVo<any>>(
@@ -306,8 +311,8 @@ export const refundOrder = async (
     {
       headers: {
         'Content-Type': 'application/json',
-        'Accept': '*/*',
-        'wserviceName': 'medistaff_admin',
+        Accept: '*/*',
+        wserviceName: 'medistaff_admin',
         ...(auth ? { Authorization: auth } : {}),
       },
     }

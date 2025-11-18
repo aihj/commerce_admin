@@ -22,7 +22,6 @@ import { z as zod } from 'zod';
 import { PATH } from '@/paths';
 import { DynamicLogo } from '@/components/core/Logo';
 import { signIn, useSession } from 'next-auth/react';
-import { phoneRegex } from '@/zod';
 import { logger } from '@/lib/logger/defaultLogger';
 import Swal from 'sweetalert2';
 import { DevTool } from '@hookform/devtools';
@@ -134,7 +133,7 @@ export function SignInForm(): React.JSX.Element {
       </Stack>
       <Stack spacing={3}>
         <Stack spacing={2}>
-          <DevTool control={control}/>
+          <DevTool control={control} />
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={2}>
               <input

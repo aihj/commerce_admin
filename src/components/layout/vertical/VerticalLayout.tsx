@@ -4,31 +4,10 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
-import {
-  기본메뉴
-} from '../config';
+import { 기본메뉴 } from '../config';
 import { MainNav } from './MainNav';
 import { SideNav } from './SideNav';
-import { User } from '@/types/user';
-import { useAppSelector } from '@/redux/hooks';
-import { useSelector } from 'react-redux';
-import {
-  selectConferenceName,
-  selectConferenceStringIdx,
-} from '@/redux/slices/pcoSlice';
 import { NavItemConfig } from '@/types/nav';
-
-const appendMenuItems = (
-  menu: NavItemConfig,
-  additionalItems: NavItemConfig[]
-) => {
-  if (menu.items) {
-    return {
-      ...menu, // key, title 유지
-      items: [...menu.items, ...additionalItems], // 하위 items만 추가
-    };
-  }
-};
 
 export interface VerticalLayoutProps {
   children?: React.ReactNode;
@@ -37,10 +16,8 @@ export interface VerticalLayoutProps {
 export function VerticalLayout({
   children,
 }: VerticalLayoutProps): React.JSX.Element {
-  const user: User = useAppSelector((state) => state.user);
-  const conferenceStringIdx = useSelector(selectConferenceStringIdx);
-  console.log('conferenceStringIdx', conferenceStringIdx);
-  const conferenceName = useSelector(selectConferenceName);
+  // const conferenceStringIdx = useSelector(selectConferenceStringIdx);
+  // console.log('conferenceStringIdx', conferenceStringIdx);
 
   // region ************* 메뉴 화면 정의 *************
   let navItem: NavItemConfig[] = [];
@@ -48,7 +25,6 @@ export function VerticalLayout({
   // const 학회통합최고관리자 =
   //   user.wroleNameList &&
   //   user.wroleNameList[0]?.wroleName === 'pco_admin_all_top';
-    
 
   // if (conferenceStringIdx) {
   //   if (학회통합최고관리자) {

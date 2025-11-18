@@ -23,10 +23,7 @@ const TablePagination = <T extends object>({
   const onRowsPerPageChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const rowsPerPage = Number(event.target.value);
-      logger.debug(
-        '<onRowsPerPageChange> rowsPerPage : ',
-        rowsPerPage
-      );
+      logger.debug('<onRowsPerPageChange> rowsPerPage : ', rowsPerPage);
       console.log('onRowsPerPageChange called with rowsPerPage:', rowsPerPage);
       setCSearchParamsFunc({ rowsPerPage });
     },
@@ -42,21 +39,24 @@ const TablePagination = <T extends object>({
     [setCSearchParamsFunc]
   );
   if (!cSearchParams || totalCount === undefined) {
-    console.log('TablePagination: cSearchParams 또는 totalCount가 없음', { cSearchParams, totalCount });
+    console.log('TablePagination: cSearchParams 또는 totalCount가 없음', {
+      cSearchParams,
+      totalCount,
+    });
     return null;
   }
-  
+
   // 타입 안전성을 위해 타입 단언 사용
   const currentPage = (cSearchParams as any).currentPage ?? 0;
   const rowsPerPage = (cSearchParams as any).rowsPerPage ?? 10;
-  
+
   console.log('TablePagination 렌더링:', {
     totalCount,
     currentPage,
     rowsPerPage,
     count: totalCount,
   });
-  
+
   return (
     <TablePaginationMui
       component="div"
