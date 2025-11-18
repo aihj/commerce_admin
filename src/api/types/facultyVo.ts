@@ -1,0 +1,30 @@
+export interface FacultyVo {
+  auth?: string;
+  conferenceIdx?: number;
+  conferenceUserContactNumber?: string;
+  conferenceUserCreateT?: string;
+  conferenceUserEmail?: string;
+  conferenceUserIdx?: number;
+  conferenceUserName?: string;
+  conferenceUserPwd?: string;
+  facultyAffiliation?: string;
+  facultyCreateT?: string;
+  facultyFile?: Blob;
+  facultyIdx?: number;
+  facultyLastAccessTime?: string;
+  facultyPayStatus?: string;
+  facultyProfileHost?: string;
+  facultyProfileName?: string;
+  facultyProfilePath?: string;
+  facultyProgramIdx?: number;
+  facultyProgramRole?: string;
+  facultyTempPwd?: string;
+  facultyType?: string;
+  programPay?: string;
+  sessionCategoryIdx?: number;
+  sessionGroupIdx?: number;
+  sessionIdx?: number;
+  totalCount?: number;
+  uniqueName?: string;
+  userIdx?: number;
+}
